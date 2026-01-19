@@ -3163,13 +3163,23 @@
             butterfly.style.left = (10 + Math.random() * 80) + '%';
             butterfly.style.top = (5 + Math.random() * 20) + '%';
 
-            // Add click handler
+            // Add click handler - disappear and spawn new one
             butterfly.addEventListener('click', (e) => {
                 e.stopPropagation();
                 initAudio();
                 speakBilingual('butterfly');
                 createSparkles(e.clientX, e.clientY);
                 playMagicSound();
+
+                // Butterfly disappears
+                butterfly.style.transition = 'transform 0.3s, opacity 0.3s';
+                butterfly.style.transform = 'scale(0)';
+                butterfly.style.opacity = '0';
+                setTimeout(() => {
+                    butterfly.remove();
+                    // Spawn new butterfly after delay
+                    setTimeout(() => spawnDecorativeButterfly(), 2000 + Math.random() * 2000);
+                }, 300);
             });
 
             document.getElementById('gameContainer').appendChild(butterfly);
@@ -4295,15 +4305,34 @@
             document.getElementById('nextLevelBtn').addEventListener('click', nextLevel);
             document.getElementById('playAgainBtn').addEventListener('click', restartGame);
 
-            // Flowers - send butterflies
+            // Flowers - send butterflies, disappear and regrow
             document.querySelectorAll('.flower').forEach(flower => {
                 const handler = (e) => {
                     e.preventDefault();
+                    if (flower.classList.contains('growing')) return;
+
                     initAudio();
                     playMagicSound();
                     speakBilingual('flower'); // цветок / פרח
                     const rect = flower.getBoundingClientRect();
                     sendButterflyToPinky(rect.left + rect.width/2, rect.top);
+
+                    // Flower disappears
+                    flower.style.transition = 'transform 0.3s, opacity 0.3s';
+                    flower.style.transform = 'scale(0)';
+                    flower.style.opacity = '0';
+
+                    // Flower regrows after delay
+                    setTimeout(() => {
+                        flower.classList.add('growing');
+                        flower.style.transition = 'transform 0.5s ease-out, opacity 0.5s';
+                        flower.style.transform = 'scale(1.2)';
+                        flower.style.opacity = '1';
+                        setTimeout(() => {
+                            flower.style.transform = 'scale(1)';
+                            flower.classList.remove('growing');
+                        }, 500);
+                    }, 2000 + Math.random() * 1000);
                 };
                 flower.addEventListener('click', handler);
                 flower.addEventListener('touchstart', handler, { passive: false });
