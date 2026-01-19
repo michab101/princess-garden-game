@@ -1899,8 +1899,7 @@
         }
 
         function playBarkSound() {
-            playTone(350, 0.1, 'sawtooth', 0.2);
-            setTimeout(() => playTone(280, 0.12, 'sawtooth', 0.2), 100);
+            playAudio('dog_sound.mp3');
         }
 
         function playThunderSound() {
@@ -1978,43 +1977,81 @@
             osc2.stop(audioCtx.currentTime + duration);
         }
 
+        // Playful xylophone sound for toddlers
+        function playXylophoneNote(frequency, duration) {
+            if (!musicEnabled || !audioCtx) return;
+
+            const osc = audioCtx.createOscillator();
+            const osc2 = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+
+            // Bright, playful xylophone-like tone
+            osc.type = 'sine';
+            osc.frequency.value = frequency;
+            osc2.type = 'sine';
+            osc2.frequency.value = frequency * 4; // Bright overtone
+
+            // Quick attack, gentle decay - like a xylophone
+            gain.gain.setValueAtTime(0, audioCtx.currentTime);
+            gain.gain.linearRampToValueAtTime(0.08, audioCtx.currentTime + 0.01);
+            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+
+            osc.connect(gain);
+            osc2.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            osc.start(audioCtx.currentTime);
+            osc2.start(audioCtx.currentTime);
+            osc.stop(audioCtx.currentTime + duration);
+            osc2.stop(audioCtx.currentTime + duration);
+        }
+
         function playBackgroundMusic() {
             if (!musicEnabled || !audioCtx) return;
             if (musicInterval) return; // Already playing
 
-            // Gentle lullaby melody (Twinkle Twinkle style)
+            // Fun, bouncy "Old MacDonald" style melody for toddlers
             const melody = [
-                { note: 262, dur: 0.6 }, // C4
-                { note: 262, dur: 0.6 }, // C4
-                { note: 392, dur: 0.6 }, // G4
-                { note: 392, dur: 0.6 }, // G4
-                { note: 440, dur: 0.6 }, // A4
-                { note: 440, dur: 0.6 }, // A4
-                { note: 392, dur: 1.0 }, // G4
-                { note: 0, dur: 0.4 },   // rest
-                { note: 349, dur: 0.6 }, // F4
-                { note: 349, dur: 0.6 }, // F4
-                { note: 330, dur: 0.6 }, // E4
-                { note: 330, dur: 0.6 }, // E4
-                { note: 294, dur: 0.6 }, // D4
-                { note: 294, dur: 0.6 }, // D4
-                { note: 262, dur: 1.0 }, // C4
+                // "Old MacDonald had a farm" style bouncy tune
+                { note: 392, dur: 0.4 }, // G4
+                { note: 392, dur: 0.4 }, // G4
+                { note: 392, dur: 0.4 }, // G4
+                { note: 294, dur: 0.4 }, // D4
+                { note: 330, dur: 0.4 }, // E4
+                { note: 330, dur: 0.4 }, // E4
+                { note: 294, dur: 0.8 }, // D4
+                { note: 0, dur: 0.3 },   // rest
+                { note: 494, dur: 0.4 }, // B4
+                { note: 494, dur: 0.4 }, // B4
+                { note: 440, dur: 0.4 }, // A4
+                { note: 440, dur: 0.4 }, // A4
+                { note: 392, dur: 0.8 }, // G4
+                { note: 0, dur: 0.5 },   // rest
+                // Second phrase - bouncy!
+                { note: 294, dur: 0.3 }, // D4
+                { note: 392, dur: 0.4 }, // G4
+                { note: 392, dur: 0.4 }, // G4
+                { note: 392, dur: 0.4 }, // G4
+                { note: 294, dur: 0.4 }, // D4
+                { note: 330, dur: 0.4 }, // E4
+                { note: 330, dur: 0.4 }, // E4
+                { note: 294, dur: 0.8 }, // D4
+                { note: 0, dur: 0.3 },   // rest
+                { note: 494, dur: 0.4 }, // B4
+                { note: 494, dur: 0.4 }, // B4
+                { note: 440, dur: 0.4 }, // A4
+                { note: 440, dur: 0.4 }, // A4
+                { note: 392, dur: 0.8 }, // G4
                 { note: 0, dur: 0.6 },   // rest
-                { note: 392, dur: 0.6 }, // G4
-                { note: 392, dur: 0.6 }, // G4
-                { note: 349, dur: 0.6 }, // F4
-                { note: 349, dur: 0.6 }, // F4
-                { note: 330, dur: 0.6 }, // E4
-                { note: 330, dur: 0.6 }, // E4
-                { note: 294, dur: 1.0 }, // D4
-                { note: 0, dur: 0.4 },   // rest
-                { note: 392, dur: 0.6 }, // G4
-                { note: 392, dur: 0.6 }, // G4
-                { note: 349, dur: 0.6 }, // F4
-                { note: 349, dur: 0.6 }, // F4
-                { note: 330, dur: 0.6 }, // E4
-                { note: 330, dur: 0.6 }, // E4
-                { note: 294, dur: 1.0 }, // D4
+                // Fun descending run
+                { note: 523, dur: 0.25 }, // C5
+                { note: 494, dur: 0.25 }, // B4
+                { note: 440, dur: 0.25 }, // A4
+                { note: 392, dur: 0.25 }, // G4
+                { note: 349, dur: 0.25 }, // F4
+                { note: 330, dur: 0.25 }, // E4
+                { note: 294, dur: 0.25 }, // D4
+                { note: 262, dur: 0.6 },  // C4
                 { note: 0, dur: 0.8 },   // rest
             ];
 
@@ -2025,11 +2062,11 @@
 
                 const { note, dur } = melody[noteIndex];
                 if (note > 0) {
-                    playMusicBoxNote(note, dur * 0.9);
+                    playXylophoneNote(note, dur * 0.85);
                 }
 
                 noteIndex = (noteIndex + 1) % melody.length;
-                musicInterval = setTimeout(playNextNote, dur * 500);
+                musicInterval = setTimeout(playNextNote, dur * 420); // Slightly faster tempo
             }
 
             playNextNote();
@@ -2449,29 +2486,29 @@
 
         // ============ WALKING ANIMALS ============
         const animals = [
-            { emoji: '🐴', audioKey: 'papa_horse', sound: 'neigh' },
-            { emoji: '🐘', audioKey: 'elephant', sound: 'trumpet' },
-            { emoji: '🦁', audioKey: 'lion', sound: 'roar' },
-            { emoji: '🐻', audioKey: 'bear', sound: 'growl' },
-            { emoji: '🦒', audioKey: 'giraffe', sound: null },
-            { emoji: '🦓', audioKey: 'zebra', sound: null },
-            { emoji: '🐄', audioKey: 'cow', sound: 'moo' },
-            { emoji: '🐷', audioKey: 'pig', sound: 'oink' },
-            { emoji: '🐑', audioKey: 'sheep', sound: 'baa' },
-            { emoji: '🐐', audioKey: 'goat', sound: 'baa' },
-            { emoji: '🦌', audioKey: 'deer', sound: null },
-            { emoji: '🐪', audioKey: 'camel', sound: null },
-            { emoji: '🦘', audioKey: 'kangaroo', sound: null },
-            { emoji: '🐊', audioKey: 'crocodile', sound: null },
-            { emoji: '🦛', audioKey: 'hippo', sound: null },
-            { emoji: '🦏', audioKey: 'rhino', sound: null },
-            { emoji: '🐅', audioKey: 'tiger', sound: 'roar' },
-            { emoji: '🐆', audioKey: 'leopard', sound: 'roar' },
-            { emoji: '🐕', audioKey: 'dog', sound: 'bark' },
-            { emoji: '🐈', audioKey: 'cat', sound: 'meow' },
-            { emoji: '🐇', audioKey: 'rabbit', sound: null },
-            { emoji: '🦊', audioKey: 'fox', sound: null },
-            { emoji: '🐿️', audioKey: 'squirrel', sound: null },
+            { emoji: '🐴', audioKey: 'papa_horse', soundFile: 'horse_sound.mp3' },
+            { emoji: '🐘', audioKey: 'elephant', soundFile: 'elephant_sound.mp3' },
+            { emoji: '🦁', audioKey: 'lion', soundFile: 'lion_sound.mp3' },
+            { emoji: '🐻', audioKey: 'bear', soundFile: 'bear_sound.mp3' },
+            { emoji: '🦒', audioKey: 'giraffe', soundFile: null },
+            { emoji: '🦓', audioKey: 'zebra', soundFile: null },
+            { emoji: '🐄', audioKey: 'cow', soundFile: 'cow_sound.mp3' },
+            { emoji: '🐷', audioKey: 'pig', soundFile: 'pig_sound.mp3' },
+            { emoji: '🐑', audioKey: 'sheep', soundFile: 'sheep_sound.mp3' },
+            { emoji: '🐐', audioKey: 'goat', soundFile: 'goat_sound.mp3' },
+            { emoji: '🦌', audioKey: 'deer', soundFile: null },
+            { emoji: '🐪', audioKey: 'camel', soundFile: null },
+            { emoji: '🦘', audioKey: 'kangaroo', soundFile: null },
+            { emoji: '🐊', audioKey: 'crocodile', soundFile: null },
+            { emoji: '🦛', audioKey: 'hippo', soundFile: null },
+            { emoji: '🦏', audioKey: 'rhino', soundFile: null },
+            { emoji: '🐅', audioKey: 'tiger', soundFile: 'lion_sound.mp3' },
+            { emoji: '🐆', audioKey: 'leopard', soundFile: 'lion_sound.mp3' },
+            { emoji: '🐕', audioKey: 'dog', soundFile: 'dog_sound.mp3' },
+            { emoji: '🐈', audioKey: 'cat', soundFile: 'cat_sound.mp3' },
+            { emoji: '🐇', audioKey: 'rabbit', soundFile: null },
+            { emoji: '🦊', audioKey: 'fox', soundFile: null },
+            { emoji: '🐿️', audioKey: 'squirrel', soundFile: null },
         ];
 
         function playAnimalSound(sound) {
@@ -2531,9 +2568,10 @@
 
             animal.addEventListener('click', () => {
                 initAudio();
+                // Play Russian, then Hebrew, then animal sound
                 speakBilingual(animalData.audioKey);
-                if (animalData.sound) {
-                    setTimeout(() => playAnimalSound(animalData.sound), 1800);
+                if (animalData.soundFile) {
+                    setTimeout(() => playAudio(animalData.soundFile), 2200);
                 }
                 createSparkles(
                     animal.getBoundingClientRect().left + 30,
@@ -2867,7 +2905,6 @@
                 createHeart(e.clientX, e.clientY);
                 createSparkles(e.clientX, e.clientY);
                 playBarkSound();
-                setTimeout(() => speak('Gav gav!', 'ru-RU', 0.8, 0.8), 200);
             });
 
             // Environment
