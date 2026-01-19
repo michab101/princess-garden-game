@@ -4367,11 +4367,11 @@
 
         // ============ STORY SEQUENCE ============
         const storySequence = [
-            { text: "Once upon a time in a magical garden...", images: [], audio: null },
-            { text: "There lived Princess Ellie...", images: ["images/Ellie.jpeg"], audio: "princess_ellie", keepPrevious: false },
-            { text: "...and Princess Maya!", images: ["images/Maya.jpeg"], audio: "princess_maya", keepPrevious: true },
-            { text: "And their playful puppy, Ms. Pinky!", images: ["images/Pinky.jpeg"], audio: "pinky", keepPrevious: false },
-            { text: "Click on the butterflies to earn stars!", images: [], audio: null, keepPrevious: false }
+            { text: "Давным-давно в волшебном саду...", images: [], audioFile: "story_intro.mp3" },
+            { text: "Жила принцесса Элли...", images: ["images/Ellie.jpeg"], audio: "princess_ellie", keepPrevious: false },
+            { text: "...и принцесса Мая!", images: ["images/Maya.jpeg"], audio: "princess_maya", keepPrevious: true },
+            { text: "И их любимая собачка Пинки!", images: ["images/Pinky.jpeg"], audio: "pinky", keepPrevious: false },
+            { text: "Нажимай на бабочек и звёздочки!", images: [], audioFile: "story_instructions.mp3", keepPrevious: false }
         ];
 
         let storyIndex = 0;
@@ -4421,17 +4421,19 @@
                         }
                     }
 
-                    // Play audio: Russian then Hebrew
-                    if (story.audio) {
+                    // Play audio
+                    if (story.audioFile) {
+                        // Single audio file (intro/instructions)
+                        playAudio(story.audioFile);
+                    } else if (story.audio) {
+                        // Russian then Hebrew for character names
                         playAudio(story.audio + '_ru.mp3');
                         setTimeout(() => playAudio(story.audio + '_he.mp3'), 1200);
-                    } else {
-                        speak(story.text, 'en-US', 0.9, 1.1);
                     }
                 }, 300);
 
                 storyIndex++;
-                storyTimer = setTimeout(showNext, story.audio ? 3000 : 3500);
+                storyTimer = setTimeout(showNext, (story.audio || story.audioFile) ? 3000 : 3500);
             }
 
             showNext();
