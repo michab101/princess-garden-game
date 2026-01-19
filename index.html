@@ -232,10 +232,14 @@
         }
 
         /* Pinky needs to be zoomed out to fit in circle */
+        .story-image:has(img[src*="Pinky"]) {
+            width: 180px;
+            height: 180px;
+        }
+
         .story-image img[src*="Pinky"] {
             object-fit: cover;
-            object-position: center 20%;
-            transform: scale(0.85);
+            object-position: center 15%;
         }
 
         .skip-button {
