@@ -2103,16 +2103,66 @@
             return audio.play().catch(e => console.log('Audio play error:', e));
         }
 
-        // Bilingual audio - Russian first, then Hebrew (ElevenLabs voices)
-        function speakBilingual(wordKey, delay = 1000) {
+        // Hebrew words mapping
+        const hebrewWords = {
+            flower: 'פרח',
+            sun: 'שמש',
+            cloud: 'ענן',
+            rain: 'גשם',
+            tree: 'עץ',
+            pond: 'בריכה',
+            fish: 'דג',
+            castle: 'טירה',
+            sky: 'שמיים',
+            grass: 'דשא',
+            papa_horse: 'אבא סוס',
+            elephant: 'פיל',
+            lion: 'אריה',
+            bear: 'דוב',
+            giraffe: 'ג׳ירפה',
+            zebra: 'זברה',
+            cow: 'פרה',
+            pig: 'חזיר',
+            sheep: 'כבשה',
+            goat: 'עז',
+            deer: 'אייל',
+            camel: 'גמל',
+            kangaroo: 'קנגורו',
+            crocodile: 'תנין',
+            hippo: 'היפופוטם',
+            rhino: 'קרנף',
+            tiger: 'נמר',
+            leopard: 'ברדלס',
+            dog: 'כלב',
+            cat: 'חתול',
+            rabbit: 'ארנב',
+            fox: 'שועל',
+            squirrel: 'סנאי'
+        };
+
+        // Speak Hebrew using browser's speech synthesis
+        function speakHebrew(text) {
+            if (!soundEnabled) return;
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'he-IL';
+            utterance.rate = 0.9;
+            utterance.pitch = 1.1;
+            speechSynthesis.speak(utterance);
+        }
+
+        // Bilingual audio - Russian (ElevenLabs) then Hebrew (browser speech)
+        function speakBilingual(wordKey, delay = 1200) {
             if (!soundEnabled) return;
 
-            // Play Russian audio
+            // Play Russian audio from ElevenLabs
             playAudio(`${wordKey}_ru.mp3`);
 
-            // Then Hebrew audio after delay
+            // Then Hebrew using browser's native speech synthesis
             setTimeout(() => {
-                playAudio(`${wordKey}_he.mp3`);
+                const hebrewText = hebrewWords[wordKey];
+                if (hebrewText) {
+                    speakHebrew(hebrewText);
+                }
             }, delay);
         }
 
@@ -2982,8 +3032,8 @@
                 initAudio();
                 // Papa says "Where are my girls? Time for ice cream!" in Russian
                 playAudio('papa_icecream_ru.mp3');
-                // Then says ice cream in Hebrew (גלידה)
-                setTimeout(() => playAudio('icecream_he.mp3'), 2500);
+                // Then says ice cream in Hebrew (גלידה) using browser speech
+                setTimeout(() => speakHebrew('גלידה'), 2500);
                 showKingPopup();
                 playMagicSound();
             });
