@@ -2052,6 +2052,13 @@
             speechSynthesis.speak(utterance);
         }
 
+        // Bilingual speech - Russian first, then Hebrew (for teaching Hebrew to Russian speakers)
+        function speakBilingual(russian, hebrew, delay = 800) {
+            if (!soundEnabled) return;
+            speak(russian, 'ru-RU', 0.85, 1.1);
+            setTimeout(() => speak(hebrew, 'he-IL', 0.9, 1.2), delay);
+        }
+
         // ============ GAME STATE ============
         let gameState = {
             level: 1,
@@ -2383,7 +2390,7 @@
         // ============ KING POPUP ============
         let kingMessageIndex = 0;
         const kingMessages = [
-            { text: 'Где мои девочки? Время для ice cream!', lang: 'ru-RU', display: 'Где мои девочки? Время для ice cream!' },
+            { text: 'Где мои девочки? Время для גלידה!', lang: 'ru-RU', display: 'Где мои девочки? Время для גלידה!' },
             { text: 'Пойдём в ресторан, мисс Пинки!', lang: 'ru-RU', display: 'Пойдём в ресторан, мисс Пинки!' }
         ];
 
@@ -2404,29 +2411,29 @@
 
         // ============ WALKING ANIMALS ============
         const animals = [
-            { emoji: '🐴', hebrew: 'סוס', sound: 'neigh' },
-            { emoji: '🐘', hebrew: 'פיל', sound: 'trumpet' },
-            { emoji: '🦁', hebrew: 'אריה', sound: 'roar' },
-            { emoji: '🐻', hebrew: 'דוב', sound: 'growl' },
-            { emoji: '🦒', hebrew: 'ג׳ירפה', sound: null },
-            { emoji: '🦓', hebrew: 'זברה', sound: null },
-            { emoji: '🐄', hebrew: 'פרה', sound: 'moo' },
-            { emoji: '🐷', hebrew: 'חזיר', sound: 'oink' },
-            { emoji: '🐑', hebrew: 'כבש', sound: 'baa' },
-            { emoji: '🐐', hebrew: 'עז', sound: 'baa' },
-            { emoji: '🦌', hebrew: 'אייל', sound: null },
-            { emoji: '🐪', hebrew: 'גמל', sound: null },
-            { emoji: '🦘', hebrew: 'קנגורו', sound: null },
-            { emoji: '🐊', hebrew: 'תנין', sound: null },
-            { emoji: '🦛', hebrew: 'היפופוטם', sound: null },
-            { emoji: '🦏', hebrew: 'קרנף', sound: null },
-            { emoji: '🐅', hebrew: 'נמר', sound: 'roar' },
-            { emoji: '🐆', hebrew: 'ברדלס', sound: 'roar' },
-            { emoji: '🐕', hebrew: 'כלב', sound: 'bark' },
-            { emoji: '🐈', hebrew: 'חתול', sound: 'meow' },
-            { emoji: '🐇', hebrew: 'ארנב', sound: null },
-            { emoji: '🦊', hebrew: 'שועל', sound: null },
-            { emoji: '🐿️', hebrew: 'סנאי', sound: null },
+            { emoji: '🐴', russian: 'папа лошадь', hebrew: 'אבא סוס', sound: 'neigh' },
+            { emoji: '🐘', russian: 'слон', hebrew: 'פיל', sound: 'trumpet' },
+            { emoji: '🦁', russian: 'лев', hebrew: 'אריה', sound: 'roar' },
+            { emoji: '🐻', russian: 'медведь', hebrew: 'דוב', sound: 'growl' },
+            { emoji: '🦒', russian: 'жираф', hebrew: 'ג׳ירפה', sound: null },
+            { emoji: '🦓', russian: 'зебра', hebrew: 'זברה', sound: null },
+            { emoji: '🐄', russian: 'корова', hebrew: 'פרה', sound: 'moo' },
+            { emoji: '🐷', russian: 'свинья', hebrew: 'חזיר', sound: 'oink' },
+            { emoji: '🐑', russian: 'овца', hebrew: 'כבש', sound: 'baa' },
+            { emoji: '🐐', russian: 'коза', hebrew: 'עז', sound: 'baa' },
+            { emoji: '🦌', russian: 'олень', hebrew: 'אייל', sound: null },
+            { emoji: '🐪', russian: 'верблюд', hebrew: 'גמל', sound: null },
+            { emoji: '🦘', russian: 'кенгуру', hebrew: 'קנגורו', sound: null },
+            { emoji: '🐊', russian: 'крокодил', hebrew: 'תנין', sound: null },
+            { emoji: '🦛', russian: 'бегемот', hebrew: 'היפופוטם', sound: null },
+            { emoji: '🦏', russian: 'носорог', hebrew: 'קרנף', sound: null },
+            { emoji: '🐅', russian: 'тигр', hebrew: 'נמר', sound: 'roar' },
+            { emoji: '🐆', russian: 'леопард', hebrew: 'ברדלס', sound: 'roar' },
+            { emoji: '🐕', russian: 'собака', hebrew: 'כלב', sound: 'bark' },
+            { emoji: '🐈', russian: 'кошка', hebrew: 'חתול', sound: 'meow' },
+            { emoji: '🐇', russian: 'кролик', hebrew: 'ארנב', sound: null },
+            { emoji: '🦊', russian: 'лиса', hebrew: 'שועל', sound: null },
+            { emoji: '🐿️', russian: 'белка', hebrew: 'סנאי', sound: null },
         ];
 
         function playAnimalSound(sound) {
@@ -2486,9 +2493,9 @@
 
             animal.addEventListener('click', () => {
                 initAudio();
-                speak(animalData.hebrew, 'he-IL', 0.9, 1.2);
+                speakBilingual(animalData.russian, animalData.hebrew, 1000);
                 if (animalData.sound) {
-                    setTimeout(() => playAnimalSound(animalData.sound), 400);
+                    setTimeout(() => playAnimalSound(animalData.sound), 1800);
                 }
                 createSparkles(
                     animal.getBoundingClientRect().left + 30,
@@ -2503,19 +2510,28 @@
         }
 
         function scheduleAnimals() {
-            // Horse at 5 seconds
-            setTimeout(() => spawnAnimal(animals[0], 'right'), 5000);
+            // Always keep a horse on screen
+            function spawnHorse() {
+                if (!gameState.gameStarted) return;
+                const direction = Math.random() > 0.5 ? 'right' : 'left';
+                spawnAnimal(animals[0], direction);
+                // Spawn another horse after the current one finishes (25s animation + small gap)
+                setTimeout(spawnHorse, 27000);
+            }
 
-            // Elephant at 20 seconds
-            setTimeout(() => spawnAnimal(animals[1], 'left'), 20000);
+            // Start first horse immediately
+            spawnHorse();
 
-            // Lion at 40 seconds
-            setTimeout(() => spawnAnimal(animals[2], 'right'), 40000);
+            // Elephant at 10 seconds
+            setTimeout(() => spawnAnimal(animals[1], 'left'), 10000);
 
-            // Bear at 55 seconds
-            setTimeout(() => spawnAnimal(animals[3], 'left'), 55000);
+            // Lion at 25 seconds
+            setTimeout(() => spawnAnimal(animals[2], 'right'), 25000);
 
-            // Then random animals every 15-25 seconds
+            // Bear at 40 seconds
+            setTimeout(() => spawnAnimal(animals[3], 'left'), 40000);
+
+            // Then random animals every 12-20 seconds
             let animalIndex = 4;
             function spawnNextAnimal() {
                 if (!gameState.gameStarted) return;
@@ -2524,10 +2540,10 @@
                 spawnAnimal(randomAnimal);
                 animalIndex++;
 
-                setTimeout(spawnNextAnimal, 15000 + Math.random() * 10000);
+                setTimeout(spawnNextAnimal, 12000 + Math.random() * 8000);
             }
 
-            setTimeout(spawnNextAnimal, 70000);
+            setTimeout(spawnNextAnimal, 55000);
         }
 
         // ============ GAME LOGIC ============
@@ -2783,7 +2799,7 @@
                     e.preventDefault();
                     initAudio();
                     playMagicSound();
-                    speak('פרח', 'he-IL', 0.9, 1.2); // Perach - flower
+                    speakBilingual('цветок', 'פרח'); // flower
                     const rect = flower.getBoundingClientRect();
                     sendButterflyToPinky(rect.left + rect.width/2, rect.top);
                 };
@@ -2819,7 +2835,7 @@
             // Environment
             document.getElementById('sun').addEventListener('click', () => {
                 initAudio();
-                speak('שמש', 'he-IL', 0.9, 1.2); // Shemesh - sun
+                speakBilingual('солнце', 'שמש'); // sun
                 const rainbow = document.getElementById('rainbow');
                 rainbow.classList.toggle('visible');
                 playMagicSound();
@@ -2830,11 +2846,11 @@
                 cloud.addEventListener('click', () => {
                     initAudio();
                     playMagicSound();
-                    speak('ענן', 'he-IL', 0.9, 1.2); // Anan - cloud
+                    speakBilingual('облако', 'ענן'); // cloud
                     cloudClickCount++;
                     if (cloudClickCount % 2 === 1) {
                         makeItRain();
-                        setTimeout(() => speak('גשם', 'he-IL', 0.9, 1.2), 500); // Geshem - rain
+                        setTimeout(() => speakBilingual('дождь', 'גשם'), 1500); // rain
                     } else {
                         makeLightning();
                     }
@@ -2844,7 +2860,7 @@
             document.getElementById('tree').addEventListener('click', (e) => {
                 initAudio();
                 playMagicSound();
-                speak('עץ', 'he-IL', 0.9, 1.2); // Etz - tree
+                speakBilingual('дерево', 'עץ'); // tree
                 createBird(e.clientX, e.clientY - 50);
                 setTimeout(() => createBird(e.clientX + 30, e.clientY - 30), 300);
                 createSparkles(e.clientX, e.clientY);
@@ -2852,7 +2868,7 @@
 
             document.getElementById('pond').addEventListener('click', (e) => {
                 initAudio();
-                speak('בריכה', 'he-IL', 0.9, 1.2); // Breicha - pond
+                speakBilingual('пруд', 'בריכה'); // pond
                 const pond = document.getElementById('pond');
                 const fish = document.getElementById('fish');
 
@@ -2875,7 +2891,7 @@
                 void fish.offsetWidth;
                 fish.classList.add('jump');
                 playSplashSound();
-                setTimeout(() => speak('דג', 'he-IL', 0.9, 1.2), 300); // Dag - fish
+                setTimeout(() => speakBilingual('рыба', 'דג'), 300); // fish
 
                 // Pinky goes crazy
                 const dog = document.getElementById('dog');
@@ -2889,7 +2905,7 @@
 
             document.getElementById('castle').addEventListener('click', () => {
                 initAudio();
-                speak('טירה', 'he-IL', 0.9, 1.2); // Tira - castle
+                speakBilingual('замок', 'טירה'); // castle
                 showKingPopup();
                 playMagicSound();
             });
@@ -2906,7 +2922,7 @@
             document.getElementById('sky').addEventListener('click', (e) => {
                 initAudio();
                 playMagicSound();
-                speak('שמיים', 'he-IL', 0.9, 1.2); // Shamayim - sky
+                speakBilingual('небо', 'שמיים'); // sky
                 // Create a star
                 const star = document.createElement('div');
                 star.textContent = '⭐';
@@ -2927,7 +2943,7 @@
             document.getElementById('grassContainer').addEventListener('click', (e) => {
                 initAudio();
                 playMagicSound();
-                speak('דשא', 'he-IL', 0.9, 1.2); // Deshe - grass
+                speakBilingual('трава', 'דשא'); // grass
                 createSparkles(e.clientX, e.clientY);
             });
         }
