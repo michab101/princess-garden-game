@@ -1568,16 +1568,22 @@
         }
 
         .flying-bird.fly-left {
-            animation: birdFlyLeft 18s linear forwards, wingFlap 0.3s ease-in-out infinite;
+            animation: birdFlyLeft 25s linear forwards, wingFlap 0.3s ease-in-out infinite;
         }
 
         .flying-bird.fly-right {
-            animation: birdFlyRight 18s linear forwards, wingFlap 0.3s ease-in-out infinite;
+            transform: scaleX(-1);
+            animation: birdFlyRight 25s linear forwards, wingFlapFlipped 0.3s ease-in-out infinite;
         }
 
         @keyframes wingFlap {
             0%, 100% { transform: scaleY(1); }
             50% { transform: scaleY(0.85); }
+        }
+
+        @keyframes wingFlapFlipped {
+            0%, 100% { transform: scaleX(-1) scaleY(1); }
+            50% { transform: scaleX(-1) scaleY(0.85); }
         }
 
         @keyframes birdFlyLeft {
@@ -3429,7 +3435,7 @@
             document.body.appendChild(bird);
 
             // Remove after animation completes
-            setTimeout(() => bird.remove(), 18000);
+            setTimeout(() => bird.remove(), 25000);
         }
 
         // Schedule periodic flying birds
