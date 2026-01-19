@@ -3758,6 +3758,15 @@
                     animal.getBoundingClientRect().top
                 );
 
+                // Jump high and get big animation
+                const originalTransform = animal.style.transform || '';
+                animal.style.transition = 'transform 0.3s ease-out';
+                animal.style.transform = 'translateY(-100px) scale(1.8)';
+                setTimeout(() => {
+                    animal.style.transition = 'transform 0.3s ease-in';
+                    animal.style.transform = originalTransform;
+                }, 300);
+
                 // Show Papa Micha popup when clicking horse
                 if (animalData.emoji === '🐴') {
                     const rect = animal.getBoundingClientRect();
