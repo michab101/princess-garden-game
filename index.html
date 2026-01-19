@@ -1961,6 +1961,82 @@
             100% { left: 110%; transform: scaleX(-1) translateY(0); }
         }
 
+        /* Hatching Egg */
+        .hatching-egg {
+            position: absolute;
+            bottom: 12%;
+            font-size: 80px;
+            z-index: 55;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .hatching-egg:hover {
+            transform: scale(1.2);
+        }
+
+        .hatching-egg.wobble {
+            animation: eggWobble 0.3s ease-in-out;
+        }
+
+        .hatching-egg.cracking {
+            animation: eggCrack 0.5s ease-in-out forwards;
+        }
+
+        .hatching-egg.hatched {
+            animation: eggHatch 0.8s ease-out forwards;
+        }
+
+        @keyframes eggWobble {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(-10deg); }
+            75% { transform: rotate(10deg); }
+        }
+
+        @keyframes eggCrack {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1.2); opacity: 0.8; }
+        }
+
+        @keyframes eggHatch {
+            0% { transform: scale(1.2); opacity: 0.8; }
+            50% { transform: scale(1.5) translateY(-20px); opacity: 0.5; }
+            100% { transform: scale(0) translateY(-50px); opacity: 0; }
+        }
+
+        .baby-chicken {
+            position: absolute;
+            font-size: 60px;
+            z-index: 56;
+            cursor: pointer;
+            animation: chickenBorn 0.5s ease-out forwards;
+        }
+
+        @keyframes chickenBorn {
+            0% { transform: scale(0) translateY(20px); opacity: 0; }
+            50% { transform: scale(1.3) translateY(-10px); opacity: 1; }
+            100% { transform: scale(1) translateY(0); opacity: 1; }
+        }
+
+        .baby-chicken.walking {
+            animation: chickenWalk 8s linear forwards;
+        }
+
+        @keyframes chickenWalk {
+            0% { transform: translateX(0) translateY(0); }
+            10% { transform: translateX(20px) translateY(-5px); }
+            20% { transform: translateX(40px) translateY(0); }
+            30% { transform: translateX(60px) translateY(-5px); }
+            40% { transform: translateX(80px) translateY(0); }
+            50% { transform: translateX(100px) translateY(-5px); }
+            60% { transform: translateX(120px) translateY(0); }
+            70% { transform: translateX(140px) translateY(-5px); }
+            80% { transform: translateX(160px) translateY(0); }
+            90% { transform: translateX(180px) translateY(-5px); }
+            100% { transform: translateX(250px) translateY(0); opacity: 0; }
+        }
+
         .ground {
             cursor: pointer;
         }
@@ -2828,6 +2904,7 @@
             leopard: 'ברדלס',
             dog: 'כלב',
             cat: 'חתול',
+            chicken: 'אפרוח',
             rabbit: 'ארנב',
             fox: 'שועל',
             squirrel: 'סנאי',
@@ -3660,6 +3737,73 @@
             setTimeout(() => animal.remove(), 26000);
         }
 
+        // Spawn a hatching egg that becomes a chicken
+        function spawnHatchingEgg() {
+            const container = document.getElementById('gameContainer');
+            const egg = document.createElement('div');
+            egg.className = 'hatching-egg';
+            egg.textContent = '🥚';
+            egg.style.left = (20 + Math.random() * 60) + '%';
+
+            let clickCount = 0;
+
+            egg.addEventListener('click', (e) => {
+                e.stopPropagation();
+                initAudio();
+                clickCount++;
+
+                if (clickCount === 1) {
+                    // First click - wobble
+                    egg.classList.add('wobble');
+                    playMagicSound();
+                    setTimeout(() => egg.classList.remove('wobble'), 300);
+                } else if (clickCount === 2) {
+                    // Second click - crack
+                    egg.classList.add('cracking');
+                    egg.textContent = '🐣';
+                    playMagicSound();
+                } else if (clickCount >= 3) {
+                    // Third click - hatch!
+                    egg.classList.remove('cracking');
+                    egg.classList.add('hatched');
+
+                    // Create baby chicken
+                    const chicken = document.createElement('div');
+                    chicken.className = 'baby-chicken';
+                    chicken.textContent = '🐥';
+                    chicken.style.left = egg.style.left;
+                    chicken.style.bottom = '12%';
+
+                    chicken.addEventListener('click', (ce) => {
+                        ce.stopPropagation();
+                        initAudio();
+                        speakBilingual('chicken');
+                        setTimeout(() => playAudio('chicken_sound.mp3'), 2200);
+                        createSparkles(ce.clientX, ce.clientY);
+                    });
+
+                    container.appendChild(chicken);
+
+                    // Say chicken in Russian/Hebrew
+                    speakBilingual('chicken');
+                    setTimeout(() => playAudio('chicken_sound.mp3'), 2200);
+                    createSparkles(e.clientX, e.clientY);
+
+                    // Remove egg after hatch animation
+                    setTimeout(() => egg.remove(), 800);
+
+                    // Chicken starts walking after born animation
+                    setTimeout(() => {
+                        chicken.classList.add('walking');
+                        // Remove chicken after it walks away
+                        setTimeout(() => chicken.remove(), 8000);
+                    }, 500);
+                }
+            });
+
+            container.appendChild(egg);
+        }
+
         // Touch and mouse drag for walking animals
         function makeAnimalDraggable(element) {
             let isDragging = false;
@@ -3779,6 +3923,19 @@
             }
 
             setTimeout(spawnNextAnimal, 55000);
+
+            // Spawn hatching eggs periodically
+            function spawnEggPeriodically() {
+                if (!gameState.gameStarted) return;
+                // Only spawn if no egg currently exists
+                if (!document.querySelector('.hatching-egg')) {
+                    spawnHatchingEgg();
+                }
+                // Spawn new egg every 30-45 seconds
+                setTimeout(spawnEggPeriodically, 30000 + Math.random() * 15000);
+            }
+            // First egg after 15 seconds
+            setTimeout(spawnEggPeriodically, 15000);
         }
 
         // ============ GAME LOGIC ============
