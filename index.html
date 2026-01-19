@@ -281,8 +281,15 @@
             border-radius: 50%;
             box-shadow: 0 0 60px #FFD700, 0 0 100px #FFA500;
             cursor: pointer;
-            transition: transform 0.3s;
+            transition: transform 0.3s, top 0.8s ease-in-out, right 0.8s ease-in-out, left 0.8s ease-in-out;
             animation: sunPulse 4s ease-in-out infinite;
+        }
+
+        .sun.centered {
+            top: 15%;
+            right: auto;
+            left: 50%;
+            transform: translateX(-50%);
         }
 
         /* Moon */
@@ -470,6 +477,7 @@
             overflow: visible;
             filter: drop-shadow(0 0 40px rgba(255,255,255,0.7))
                     drop-shadow(0 0 80px rgba(255,200,100,0.4));
+            cursor: pointer;
         }
 
         .rainbow-arc {
@@ -492,6 +500,7 @@
 
         .rainbow.visible {
             display: block;
+            pointer-events: auto;
             animation: rainbowFadeInOut 12s ease-in-out forwards;
         }
 
@@ -2788,6 +2797,7 @@
             sun: 'שמש',
             cloud: 'ענן',
             rain: 'גשם',
+            rainbow: 'קשת',
             tree: 'עץ',
             pond: 'בריכה',
             fish: 'דג',
@@ -4083,11 +4093,13 @@
             function makeSunDance() {
                 const sun = document.getElementById('sun');
                 sun.classList.add('dancing');
+                sun.classList.add('centered'); // Move sun to center
                 sunIsDancing = true;
                 // Stop dancing after 5 seconds if sun not pressed
                 setTimeout(() => {
                     if (sunIsDancing) {
                         sun.classList.remove('dancing');
+                        sun.classList.remove('centered');
                         sunIsDancing = false;
                     }
                 }, 5000);
@@ -4154,6 +4166,13 @@
                 });
             });
 
+            document.getElementById('rainbow').addEventListener('click', (e) => {
+                initAudio();
+                speakBilingual('rainbow'); // радуга / קשת
+                createSparkles(e.clientX, e.clientY);
+                playMagicSound();
+            });
+
             document.getElementById('tree').addEventListener('click', (e) => {
                 initAudio();
                 playMagicSound();
@@ -4217,14 +4236,12 @@
                     setTimeout(() => playAudio('restaurant_he.mp3'), 2500);
                     showKingPopup('Пойдём в ресторан, мисс Пинки!');
                 } else if (interaction === 2) {
-                    // Sana: Where is my boosa
+                    // Sana: Where is my boosa (Russian only, once)
                     playAudio('sana_boosa_ru.mp3');
-                    setTimeout(() => playAudio('sana_boosa_he.mp3'), 2000);
                     showSanaPopup();
                 } else {
-                    // Veronika: Pinky come home
+                    // Veronika: Pinky come home (Russian only, once)
                     playAudio('veronika_pinky_ru.mp3');
-                    setTimeout(() => playAudio('veronika_pinky_he.mp3'), 2500);
                     showVeronikaPopup();
                 }
 
