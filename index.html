@@ -1875,45 +1875,71 @@
             cursor: pointer;
             z-index: 100;
             transition: transform 0.2s;
-            width: 50px;
-            height: 65px;
+            width: 90px;
+            height: 140px;
         }
 
         .walking-balloon:hover {
-            transform: scale(1.2);
+            transform: scale(1.15);
         }
 
         .balloon-body {
-            width: 50px;
-            height: 60px;
-            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            width: 90px;
+            height: 110px;
+            border-radius: 50% 50% 45% 45% / 55% 55% 45% 45%;
             position: relative;
-            box-shadow: inset -10px -10px 20px rgba(255,255,255,0.4),
-                        inset 5px 5px 10px rgba(0,0,0,0.1),
-                        2px 4px 8px rgba(0,0,0,0.3);
+            box-shadow: inset -15px -10px 30px rgba(255,255,255,0.5),
+                        inset 8px 8px 20px rgba(0,0,0,0.15),
+                        4px 6px 12px rgba(0,0,0,0.25);
         }
 
-        .balloon-body::after {
+        /* Balloon shine/highlight */
+        .balloon-body::before {
             content: '';
+            position: absolute;
+            top: 15%;
+            left: 20%;
+            width: 25px;
+            height: 35px;
+            background: rgba(255,255,255,0.4);
+            border-radius: 50%;
+            transform: rotate(-30deg);
+        }
+
+        /* Balloon knot */
+        .balloon-knot {
             position: absolute;
             bottom: -8px;
             left: 50%;
             transform: translateX(-50%);
-            width: 0;
-            height: 0;
-            border-left: 6px solid transparent;
-            border-right: 6px solid transparent;
-            border-top: 10px solid inherit;
+            width: 12px;
+            height: 12px;
+            border-radius: 50% 50% 30% 30%;
         }
 
         .balloon-string {
             position: absolute;
-            bottom: -25px;
+            bottom: -45px;
             left: 50%;
-            width: 2px;
-            height: 20px;
-            background: #666;
+            width: 3px;
+            height: 40px;
+            background: linear-gradient(to bottom, #888, #666);
             transform: translateX(-50%);
+            border-radius: 2px;
+        }
+
+        /* Curvy string effect */
+        .balloon-string::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: -3px;
+            width: 10px;
+            height: 10px;
+            border: 2px solid #666;
+            border-radius: 50%;
+            border-top-color: transparent;
+            border-left-color: transparent;
         }
 
         .walking-balloon.walk-left {
@@ -3029,17 +3055,19 @@
         let currentGameMode = 'animals'; // 'animals' or 'colors'
 
         const colorItems = [
-            { emoji: '🔴', audioKey: 'red', color: '#FF0000' },
-            { emoji: '🔵', audioKey: 'blue', color: '#0000FF' },
-            { emoji: '🟢', audioKey: 'green', color: '#00FF00' },
-            { emoji: '🟡', audioKey: 'yellow', color: '#FFFF00' },
-            { emoji: '🟠', audioKey: 'orange', color: '#FFA500' },
-            { emoji: '🟣', audioKey: 'purple', color: '#800080' },
-            { emoji: '🩷', audioKey: 'pink', color: '#FFC0CB' },
-            { emoji: '⚪', audioKey: 'white', color: '#FFFFFF' },
-            { emoji: '⚫', audioKey: 'black', color: '#000000' },
-            { emoji: '🟤', audioKey: 'brown', color: '#8B4513' },
+            { audioKey: 'red', color: '#FF0000' },
+            { audioKey: 'blue', color: '#0066FF' },
+            { audioKey: 'green', color: '#00CC00' },
+            { audioKey: 'yellow', color: '#FFD700' },
+            { audioKey: 'orange', color: '#FF6600' },
+            { audioKey: 'purple', color: '#9900CC' },
+            { audioKey: 'pink', color: '#FF69B4' },
+            { audioKey: 'white', color: '#FFFFFF' },
+            { audioKey: 'black', color: '#222222' },
+            { audioKey: 'brown', color: '#8B4513' },
         ];
+
+        let lastBalloonColor = null; // Track last color to prevent repeats
 
         function spawnColorBalloon(colorData, direction = 'random') {
             const container = document.getElementById('gameContainer');
@@ -3050,12 +3078,17 @@
             const balloonBody = document.createElement('div');
             balloonBody.className = 'balloon-body';
             balloonBody.style.backgroundColor = colorData.color;
-            balloonBody.style.borderBottomColor = colorData.color;
+
+            // Add balloon knot
+            const balloonKnot = document.createElement('div');
+            balloonKnot.className = 'balloon-knot';
+            balloonKnot.style.backgroundColor = colorData.color;
 
             const balloonString = document.createElement('div');
             balloonString.className = 'balloon-string';
 
             balloon.appendChild(balloonBody);
+            balloon.appendChild(balloonKnot);
             balloon.appendChild(balloonString);
 
             const goRight = direction === 'random' ? Math.random() > 0.5 : direction === 'right';
@@ -3143,9 +3176,20 @@
         function scheduleColors() {
             if (!gameState.gameStarted || currentGameMode !== 'colors') return;
 
+            function getRandomColorDifferentFromLast() {
+                let colorData;
+                let attempts = 0;
+                do {
+                    colorData = colorItems[Math.floor(Math.random() * colorItems.length)];
+                    attempts++;
+                } while (colorData.audioKey === lastBalloonColor && attempts < 10);
+                lastBalloonColor = colorData.audioKey;
+                return colorData;
+            }
+
             function spawnRandomColor() {
                 if (!gameState.gameStarted || currentGameMode !== 'colors') return;
-                const colorData = colorItems[Math.floor(Math.random() * colorItems.length)];
+                const colorData = getRandomColorDifferentFromLast();
                 const direction = Math.random() > 0.5 ? 'right' : 'left';
                 spawnColorBalloon(colorData, direction);
                 setTimeout(spawnRandomColor, 3000 + Math.random() * 2000);
