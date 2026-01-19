@@ -1208,6 +1208,16 @@
             box-shadow: 0 4px 15px rgba(0,0,0,0.3);
         }
 
+        .star-counter {
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            color: #4A0080;
+            padding: 12px 25px;
+            border-radius: 25px;
+            font-size: 22px;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+
         /* ============ GAME TITLE ============ */
         .game-title {
             position: absolute;
@@ -2136,7 +2146,7 @@
             .lily-pad.pad1 { top: 25px; left: 30px; }
             .lily-pad.pad2 { top: 50px; left: 120px; }
             .lily-pad.pad3 { top: 70px; left: 70px; }
-            .level-display, .score-display, .butterfly-counter {
+            .level-display, .score-display, .butterfly-counter, .star-counter {
                 font-size: 14px;
                 padding: 8px 15px;
             }
@@ -2622,6 +2632,7 @@
                 <div class="level-display" id="levelDisplay">Level 1</div>
                 <div class="score-display" id="scoreDisplay">⭐ 0</div>
                 <div class="butterfly-counter" id="butterflyCounter">🦋 0 / 5</div>
+                <div class="star-counter" id="starCounter">⭐ 0 / 5</div>
             </div>
         </div>
 
@@ -3075,6 +3086,8 @@
             score: 0,
             butterfliesCaught: 0,
             butterfliesNeeded: 5,
+            starsCaught: 0,
+            starsNeeded: 5,
             gameStarted: false,
             gamePaused: false,
             pinkySpeed: 1.5,
@@ -3193,7 +3206,9 @@
                 createSparkles(e.clientX, e.clientY);
                 playMagicSound();
                 gameState.score += 1;
+                gameState.butterfliesCaught++;
                 updateUI();
+                checkWinCondition();
             });
 
             document.body.appendChild(butterfly);
@@ -3248,7 +3263,9 @@
                 createSparkles(e.clientX, e.clientY);
                 playMagicSound();
                 gameState.score += 1;
+                gameState.butterfliesCaught++;
                 updateUI();
+                checkWinCondition();
 
                 // Butterfly disappears
                 butterfly.style.transition = 'transform 0.3s, opacity 0.3s';
@@ -3293,13 +3310,17 @@
             star.style.top = (3 + Math.random() * 22) + '%';
             star.style.animationDelay = (Math.random() * 2) + 's';
 
-            // Add click handler - star disappears and new one spawns later
+            // Add click handler - star gives 1 point, disappears and new one spawns later
             star.addEventListener('click', (e) => {
                 e.stopPropagation();
                 initAudio();
                 speakBilingual('star');
                 createSparkles(e.clientX, e.clientY);
                 playMagicSound();
+                gameState.score += 1;
+                gameState.starsCaught++;
+                updateUI();
+                checkWinCondition();
 
                 // Remove star with fade effect
                 star.style.transition = 'opacity 0.3s, transform 0.3s';
@@ -4136,6 +4157,14 @@
             document.getElementById('levelDisplay').textContent = `Level ${gameState.level}`;
             document.getElementById('scoreDisplay').textContent = `⭐ ${gameState.score}`;
             document.getElementById('butterflyCounter').textContent = `🦋 ${gameState.butterfliesCaught} / ${gameState.butterfliesNeeded}`;
+            document.getElementById('starCounter').textContent = `⭐ ${gameState.starsCaught} / ${gameState.starsNeeded}`;
+        }
+
+        function checkWinCondition() {
+            if (gameState.butterfliesCaught >= gameState.butterfliesNeeded &&
+                gameState.starsCaught >= gameState.starsNeeded) {
+                winLevel();
+            }
         }
 
         function catchButterfly() {
@@ -4223,6 +4252,7 @@
             gameState.butterfliesNeeded = config.butterflies;
             gameState.pinkySpeed = config.pinkySpeed;
             gameState.butterfliesCaught = 0;
+            gameState.starsCaught = 0;
             gameState.gamePaused = false;
 
             document.getElementById('winScreen').classList.remove('visible');
@@ -4244,6 +4274,8 @@
             gameState.score = 0;
             gameState.butterfliesCaught = 0;
             gameState.butterfliesNeeded = 5;
+            gameState.starsCaught = 0;
+            gameState.starsNeeded = 5;
             gameState.pinkySpeed = 1.5;
             gameState.gamePaused = false;
 
