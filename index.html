@@ -3434,6 +3434,9 @@
                 speakBilingual('bird');
                 createSparkles(e.clientX, e.clientY);
                 playBirdSound();
+                // Pause bird so it doesn't fly off when caught
+                bird.style.animationPlayState = 'paused';
+                setTimeout(() => bird.remove(), 2000);
             });
 
             document.body.appendChild(bird);
@@ -3633,6 +3636,7 @@
             const newBottom = 10 + Math.random() * 20;
 
             dog.style.left = newLeft + '%';
+            dog.style.transform = 'none';
             dog.style.bottom = newBottom + '%';
         }
 
@@ -4354,9 +4358,10 @@
             spawnGems();
             spawnPowerups();
 
-            // Reset Pinky position
+            // Reset Pinky position (centered)
             const dog = document.getElementById('dog');
             dog.style.left = '50%';
+            dog.style.transform = 'translateX(-50%)';
             dog.style.bottom = '15%';
 
             playLevelUpSound();
@@ -4380,6 +4385,7 @@
 
             const dog = document.getElementById('dog');
             dog.style.left = '50%';
+            dog.style.transform = 'translateX(-50%)';
             dog.style.bottom = '15%';
         }
 
