@@ -242,11 +242,11 @@
             z-index: 0;
         }
 
-        /* Sun with rays */
+        /* Sun with rays - centered more */
         .sun {
             position: absolute;
             top: 30px;
-            right: 80px;
+            right: 35%;
             width: 100px;
             height: 100px;
             background: radial-gradient(circle, #FFD700 0%, #FFA500 100%);
@@ -256,6 +256,56 @@
             transition: transform 0.3s;
             animation: sunPulse 4s ease-in-out infinite;
         }
+
+        /* Moon */
+        .moon {
+            position: absolute;
+            top: 40px;
+            left: 80px;
+            width: 70px;
+            height: 70px;
+            background: radial-gradient(circle at 30% 30%, #FFFACD 0%, #F0E68C 50%, #DAA520 100%);
+            border-radius: 50%;
+            box-shadow: 0 0 30px rgba(255, 250, 205, 0.8), 0 0 60px rgba(255, 215, 0, 0.4);
+            cursor: pointer;
+            transition: transform 0.3s;
+            animation: moonGlow 5s ease-in-out infinite;
+        }
+
+        .moon::before {
+            content: '';
+            position: absolute;
+            top: 10%;
+            left: 15%;
+            width: 15px;
+            height: 15px;
+            background: rgba(139, 119, 42, 0.3);
+            border-radius: 50%;
+        }
+
+        .moon::after {
+            content: '';
+            position: absolute;
+            top: 40%;
+            right: 20%;
+            width: 10px;
+            height: 10px;
+            background: rgba(139, 119, 42, 0.2);
+            border-radius: 50%;
+        }
+
+        @keyframes moonGlow {
+            0%, 100% { box-shadow: 0 0 30px rgba(255, 250, 205, 0.8), 0 0 60px rgba(255, 215, 0, 0.4); }
+            50% { box-shadow: 0 0 40px rgba(255, 250, 205, 1), 0 0 80px rgba(255, 215, 0, 0.6); }
+        }
+
+        @keyframes starTwinkle {
+            0% { opacity: 0; transform: scale(0) rotate(0deg); }
+            50% { opacity: 1; transform: scale(1.2) rotate(180deg); }
+            100% { opacity: 0; transform: scale(0) rotate(360deg); }
+        }
+
+        .moon:hover { transform: scale(1.15); }
 
         .sun::before {
             content: '';
@@ -1660,6 +1710,7 @@
         <!-- Sky -->
         <div class="sky" id="sky"></div>
         <div class="sun" id="sun"></div>
+        <div class="moon" id="moon"></div>
         <div class="cloud cloud-1" id="cloud1"></div>
         <div class="cloud cloud-2" id="cloud2"></div>
         <div class="cloud cloud-3" id="cloud3"></div>
@@ -2115,6 +2166,7 @@
             castle: 'טירה',
             sky: 'שמיים',
             grass: 'דשא',
+            moon: 'ירח',
             papa_horse: 'אבא סוס',
             elephant: 'פיל',
             lion: 'אריה',
@@ -2961,6 +3013,32 @@
                 const rainbow = document.getElementById('rainbow');
                 rainbow.classList.toggle('visible');
                 playMagicSound();
+            });
+
+            document.getElementById('moon').addEventListener('click', () => {
+                initAudio();
+                speakBilingual('moon'); // луна / ירח
+                playMagicSound();
+                // Create stars around moon
+                const moon = document.getElementById('moon');
+                const rect = moon.getBoundingClientRect();
+                for (let i = 0; i < 5; i++) {
+                    setTimeout(() => {
+                        const star = document.createElement('div');
+                        star.textContent = '⭐';
+                        star.style.cssText = `
+                            position: fixed;
+                            left: ${rect.left + Math.random() * 100 - 20}px;
+                            top: ${rect.top + Math.random() * 100 - 20}px;
+                            font-size: 20px;
+                            pointer-events: none;
+                            animation: starTwinkle 1s ease-out forwards;
+                            z-index: 1000;
+                        `;
+                        document.body.appendChild(star);
+                        setTimeout(() => star.remove(), 1000);
+                    }, i * 100);
+                }
             });
 
             let cloudClickCount = 0;
