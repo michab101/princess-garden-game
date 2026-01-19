@@ -647,9 +647,9 @@
         .pond {
             position: absolute;
             bottom: 8%;
-            right: 8%;
-            width: 180px;
-            height: 90px;
+            right: 5%;
+            width: 360px;
+            height: 180px;
             background: linear-gradient(180deg, #87CEFA 0%, #4169E1 50%, #1E90FF 100%);
             border-radius: 50%;
             cursor: pointer;
@@ -678,8 +678,8 @@
 
         .lily-pad {
             position: absolute;
-            width: 35px;
-            height: 28px;
+            width: 50px;
+            height: 40px;
             background: radial-gradient(ellipse at center, #32CD32, #228B22);
             border-radius: 50%;
             animation: lilyFloat 3s ease-in-out infinite;
@@ -690,13 +690,14 @@
             position: absolute;
             top: 0;
             left: 45%;
-            width: 3px;
+            width: 4px;
             height: 50%;
             background: #4169E1;
         }
 
-        .lily-pad.pad1 { top: 25px; left: 25px; }
-        .lily-pad.pad2 { top: 45px; left: 110px; animation-delay: -1s; }
+        .lily-pad.pad1 { top: 40px; left: 50px; }
+        .lily-pad.pad2 { top: 80px; left: 220px; animation-delay: -1s; }
+        .lily-pad.pad3 { top: 110px; left: 120px; animation-delay: -0.5s; }
 
         @keyframes lilyFloat {
             0%, 100% { transform: translateY(0) rotate(0deg); }
@@ -1616,19 +1617,45 @@
             .title-logo { font-size: 32px; }
             .start-button { font-size: 24px; padding: 15px 40px; }
             .game-title { font-size: 22px; top: 70px; }
-            .character-frame { width: 100px; height: 100px; }
-            .dog .character-frame { width: 140px; height: 140px; }
-            .character-crown { font-size: 25px; }
-            .character-name { font-size: 12px; }
-            .castle { transform: scale(0.7); left: 10px; }
-            .tree { transform: scale(0.7); }
-            .pond { width: 130px; height: 65px; }
+            .character-frame { width: 80px; height: 80px; }
+            .dog .character-frame { width: 100px; height: 100px; }
+            .character-crown { font-size: 20px; }
+            .character-name { font-size: 10px; }
+            .castle { transform: scale(0.6); left: 5px; }
+            .tree { transform: scale(0.6); }
+            .pond { width: 120px; height: 60px; }
+            .lily-pad { width: 25px; height: 20px; }
+            .lily-pad.pad1 { top: 15px; left: 20px; }
+            .lily-pad.pad2 { top: 30px; left: 70px; }
+            .lily-pad.pad3 { display: none; }
             .level-display, .score-display, .butterfly-counter {
                 font-size: 14px;
                 padding: 8px 15px;
             }
             .win-title { font-size: 36px; }
             .win-button { padding: 12px 30px; font-size: 18px; }
+            .walking-animal { font-size: 40px; }
+            .walking-balloon { font-size: 45px; }
+            .game-mode-btn { font-size: 20px; padding: 20px 30px; }
+            .game-mode-btn .emoji { font-size: 40px; }
+        }
+
+        /* Very small phones */
+        @media (max-width: 480px) {
+            .character-frame { width: 60px; height: 60px; }
+            .dog .character-frame { width: 80px; height: 80px; }
+            .character-crown { font-size: 16px; top: -12px; }
+            .character-name { font-size: 8px; padding: 2px 6px; }
+            .castle { transform: scale(0.5); left: 0; }
+            .tree { transform: scale(0.5); }
+            .pond { width: 100px; height: 50px; right: 3%; }
+            .sun { width: 70px; height: 70px; }
+            .moon { width: 50px; height: 50px; }
+            .walking-animal { font-size: 35px; }
+            .walking-balloon { font-size: 40px; }
+            .game-mode-title { font-size: 28px; }
+            .game-mode-btn { font-size: 18px; padding: 15px 25px; }
+            .game-mode-btn .emoji { font-size: 35px; }
         }
         /* ============ PASSWORD SCREEN ============ */
         .password-screen {
@@ -1918,6 +1945,7 @@
             <div class="pond-shine"></div>
             <div class="lily-pad pad1"></div>
             <div class="lily-pad pad2"></div>
+            <div class="lily-pad pad3"></div>
             <div class="fish" id="fish">
                 <div class="fish-body"></div>
                 <div class="fish-tail"></div>
