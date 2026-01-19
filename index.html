@@ -1600,6 +1600,22 @@
             100% { left: 110%; top: 10%; transform: scaleX(-1); }
         }
 
+        /* Bird caught - flies off fast */
+        .flying-bird.caught {
+            animation: none !important;
+            transition: left 0.5s linear, top 0.3s ease-out;
+        }
+
+        .flying-bird.caught.fly-left {
+            left: -15% !important;
+            top: -10% !important;
+        }
+
+        .flying-bird.caught.fly-right {
+            left: 115% !important;
+            top: -10% !important;
+        }
+
         /* ============ KING POPUP ============ */
         .king-popup {
             position: fixed;
@@ -3434,9 +3450,16 @@
                 speakBilingual('bird');
                 createSparkles(e.clientX, e.clientY);
                 playBirdSound();
-                // Speed up bird 10x when caught and fly off
-                bird.style.animationDuration = bird.classList.contains('slow-bird') ? '3s' : '1.8s';
+                // Get current position and fly off fast
+                const rect = bird.getBoundingClientRect();
+                bird.style.left = rect.left + 'px';
+                bird.style.top = rect.top + 'px';
                 bird.style.pointerEvents = 'none';
+                // Trigger fly-off
+                requestAnimationFrame(() => {
+                    bird.classList.add('caught');
+                });
+                setTimeout(() => bird.remove(), 600);
             });
 
             document.body.appendChild(bird);
