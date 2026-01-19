@@ -3585,14 +3585,17 @@
             // Random vertical position in sky area
             balloon.style.top = (10 + Math.random() * 30) + '%';
 
-            balloon.addEventListener('click', () => {
+            balloon.addEventListener('click', (e) => {
                 initAudio();
                 speakBilingual(colorData.audioKey);
-                createSparkles(
-                    balloon.getBoundingClientRect().left + 30,
-                    balloon.getBoundingClientRect().top
-                );
+                createSparkles(e.clientX, e.clientY);
                 playMagicSound();
+
+                // Pop the balloon
+                balloon.style.transition = 'transform 0.2s, opacity 0.2s';
+                balloon.style.transform = 'scale(1.5)';
+                balloon.style.opacity = '0';
+                setTimeout(() => balloon.remove(), 200);
             });
 
             container.appendChild(balloon);
