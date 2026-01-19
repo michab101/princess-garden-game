@@ -2408,11 +2408,6 @@
 
             dog.style.left = newLeft + '%';
             dog.style.bottom = newBottom + '%';
-
-            // Random bark
-            if (Math.random() > 0.7) {
-                playBarkSound();
-            }
         }
 
         function startPinkyMovement() {
@@ -2980,7 +2975,10 @@
 
             document.getElementById('castle').addEventListener('click', () => {
                 initAudio();
-                speakBilingual('castle'); // замок / טירה
+                // Papa says "Where are my girls? Time for ice cream!" in Russian
+                playAudio('papa_icecream_ru.mp3');
+                // Then says ice cream in Hebrew (גלידה)
+                setTimeout(() => playAudio('icecream_he.mp3'), 2500);
                 showKingPopup();
                 playMagicSound();
             });
