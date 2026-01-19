@@ -238,6 +238,8 @@
             height: 60%;
             background: linear-gradient(180deg, #87CEEB 0%, #B0E0E6 50%, #F0F8FF 100%);
             transition: background 3s;
+            cursor: pointer;
+            z-index: 0;
         }
 
         /* Sun with rays */
@@ -869,8 +871,8 @@
         }
 
         .dog .character-frame {
-            width: 130px;
-            height: 130px;
+            width: 160px;
+            height: 160px;
             border-color: #FFB6C1;
             animation-delay: -1s;
         }
@@ -880,8 +882,8 @@
         }
 
         .dog-bow {
-            font-size: 28px;
-            margin-top: 5px;
+            font-size: 32px;
+            margin-bottom: 5px;
             animation: bowWiggle 1s ease-in-out infinite;
         }
 
@@ -1442,13 +1444,13 @@
         }
 
         @keyframes walkLeft {
-            0% { left: 110%; transform: scaleX(-1); }
-            100% { left: -15%; transform: scaleX(-1); }
+            0% { left: 110%; transform: scaleX(1); }
+            100% { left: -15%; transform: scaleX(1); }
         }
 
         @keyframes walkRight {
-            0% { left: -15%; transform: scaleX(1); }
-            100% { left: 110%; transform: scaleX(1); }
+            0% { left: -15%; transform: scaleX(-1); }
+            100% { left: 110%; transform: scaleX(-1); }
         }
 
         .walking-animal.bounce {
@@ -1460,61 +1462,51 @@
         }
 
         @keyframes walkLeftBounce {
-            0% { left: 110%; transform: scaleX(-1) translateY(0); }
-            5% { transform: scaleX(-1) translateY(-15px); }
-            10% { transform: scaleX(-1) translateY(0); }
-            15% { transform: scaleX(-1) translateY(-15px); }
-            20% { transform: scaleX(-1) translateY(0); }
-            25% { transform: scaleX(-1) translateY(-15px); }
-            30% { transform: scaleX(-1) translateY(0); }
-            35% { transform: scaleX(-1) translateY(-15px); }
-            40% { transform: scaleX(-1) translateY(0); }
-            45% { transform: scaleX(-1) translateY(-15px); }
-            50% { transform: scaleX(-1) translateY(0); }
-            55% { transform: scaleX(-1) translateY(-15px); }
-            60% { transform: scaleX(-1) translateY(0); }
-            65% { transform: scaleX(-1) translateY(-15px); }
-            70% { transform: scaleX(-1) translateY(0); }
-            75% { transform: scaleX(-1) translateY(-15px); }
-            80% { transform: scaleX(-1) translateY(0); }
-            85% { transform: scaleX(-1) translateY(-15px); }
-            90% { transform: scaleX(-1) translateY(0); }
-            95% { transform: scaleX(-1) translateY(-15px); }
-            100% { left: -15%; transform: scaleX(-1) translateY(0); }
+            0% { left: 110%; transform: scaleX(1) translateY(0); }
+            5% { transform: scaleX(1) translateY(-40px); }
+            10% { transform: scaleX(1) translateY(0); }
+            15% { transform: scaleX(1) translateY(-40px); }
+            20% { transform: scaleX(1) translateY(0); }
+            25% { transform: scaleX(1) translateY(-40px); }
+            30% { transform: scaleX(1) translateY(0); }
+            35% { transform: scaleX(1) translateY(-40px); }
+            40% { transform: scaleX(1) translateY(0); }
+            45% { transform: scaleX(1) translateY(-40px); }
+            50% { transform: scaleX(1) translateY(0); }
+            55% { transform: scaleX(1) translateY(-40px); }
+            60% { transform: scaleX(1) translateY(0); }
+            65% { transform: scaleX(1) translateY(-40px); }
+            70% { transform: scaleX(1) translateY(0); }
+            75% { transform: scaleX(1) translateY(-40px); }
+            80% { transform: scaleX(1) translateY(0); }
+            85% { transform: scaleX(1) translateY(-40px); }
+            90% { transform: scaleX(1) translateY(0); }
+            95% { transform: scaleX(1) translateY(-40px); }
+            100% { left: -15%; transform: scaleX(1) translateY(0); }
         }
 
         @keyframes walkRightBounce {
-            0% { left: -15%; transform: scaleX(1) translateY(0); }
-            5% { transform: scaleX(1) translateY(-15px); }
-            10% { transform: scaleX(1) translateY(0); }
-            15% { transform: scaleX(1) translateY(-15px); }
-            20% { transform: scaleX(1) translateY(0); }
-            25% { transform: scaleX(1) translateY(-15px); }
-            30% { transform: scaleX(1) translateY(0); }
-            35% { transform: scaleX(1) translateY(-15px); }
-            40% { transform: scaleX(1) translateY(0); }
-            45% { transform: scaleX(1) translateY(-15px); }
-            50% { transform: scaleX(1) translateY(0); }
-            55% { transform: scaleX(1) translateY(-15px); }
-            60% { transform: scaleX(1) translateY(0); }
-            65% { transform: scaleX(1) translateY(-15px); }
-            70% { transform: scaleX(1) translateY(0); }
-            75% { transform: scaleX(1) translateY(-15px); }
-            80% { transform: scaleX(1) translateY(0); }
-            85% { transform: scaleX(1) translateY(-15px); }
-            90% { transform: scaleX(1) translateY(0); }
-            95% { transform: scaleX(1) translateY(-15px); }
-            100% { left: 110%; transform: scaleX(1) translateY(0); }
-        }
-
-        .sky {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 40%;
-            cursor: pointer;
-            z-index: 0;
+            0% { left: -15%; transform: scaleX(-1) translateY(0); }
+            5% { transform: scaleX(-1) translateY(-40px); }
+            10% { transform: scaleX(-1) translateY(0); }
+            15% { transform: scaleX(-1) translateY(-40px); }
+            20% { transform: scaleX(-1) translateY(0); }
+            25% { transform: scaleX(-1) translateY(-40px); }
+            30% { transform: scaleX(-1) translateY(0); }
+            35% { transform: scaleX(-1) translateY(-40px); }
+            40% { transform: scaleX(-1) translateY(0); }
+            45% { transform: scaleX(-1) translateY(-40px); }
+            50% { transform: scaleX(-1) translateY(0); }
+            55% { transform: scaleX(-1) translateY(-40px); }
+            60% { transform: scaleX(-1) translateY(0); }
+            65% { transform: scaleX(-1) translateY(-40px); }
+            70% { transform: scaleX(-1) translateY(0); }
+            75% { transform: scaleX(-1) translateY(-40px); }
+            80% { transform: scaleX(-1) translateY(0); }
+            85% { transform: scaleX(-1) translateY(-40px); }
+            90% { transform: scaleX(-1) translateY(0); }
+            95% { transform: scaleX(-1) translateY(-40px); }
+            100% { left: 110%; transform: scaleX(-1) translateY(0); }
         }
 
         .ground {
@@ -1527,7 +1519,7 @@
             .start-button { font-size: 24px; padding: 15px 40px; }
             .game-title { font-size: 22px; top: 70px; }
             .character-frame { width: 100px; height: 100px; }
-            .dog .character-frame { width: 90px; height: 90px; }
+            .dog .character-frame { width: 120px; height: 120px; }
             .character-crown { font-size: 25px; }
             .character-name { font-size: 12px; }
             .castle { transform: scale(0.7); left: 10px; }
@@ -1785,10 +1777,10 @@
         <div class="character dog" id="dog">
             <div class="character-wrapper">
                 <div class="character-crown">👑</div>
+                <div class="dog-bow">🎀</div>
                 <div class="character-frame">
                     <img src="images/Pinky.jpeg" alt="Ms. Pinky">
                 </div>
-                <div class="dog-bow">🎀</div>
                 <div class="character-name">Ms. Pinky</div>
             </div>
         </div>
@@ -2391,7 +2383,7 @@
         // ============ KING POPUP ============
         let kingMessageIndex = 0;
         const kingMessages = [
-            { text: 'Где мои девочки? Время для גלידה!', lang: 'ru-RU', display: 'Где мои девочки? Время для גלידה!' },
+            { text: 'Где мои девочки? Время для ice cream!', lang: 'ru-RU', display: 'Где мои девочки? Время для ice cream!' },
             { text: 'Пойдём в ресторан, мисс Пинки!', lang: 'ru-RU', display: 'Пойдём в ресторан, мисс Пинки!' }
         ];
 
@@ -2790,6 +2782,7 @@
                 const handler = (e) => {
                     e.preventDefault();
                     initAudio();
+                    playMagicSound();
                     speak('פרח', 'he-IL', 0.9, 1.2); // Perach - flower
                     const rect = flower.getBoundingClientRect();
                     sendButterflyToPinky(rect.left + rect.width/2, rect.top);
@@ -2836,6 +2829,7 @@
             document.querySelectorAll('.cloud').forEach(cloud => {
                 cloud.addEventListener('click', () => {
                     initAudio();
+                    playMagicSound();
                     speak('ענן', 'he-IL', 0.9, 1.2); // Anan - cloud
                     cloudClickCount++;
                     if (cloudClickCount % 2 === 1) {
@@ -2849,6 +2843,7 @@
 
             document.getElementById('tree').addEventListener('click', (e) => {
                 initAudio();
+                playMagicSound();
                 speak('עץ', 'he-IL', 0.9, 1.2); // Etz - tree
                 createBird(e.clientX, e.clientY - 50);
                 setTimeout(() => createBird(e.clientX + 30, e.clientY - 30), 300);
@@ -2910,6 +2905,7 @@
             // Sky click
             document.getElementById('sky').addEventListener('click', (e) => {
                 initAudio();
+                playMagicSound();
                 speak('שמיים', 'he-IL', 0.9, 1.2); // Shamayim - sky
                 // Create a star
                 const star = document.createElement('div');
@@ -2930,6 +2926,7 @@
             // Grass click
             document.getElementById('grassContainer').addEventListener('click', (e) => {
                 initAudio();
+                playMagicSound();
                 speak('דשא', 'he-IL', 0.9, 1.2); // Deshe - grass
                 createSparkles(e.clientX, e.clientY);
             });
