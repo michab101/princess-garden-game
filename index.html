@@ -3434,9 +3434,9 @@
                 speakBilingual('bird');
                 createSparkles(e.clientX, e.clientY);
                 playBirdSound();
-                // Pause bird so it doesn't fly off when caught
-                bird.style.animationPlayState = 'paused';
-                setTimeout(() => bird.remove(), 2000);
+                // Speed up bird 10x when caught and fly off
+                bird.style.animationDuration = bird.classList.contains('slow-bird') ? '3s' : '1.8s';
+                bird.style.pointerEvents = 'none';
             });
 
             document.body.appendChild(bird);
