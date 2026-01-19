@@ -4496,8 +4496,6 @@
                 void fish.offsetWidth;
                 fish.classList.add('jump');
                 playSplashSound();
-                // Wait for pond audio to finish before saying fish
-                setTimeout(() => speakBilingual('fish'), 2500); // рыба / דג
 
                 // Pinky goes crazy
                 const dog = document.getElementById('dog');
@@ -4508,6 +4506,27 @@
                 setTimeout(() => playBarkSound(), 200);
                 setTimeout(() => playBarkSound(), 400);
             });
+
+            // Fish click handler
+            document.getElementById('fish').addEventListener('click', (e) => {
+                e.stopPropagation();
+                initAudio();
+                speakBilingual('fish'); // рыба / דג
+                createSparkles(e.clientX, e.clientY);
+            });
+
+            // Fish appears periodically
+            function fishJumpPeriodically() {
+                const fish = document.getElementById('fish');
+                if (fish && gameState.gameStarted) {
+                    fish.classList.remove('jump');
+                    void fish.offsetWidth;
+                    fish.classList.add('jump');
+                    playSplashSound();
+                }
+                setTimeout(fishJumpPeriodically, 8000 + Math.random() * 7000);
+            }
+            setTimeout(fishJumpPeriodically, 5000);
 
             let castleClickCount = 0;
             document.getElementById('castle').addEventListener('click', () => {
