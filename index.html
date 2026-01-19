@@ -1568,38 +1568,27 @@
         }
 
         .flying-bird.fly-left {
-            animation: birdFlyLeft 25s linear forwards, wingFlap 0.3s ease-in-out infinite;
+            animation: birdFlyLeft 25s linear forwards;
         }
 
         .flying-bird.fly-right {
-            transform: scaleX(-1);
-            animation: birdFlyRight 25s linear forwards, wingFlapFlipped 0.3s ease-in-out infinite;
-        }
-
-        @keyframes wingFlap {
-            0%, 100% { transform: scaleY(1); }
-            50% { transform: scaleY(0.85); }
-        }
-
-        @keyframes wingFlapFlipped {
-            0%, 100% { transform: scaleX(-1) scaleY(1); }
-            50% { transform: scaleX(-1) scaleY(0.85); }
+            animation: birdFlyRight 25s linear forwards;
         }
 
         @keyframes birdFlyLeft {
-            0% { left: 110%; top: 8%; }
-            25% { top: 14%; }
-            50% { top: 5%; }
-            75% { top: 12%; }
-            100% { left: -10%; top: 8%; }
+            0% { left: 110%; top: 8%; transform: scaleX(1); }
+            25% { top: 14%; transform: scaleX(1); }
+            50% { top: 5%; transform: scaleX(1); }
+            75% { top: 12%; transform: scaleX(1); }
+            100% { left: -10%; top: 8%; transform: scaleX(1); }
         }
 
         @keyframes birdFlyRight {
-            0% { left: -10%; top: 10%; }
-            25% { top: 5%; }
-            50% { top: 15%; }
-            75% { top: 7%; }
-            100% { left: 110%; top: 10%; }
+            0% { left: -10%; top: 10%; transform: scaleX(-1); }
+            25% { top: 5%; transform: scaleX(-1); }
+            50% { top: 15%; transform: scaleX(-1); }
+            75% { top: 7%; transform: scaleX(-1); }
+            100% { left: 110%; top: 10%; transform: scaleX(-1); }
         }
 
         /* ============ KING POPUP ============ */
@@ -3415,7 +3404,7 @@
 
         // Spawn a flying bird that crosses the sky
         function spawnFlyingBird() {
-            const birdEmojis = ['🐦', '🐤', '🦅', '🦆', '🕊️', '🦜'];
+            const birdEmojis = ['🐦', '🦅', '🦆', '🦜'];
             const bird = document.createElement('div');
             bird.className = 'flying-bird';
             bird.textContent = birdEmojis[Math.floor(Math.random() * birdEmojis.length)];
