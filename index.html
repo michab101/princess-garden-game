@@ -1236,6 +1236,8 @@
             position: fixed;
             pointer-events: none;
             z-index: 150;
+            width: 50px;
+            height: 40px;
         }
 
         .butterfly.decorative-butterfly {
@@ -1245,30 +1247,115 @@
             z-index: 120;
         }
 
-        .butterfly-wing {
-            width: 18px;
-            height: 22px;
-            border-radius: 50% 50% 20% 50%;
+        .butterfly-body {
             position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 6px;
+            height: 20px;
+            background: linear-gradient(#333, #111);
+            border-radius: 3px;
+            z-index: 3;
         }
 
-        .butterfly-wing.left {
-            animation: wingFlapLeft 0.15s ease-in-out infinite alternate;
+        .butterfly-antenna {
+            position: absolute;
+            left: 50%;
+            top: 5px;
+            width: 2px;
+            height: 10px;
+            background: #333;
+            border-radius: 1px;
         }
 
-        .butterfly-wing.right {
-            left: 14px;
-            animation: wingFlapRight 0.15s ease-in-out infinite alternate-reverse;
+        .butterfly-antenna.left-antenna {
+            transform: translateX(-6px) rotate(-30deg);
         }
 
-        @keyframes wingFlapLeft {
-            from { transform: rotateY(0deg); }
-            to { transform: rotateY(70deg); }
+        .butterfly-antenna.right-antenna {
+            transform: translateX(4px) rotate(30deg);
         }
 
-        @keyframes wingFlapRight {
-            from { transform: scaleX(-1) rotateY(0deg); }
-            to { transform: scaleX(-1) rotateY(70deg); }
+        .butterfly-antenna::after {
+            content: '';
+            position: absolute;
+            top: -3px;
+            left: -1px;
+            width: 4px;
+            height: 4px;
+            background: #333;
+            border-radius: 50%;
+        }
+
+        .butterfly-wing {
+            position: absolute;
+            top: 50%;
+            transform-origin: right center;
+            border-radius: 50% 80% 50% 80%;
+            box-shadow: inset 0 0 10px rgba(255,255,255,0.5);
+        }
+
+        .butterfly-wing.top-left {
+            width: 20px;
+            height: 18px;
+            left: 3px;
+            transform: translateY(-100%) rotate(-20deg);
+            animation: wingFlapTopLeft 0.12s ease-in-out infinite alternate;
+        }
+
+        .butterfly-wing.top-right {
+            width: 20px;
+            height: 18px;
+            right: 3px;
+            left: auto;
+            transform-origin: left center;
+            transform: translateY(-100%) rotate(20deg);
+            animation: wingFlapTopRight 0.12s ease-in-out infinite alternate;
+        }
+
+        .butterfly-wing.bottom-left {
+            width: 16px;
+            height: 14px;
+            left: 6px;
+            transform: translateY(10%) rotate(10deg);
+            animation: wingFlapBottomLeft 0.12s ease-in-out infinite alternate;
+        }
+
+        .butterfly-wing.bottom-right {
+            width: 16px;
+            height: 14px;
+            right: 6px;
+            left: auto;
+            transform-origin: left center;
+            transform: translateY(10%) rotate(-10deg);
+            animation: wingFlapBottomRight 0.12s ease-in-out infinite alternate;
+        }
+
+        .butterfly-wing .wing-spot {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.6);
+        }
+
+        @keyframes wingFlapTopLeft {
+            from { transform: translateY(-100%) rotate(-20deg) rotateY(0deg); }
+            to { transform: translateY(-100%) rotate(-20deg) rotateY(60deg); }
+        }
+
+        @keyframes wingFlapTopRight {
+            from { transform: translateY(-100%) rotate(20deg) rotateY(0deg); }
+            to { transform: translateY(-100%) rotate(20deg) rotateY(-60deg); }
+        }
+
+        @keyframes wingFlapBottomLeft {
+            from { transform: translateY(10%) rotate(10deg) rotateY(0deg); }
+            to { transform: translateY(10%) rotate(10deg) rotateY(50deg); }
+        }
+
+        @keyframes wingFlapBottomRight {
+            from { transform: translateY(10%) rotate(-10deg) rotateY(0deg); }
+            to { transform: translateY(10%) rotate(-10deg) rotateY(-50deg); }
         }
 
         /* Clickable Stars */
@@ -2883,10 +2970,23 @@
             butterfly.style.left = x + 'px';
             butterfly.style.top = y + 'px';
 
-            const color = ['#FF69B4', '#DDA0DD', '#87CEEB', '#FFB6C1', '#98D8C8'][Math.floor(Math.random() * 5)];
+            const colors = [
+                { primary: '#FF69B4', secondary: '#FF1493' },
+                { primary: '#DDA0DD', secondary: '#BA55D3' },
+                { primary: '#87CEEB', secondary: '#4169E1' },
+                { primary: '#FFB6C1', secondary: '#FF6B8A' },
+                { primary: '#98D8C8', secondary: '#20B2AA' },
+                { primary: '#FFD700', secondary: '#FFA500' }
+            ];
+            const colorSet = colors[Math.floor(Math.random() * colors.length)];
             butterfly.innerHTML = `
-                <div class="butterfly-wing left" style="background: ${color};"></div>
-                <div class="butterfly-wing right" style="background: ${color};"></div>
+                <div class="butterfly-antenna left-antenna"></div>
+                <div class="butterfly-antenna right-antenna"></div>
+                <div class="butterfly-body"></div>
+                <div class="butterfly-wing top-left" style="background: linear-gradient(135deg, ${colorSet.primary}, ${colorSet.secondary});"><div class="wing-spot" style="width: 6px; height: 6px; top: 4px; left: 4px;"></div></div>
+                <div class="butterfly-wing top-right" style="background: linear-gradient(225deg, ${colorSet.primary}, ${colorSet.secondary});"><div class="wing-spot" style="width: 6px; height: 6px; top: 4px; right: 4px;"></div></div>
+                <div class="butterfly-wing bottom-left" style="background: linear-gradient(135deg, ${colorSet.secondary}, ${colorSet.primary});"></div>
+                <div class="butterfly-wing bottom-right" style="background: linear-gradient(225deg, ${colorSet.secondary}, ${colorSet.primary});"></div>
             `;
 
             // Add click handler to say butterfly in Russian/Hebrew
@@ -2919,10 +3019,23 @@
             const butterfly = document.createElement('div');
             butterfly.className = 'butterfly decorative-butterfly';
 
-            const color = ['#FF69B4', '#DDA0DD', '#87CEEB', '#FFB6C1', '#98D8C8'][Math.floor(Math.random() * 5)];
+            const colors = [
+                { primary: '#FF69B4', secondary: '#FF1493' },
+                { primary: '#DDA0DD', secondary: '#BA55D3' },
+                { primary: '#87CEEB', secondary: '#4169E1' },
+                { primary: '#FFB6C1', secondary: '#FF6B8A' },
+                { primary: '#98D8C8', secondary: '#20B2AA' },
+                { primary: '#FFD700', secondary: '#FFA500' }
+            ];
+            const colorSet = colors[Math.floor(Math.random() * colors.length)];
             butterfly.innerHTML = `
-                <div class="butterfly-wing left" style="background: ${color};"></div>
-                <div class="butterfly-wing right" style="background: ${color};"></div>
+                <div class="butterfly-antenna left-antenna"></div>
+                <div class="butterfly-antenna right-antenna"></div>
+                <div class="butterfly-body"></div>
+                <div class="butterfly-wing top-left" style="background: linear-gradient(135deg, ${colorSet.primary}, ${colorSet.secondary});"><div class="wing-spot" style="width: 6px; height: 6px; top: 4px; left: 4px;"></div></div>
+                <div class="butterfly-wing top-right" style="background: linear-gradient(225deg, ${colorSet.primary}, ${colorSet.secondary});"><div class="wing-spot" style="width: 6px; height: 6px; top: 4px; right: 4px;"></div></div>
+                <div class="butterfly-wing bottom-left" style="background: linear-gradient(135deg, ${colorSet.secondary}, ${colorSet.primary});"></div>
+                <div class="butterfly-wing bottom-right" style="background: linear-gradient(225deg, ${colorSet.secondary}, ${colorSet.primary});"></div>
             `;
 
             // Random position in the garden area
@@ -3948,11 +4061,10 @@
                 // Russian "Princess Maya" then Hebrew "Princess Maya"
                 playAudio('princess_maya_ru.mp3');
                 setTimeout(() => playAudio('princess_maya_he.mp3'), 1200);
-                // Russian "Where is my Sana?" then Hebrew "Where is my Sana?"
+                // Toddler voice: "Где моя Сана?" (once)
                 setTimeout(() => playAudio('maya_sana_ru.mp3'), 2400);
-                setTimeout(() => playAudio('maya_sana_he.mp3'), 3600);
-                // Adult female "maya boosa maya boosa"
-                setTimeout(() => playAudio('maya_boosa.mp3'), 4800);
+                // Old woman voice: "Мая буся" (once)
+                setTimeout(() => playAudio('maya_boosa.mp3'), 4500);
             });
 
             document.getElementById('dog').addEventListener('click', (e) => {
