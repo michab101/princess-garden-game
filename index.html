@@ -2673,8 +2673,52 @@
 
             container.appendChild(animal);
 
+            // Make animal draggable on touch
+            makeAnimalDraggable(animal);
+
             // Remove after animation
             setTimeout(() => animal.remove(), 26000);
+        }
+
+        // Touch drag for walking animals
+        function makeAnimalDraggable(element) {
+            let isDragging = false;
+            let startX, startY, startLeft, startBottom;
+
+            element.addEventListener('touchstart', (e) => {
+                isDragging = true;
+                const touch = e.touches[0];
+                startX = touch.clientX;
+                startY = touch.clientY;
+                const rect = element.getBoundingClientRect();
+                const container = document.getElementById('gameContainer').getBoundingClientRect();
+                startLeft = rect.left - container.left;
+                startBottom = container.bottom - rect.bottom;
+                // Stop the walking animation
+                element.style.animation = 'none';
+                element.style.transition = 'none';
+            }, { passive: true });
+
+            element.addEventListener('touchmove', (e) => {
+                if (!isDragging) return;
+                const touch = e.touches[0];
+                const deltaX = touch.clientX - startX;
+                const deltaY = touch.clientY - startY;
+
+                if (Math.abs(deltaX) > 5 || Math.abs(deltaY) > 5) {
+                    e.preventDefault();
+                    const container = document.getElementById('gameContainer').getBoundingClientRect();
+                    const newLeft = Math.max(0, Math.min(container.width - 60, startLeft + deltaX));
+                    const newBottom = Math.max(0, Math.min(container.height - 80, startBottom - deltaY));
+                    element.style.left = newLeft + 'px';
+                    element.style.right = 'auto';
+                    element.style.bottom = newBottom + 'px';
+                }
+            }, { passive: false });
+
+            element.addEventListener('touchend', () => {
+                isDragging = false;
+            });
         }
 
         function scheduleAnimals() {
@@ -3091,7 +3135,8 @@
                 void fish.offsetWidth;
                 fish.classList.add('jump');
                 playSplashSound();
-                setTimeout(() => speakBilingual('fish'), 300); // рыба / דג
+                // Wait for pond audio to finish before saying fish
+                setTimeout(() => speakBilingual('fish'), 2500); // рыба / דג
 
                 // Pinky goes crazy
                 const dog = document.getElementById('dog');
