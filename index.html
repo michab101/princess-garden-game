@@ -4568,22 +4568,21 @@
                     setTimeout(() => playAudio('icecream_he.mp3'), 2500);
                     showKingPopup('Где мои девочки? Время для גלידה!');
                 } else if (interaction === 1) {
+                    // Oksana: Where is my boosa (Russian only)
+                    playAudio('sana_boosa_ru.mp3');
+                    showSanaPopup();
+                } else if (interaction === 2) {
+                    // Veronika: Pinky come home (Russian only)
+                    playAudio('veronika_pinky_ru.mp3');
+                    showVeronikaPopup();
+                } else {
                     // Papa: Restaurant
                     playAudio('papa_restaurant_ru.mp3');
                     setTimeout(() => playAudio('restaurant_he.mp3'), 2000);
                     showKingPopup('Пойдём в ресторан!');
-                } else if (interaction === 2) {
-                    // Sana: Where is my boosa (Russian only, once)
-                    playAudio('sana_boosa_ru.mp3');
-                    showSanaPopup();
-                } else {
-                    // Veronika: Pinky come home (Russian only, once)
-                    playAudio('veronika_pinky_ru.mp3');
-                    showVeronikaPopup();
                 }
 
                 castleClickCount++;
-                // Removed playMagicSound() to avoid duplicate sounds
             });
 
             document.getElementById('gameTitle').addEventListener('click', (e) => {
