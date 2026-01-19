@@ -1715,6 +1715,111 @@
             font-size: 16px;
             margin-top: 30px;
         }
+
+        /* ============ GAME MODE MENU ============ */
+        .game-mode-menu {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9500;
+        }
+
+        .game-mode-menu.visible {
+            display: flex;
+        }
+
+        .game-mode-title {
+            font-size: 42px;
+            color: white;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.3);
+            margin-bottom: 40px;
+        }
+
+        .game-mode-buttons {
+            display: flex;
+            gap: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .game-mode-btn {
+            font-size: 28px;
+            padding: 30px 50px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-family: 'Comic Sans MS', cursive;
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .game-mode-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .game-mode-btn.animals {
+            background: linear-gradient(135deg, #90EE90, #32CD32);
+            color: #006400;
+            box-shadow: 0 10px 30px rgba(50, 205, 50, 0.5);
+        }
+
+        .game-mode-btn.colors {
+            background: linear-gradient(135deg, #FF69B4, #FF1493);
+            color: white;
+            box-shadow: 0 10px 30px rgba(255, 105, 180, 0.5);
+        }
+
+        .game-mode-btn .emoji {
+            font-size: 60px;
+        }
+
+        /* Walking colored balloons */
+        .walking-balloon {
+            position: absolute;
+            font-size: 60px;
+            cursor: pointer;
+            z-index: 100;
+            transition: transform 0.2s;
+            filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.3));
+        }
+
+        .walking-balloon:hover {
+            transform: scale(1.2);
+        }
+
+        .walking-balloon.walk-left {
+            animation: balloonFloatLeft 20s linear forwards;
+        }
+
+        .walking-balloon.walk-right {
+            animation: balloonFloatRight 20s linear forwards;
+        }
+
+        @keyframes balloonFloatLeft {
+            0% { left: 110%; transform: translateY(0); }
+            25% { transform: translateY(-20px); }
+            50% { transform: translateY(0); }
+            75% { transform: translateY(-20px); }
+            100% { left: -15%; transform: translateY(0); }
+        }
+
+        @keyframes balloonFloatRight {
+            0% { left: -15%; transform: translateY(0); }
+            25% { transform: translateY(-20px); }
+            50% { transform: translateY(0); }
+            75% { transform: translateY(-20px); }
+            100% { left: 110%; transform: translateY(0); }
+        }
     </style>
 </head>
 <body>
@@ -1726,6 +1831,21 @@
         <button class="password-button" id="passwordButton">Enter 🔑</button>
         <div class="password-error" id="passwordError">Wrong password! Try again.</div>
         <div class="password-hint">Hint: What's our puppy's name? 🐕</div>
+    </div>
+
+    <!-- ============ GAME MODE MENU ============ -->
+    <div class="game-mode-menu" id="gameModeMenu">
+        <div class="game-mode-title">🎮 Choose a Game! 🎮</div>
+        <div class="game-mode-buttons">
+            <button class="game-mode-btn animals" id="btnAnimals">
+                <span class="emoji">🦁🐘🦒</span>
+                <span>Animals</span>
+            </button>
+            <button class="game-mode-btn colors" id="btnColors">
+                <span class="emoji">🔴🟢🔵</span>
+                <span>Colors</span>
+            </button>
+        </div>
     </div>
 
     <!-- ============ TITLE SCREEN ============ -->
@@ -2243,7 +2363,18 @@
             squirrel: 'סנאי',
             princess_ellie: 'הנסיכה אלי',
             princess_maya: 'הנסיכה מאיה',
-            pinky: 'הכלבה פינקי'
+            pinky: 'הכלבה פינקי',
+            // Colors
+            red: 'אדום',
+            blue: 'כחול',
+            green: 'ירוק',
+            yellow: 'צהוב',
+            orange: 'כתום',
+            purple: 'סגול',
+            pink: 'ורוד',
+            white: 'לבן',
+            black: 'שחור',
+            brown: 'חום'
         };
 
         // Bilingual audio - Russian (ElevenLabs) then Hebrew (Microsoft Edge TTS)
@@ -2294,6 +2425,12 @@
             preloadAudio('icecream_he.mp3');
             preloadAudio('papa_restaurant_ru.mp3');
             preloadAudio('restaurant_he.mp3');
+            // Colors
+            const colors = ['red', 'blue', 'green', 'yellow', 'orange', 'purple', 'pink', 'white', 'black', 'brown'];
+            colors.forEach(color => {
+                preloadAudio(`${color}_ru.mp3`);
+                preloadAudio(`${color}_he.mp3`);
+            });
         }
 
         // ============ GAME STATE ============
@@ -2667,6 +2804,128 @@
             { emoji: '🦊', audioKey: 'fox', soundFile: 'fox_sound.mp3' },
             { emoji: '🐿️', audioKey: 'squirrel', soundFile: 'squirrel_sound.mp3' },
         ];
+
+        // ============ COLORS FOR COLOR GAME ============
+        let currentGameMode = 'animals'; // 'animals' or 'colors'
+
+        const colorItems = [
+            { emoji: '🔴', audioKey: 'red', color: '#FF0000' },
+            { emoji: '🔵', audioKey: 'blue', color: '#0000FF' },
+            { emoji: '🟢', audioKey: 'green', color: '#00FF00' },
+            { emoji: '🟡', audioKey: 'yellow', color: '#FFFF00' },
+            { emoji: '🟠', audioKey: 'orange', color: '#FFA500' },
+            { emoji: '🟣', audioKey: 'purple', color: '#800080' },
+            { emoji: '🩷', audioKey: 'pink', color: '#FFC0CB' },
+            { emoji: '⚪', audioKey: 'white', color: '#FFFFFF' },
+            { emoji: '⚫', audioKey: 'black', color: '#000000' },
+            { emoji: '🟤', audioKey: 'brown', color: '#8B4513' },
+        ];
+
+        function spawnColorBalloon(colorData, direction = 'random') {
+            const container = document.getElementById('gameContainer');
+            const balloon = document.createElement('div');
+            balloon.className = 'walking-balloon';
+            balloon.textContent = '🎈';
+            balloon.style.color = colorData.color;
+            balloon.style.textShadow = `0 0 10px ${colorData.color}`;
+
+            const goRight = direction === 'random' ? Math.random() > 0.5 : direction === 'right';
+            balloon.classList.add(goRight ? 'walk-right' : 'walk-left');
+
+            // Random vertical position in sky area
+            balloon.style.top = (10 + Math.random() * 30) + '%';
+
+            balloon.addEventListener('click', () => {
+                initAudio();
+                speakBilingual(colorData.audioKey);
+                createSparkles(
+                    balloon.getBoundingClientRect().left + 30,
+                    balloon.getBoundingClientRect().top
+                );
+                playMagicSound();
+            });
+
+            container.appendChild(balloon);
+            makeBalloonDraggable(balloon);
+
+            // Remove after animation
+            setTimeout(() => balloon.remove(), 21000);
+        }
+
+        function makeBalloonDraggable(element) {
+            let isDragging = false;
+            let startX, startY, startLeft, startTop;
+            let wasGoingRight = false;
+
+            function startDrag(clientX, clientY) {
+                isDragging = true;
+                startX = clientX;
+                startY = clientY;
+                const rect = element.getBoundingClientRect();
+                const container = document.getElementById('gameContainer').getBoundingClientRect();
+                startLeft = rect.left - container.left;
+                startTop = rect.top - container.top;
+                wasGoingRight = element.classList.contains('walk-right');
+                element.style.animation = 'none';
+                element.style.left = startLeft + 'px';
+                element.style.top = startTop + 'px';
+            }
+
+            function moveDrag(clientX, clientY, e) {
+                if (!isDragging) return;
+                const deltaX = clientX - startX;
+                const deltaY = clientY - startY;
+                if (Math.abs(deltaX) > 5 || Math.abs(deltaY) > 5) {
+                    if (e) e.preventDefault();
+                    const container = document.getElementById('gameContainer').getBoundingClientRect();
+                    const newLeft = Math.max(0, Math.min(container.width - 60, startLeft + deltaX));
+                    const newTop = Math.max(0, Math.min(container.height * 0.5, startTop + deltaY));
+                    element.style.left = newLeft + 'px';
+                    element.style.top = newTop + 'px';
+                }
+            }
+
+            function endDrag() {
+                if (!isDragging) return;
+                isDragging = false;
+                const container = document.getElementById('gameContainer').getBoundingClientRect();
+                const rect = element.getBoundingClientRect();
+                const currentLeft = rect.left - container.left;
+                const currentLeftPercent = (currentLeft / container.width) * 100;
+
+                let targetLeft = wasGoingRight ? '110%' : '-15%';
+                const remainingDistance = wasGoingRight ? (110 - currentLeftPercent) / 125 : (currentLeftPercent + 15) / 125;
+                const remainingTime = Math.max(2, remainingDistance * 20);
+
+                element.style.transition = `left ${remainingTime}s linear`;
+                requestAnimationFrame(() => {
+                    element.style.left = targetLeft;
+                });
+            }
+
+            element.addEventListener('touchstart', (e) => startDrag(e.touches[0].clientX, e.touches[0].clientY), { passive: true });
+            element.addEventListener('touchmove', (e) => moveDrag(e.touches[0].clientX, e.touches[0].clientY, e), { passive: false });
+            element.addEventListener('touchend', endDrag);
+            element.addEventListener('mousedown', (e) => { e.preventDefault(); startDrag(e.clientX, e.clientY); });
+            document.addEventListener('mousemove', (e) => moveDrag(e.clientX, e.clientY, e));
+            document.addEventListener('mouseup', endDrag);
+        }
+
+        function scheduleColors() {
+            if (!gameState.gameStarted || currentGameMode !== 'colors') return;
+
+            function spawnRandomColor() {
+                if (!gameState.gameStarted || currentGameMode !== 'colors') return;
+                const colorData = colorItems[Math.floor(Math.random() * colorItems.length)];
+                const direction = Math.random() > 0.5 ? 'right' : 'left';
+                spawnColorBalloon(colorData, direction);
+                setTimeout(spawnRandomColor, 3000 + Math.random() * 2000);
+            }
+
+            // Start spawning colors
+            spawnRandomColor();
+            setTimeout(spawnRandomColor, 1500);
+        }
 
         function playAnimalSound(sound) {
             if (!soundEnabled || !audioCtx) return;
@@ -3067,7 +3326,13 @@
             spawnPowerups();
             startPinkyMovement();
             animatePrincesses();
-            scheduleAnimals();
+
+            // Start animals or colors based on game mode
+            if (currentGameMode === 'colors') {
+                scheduleColors();
+            } else {
+                scheduleAnimals();
+            }
 
             if (musicEnabled) {
                 playBackgroundMusic();
@@ -3360,6 +3625,7 @@
 
             if (password === 'pinky') {
                 document.getElementById('passwordScreen').classList.add('hidden');
+                document.getElementById('gameModeMenu').classList.add('visible');
                 localStorage.setItem('princessGameAuth', 'true');
             } else {
                 error.classList.add('visible');
@@ -3368,19 +3634,33 @@
             }
         }
 
+        function selectGameMode(mode) {
+            currentGameMode = mode;
+            document.getElementById('gameModeMenu').classList.remove('visible');
+            // Continue to title screen
+        }
+
         function setupPasswordScreen() {
             // Check if already authenticated
             if (localStorage.getItem('princessGameAuth') === 'true') {
                 document.getElementById('passwordScreen').classList.add('hidden');
-                return;
+                document.getElementById('gameModeMenu').classList.add('visible');
+            } else {
+                // Auto-focus password input
+                document.getElementById('passwordInput').focus();
+
+                document.getElementById('passwordButton').addEventListener('click', checkPassword);
+                document.getElementById('passwordInput').addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') checkPassword();
+                });
             }
 
-            // Auto-focus password input
-            document.getElementById('passwordInput').focus();
-
-            document.getElementById('passwordButton').addEventListener('click', checkPassword);
-            document.getElementById('passwordInput').addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') checkPassword();
+            // Game mode buttons
+            document.getElementById('btnAnimals').addEventListener('click', () => {
+                selectGameMode('animals');
+            });
+            document.getElementById('btnColors').addEventListener('click', () => {
+                selectGameMode('colors');
             });
         }
 
