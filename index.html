@@ -1225,18 +1225,22 @@
         }
 
         .butterfly-wing.left {
-            animation: wingFlap 0.15s ease-in-out infinite alternate;
+            animation: wingFlapLeft 0.15s ease-in-out infinite alternate;
         }
 
         .butterfly-wing.right {
             left: 14px;
-            transform: scaleX(-1);
-            animation: wingFlap 0.15s ease-in-out infinite alternate-reverse;
+            animation: wingFlapRight 0.15s ease-in-out infinite alternate-reverse;
         }
 
-        @keyframes wingFlap {
+        @keyframes wingFlapLeft {
             from { transform: rotateY(0deg); }
             to { transform: rotateY(70deg); }
+        }
+
+        @keyframes wingFlapRight {
+            from { transform: scaleX(-1) rotateY(0deg); }
+            to { transform: scaleX(-1) rotateY(70deg); }
         }
 
         /* Clickable Stars */
@@ -3914,13 +3918,23 @@
         function selectGameMode(mode) {
             currentGameMode = mode;
             document.getElementById('gameModeMenu').classList.remove('visible');
-            // Continue to title screen
+
+            // If game is already started, restart the appropriate spawning
+            if (gameState.gameStarted) {
+                if (mode === 'colors') {
+                    scheduleColors();
+                } else {
+                    scheduleAnimals();
+                }
+            }
         }
 
         function showGameModeMenu() {
-            // Remove all balloons when switching modes
+            // Remove all balloons and animals when switching modes
             document.querySelectorAll('.walking-balloon').forEach(b => b.remove());
             document.querySelectorAll('.walking-animal').forEach(a => a.remove());
+            // Reset last color tracking
+            lastBalloonColor = null;
             // Show the menu
             document.getElementById('gameModeMenu').classList.add('visible');
         }
