@@ -1088,8 +1088,10 @@
 
         .dog {
             bottom: 15%;
-            left: 50%;
-            transform: translateX(-50%);
+            left: 0;
+            right: 0;
+            margin: 0 auto;
+            width: fit-content;
         }
 
         .dog .character-frame {
@@ -4377,7 +4379,7 @@
             { text: "Жила принцесса Элли...", images: ["images/Ellie.jpeg"], audio: "princess_ellie", keepPrevious: false },
             { text: "...и принцесса Мая!", images: ["images/Maya.jpeg"], audio: "princess_maya", keepPrevious: true },
             { text: "И их любимая собачка Пинки!", images: ["images/Pinky.jpeg"], audio: "pinky", keepPrevious: false },
-            { text: "Нажимай на бабочек и звёздочки!", images: [], audioFile: "story_instructions.mp3", keepPrevious: false }
+            { text: "Click the butterflies and stars!", images: [], audioFiles: ["story_instructions_en.mp3", "story_instructions.mp3"], keepPrevious: false }
         ];
 
         let storyIndex = 0;
@@ -4428,8 +4430,12 @@
                     }
 
                     // Play audio
-                    if (story.audioFile) {
-                        // Single audio file (intro/instructions)
+                    if (story.audioFiles) {
+                        // Multiple audio files (English then Russian)
+                        playAudio(story.audioFiles[0]);
+                        setTimeout(() => playAudio(story.audioFiles[1]), 1800);
+                    } else if (story.audioFile) {
+                        // Single audio file (intro)
                         playAudio(story.audioFile);
                     } else if (story.audio) {
                         // Russian then Hebrew for character names
@@ -4439,7 +4445,7 @@
                 }, 300);
 
                 storyIndex++;
-                storyTimer = setTimeout(showNext, (story.audio || story.audioFile) ? 3000 : 3500);
+                storyTimer = setTimeout(showNext, story.audioFiles ? 4500 : (story.audio || story.audioFile) ? 3000 : 3500);
             }
 
             showNext();
