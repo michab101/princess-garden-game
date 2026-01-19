@@ -1403,6 +1403,118 @@
             border-radius: 15px;
         }
 
+        /* Sana Popup */
+        .sana-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            background: linear-gradient(135deg, #FF69B4 0%, #FF1493 100%);
+            border-radius: 30px;
+            padding: 35px;
+            text-align: center;
+            z-index: 1500;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+            transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        .sana-popup.visible {
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .sana-popup .sana-emoji {
+            font-size: 70px;
+            animation: kingCrownBounce 0.5s ease-in-out infinite alternate;
+        }
+
+        .sana-popup .sana-image {
+            width: 160px;
+            height: 160px;
+            border-radius: 50%;
+            border: 6px solid #C71585;
+            margin: 15px auto;
+            overflow: hidden;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        }
+
+        .sana-popup .sana-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .sana-popup .sana-title {
+            font-size: 26px;
+            color: #fff;
+            margin: 10px 0;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .sana-popup .sana-message {
+            font-size: 20px;
+            color: #333;
+            background: rgba(255,255,255,0.5);
+            padding: 10px 20px;
+            border-radius: 15px;
+        }
+
+        /* Veronika Popup */
+        .veronika-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            background: linear-gradient(135deg, #9370DB 0%, #8A2BE2 100%);
+            border-radius: 30px;
+            padding: 35px;
+            text-align: center;
+            z-index: 1500;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+            transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        .veronika-popup.visible {
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .veronika-popup .veronika-emoji {
+            font-size: 70px;
+            animation: kingCrownBounce 0.5s ease-in-out infinite alternate;
+        }
+
+        .veronika-popup .veronika-image {
+            width: 160px;
+            height: 160px;
+            border-radius: 50%;
+            border: 6px solid #4B0082;
+            margin: 15px auto;
+            overflow: hidden;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        }
+
+        .veronika-popup .veronika-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .veronika-popup .veronika-title {
+            font-size: 26px;
+            color: #fff;
+            margin: 10px 0;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .veronika-popup .veronika-message {
+            font-size: 20px;
+            color: #333;
+            background: rgba(255,255,255,0.5);
+            padding: 10px 20px;
+            border-radius: 15px;
+        }
+
         /* ============ WIN SCREEN ============ */
         .win-screen {
             position: fixed;
@@ -2192,6 +2304,22 @@
             <div class="king-title">King Papa Micha</div>
             <div class="king-message" id="kingMessage">איפה הבנות שלי? זמן לגלידה!</div>
         </div>
+
+        <!-- Sana Popup -->
+        <div class="sana-popup" id="sanaPopup">
+            <div class="sana-emoji">💕</div>
+            <div class="sana-image"><img src="images/Oksana.jpeg" alt="Sana"></div>
+            <div class="sana-title">Sana (Oksana)</div>
+            <div class="sana-message" id="sanaMessage">Где моя буся?</div>
+        </div>
+
+        <!-- Veronika Popup -->
+        <div class="veronika-popup" id="veronikaPopup">
+            <div class="veronika-emoji">👩‍👧‍👧</div>
+            <div class="veronika-image"><img src="images/Veronika.jpeg" alt="Mama Veronika"></div>
+            <div class="veronika-title">Mama Veronika</div>
+            <div class="veronika-message" id="veronikaMessage">Пинки, Пинки, иди домой!</div>
+        </div>
     </div>
 
     <!-- ============ INSTRUCTIONS POPUP ============ -->
@@ -2581,6 +2709,12 @@
             preloadAudio('icecream_he.mp3');
             preloadAudio('papa_restaurant_ru.mp3');
             preloadAudio('restaurant_he.mp3');
+            preloadAudio('sana_boosa_ru.mp3');
+            preloadAudio('sana_boosa_he.mp3');
+            preloadAudio('veronika_pinky_ru.mp3');
+            preloadAudio('veronika_pinky_he.mp3');
+            preloadAudio('home_ru.mp3');
+            preloadAudio('home_he.mp3');
             // Colors
             const colors = ['red', 'blue', 'green', 'yellow', 'orange', 'purple', 'pink', 'white', 'black', 'brown'];
             colors.forEach(color => {
@@ -2733,33 +2867,48 @@
             setTimeout(() => butterfly.remove(), 30000);
         }
 
-        // Create clickable stars in the sky
-        function createClickableStars() {
+        // Create a single clickable star in the sky
+        function spawnStar() {
             const container = document.getElementById('gameContainer');
             const starEmojis = ['⭐', '🌟', '✨'];
 
+            const star = document.createElement('div');
+            star.className = 'clickable-star';
+            star.textContent = starEmojis[Math.floor(Math.random() * starEmojis.length)];
+
+            // Position ONLY in the sky area (top 25% of screen)
+            star.style.left = (5 + Math.random() * 90) + '%';
+            star.style.top = (3 + Math.random() * 22) + '%';
+            star.style.animationDelay = (Math.random() * 2) + 's';
+
+            // Add click handler - star disappears and new one spawns later
+            star.addEventListener('click', (e) => {
+                e.stopPropagation();
+                initAudio();
+                speakBilingual('star');
+                createSparkles(e.clientX, e.clientY);
+                playMagicSound();
+
+                // Remove star with fade effect
+                star.style.transition = 'opacity 0.3s, transform 0.3s';
+                star.style.opacity = '0';
+                star.style.transform = 'scale(2)';
+                setTimeout(() => {
+                    star.remove();
+                    // Spawn a new star after 3-6 seconds
+                    setTimeout(() => spawnStar(), 3000 + Math.random() * 3000);
+                }, 300);
+            });
+
+            container.appendChild(star);
+        }
+
+        // Create initial clickable stars in the sky
+        function createClickableStars() {
             // Create 5-7 clickable stars
             const numStars = 5 + Math.floor(Math.random() * 3);
             for (let i = 0; i < numStars; i++) {
-                const star = document.createElement('div');
-                star.className = 'clickable-star';
-                star.textContent = starEmojis[Math.floor(Math.random() * starEmojis.length)];
-
-                // Position in the sky area (top 35% of screen)
-                star.style.left = (5 + Math.random() * 90) + '%';
-                star.style.top = (5 + Math.random() * 30) + '%';
-                star.style.animationDelay = (Math.random() * 2) + 's';
-
-                // Add click handler
-                star.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    initAudio();
-                    speakBilingual('star');
-                    createSparkles(e.clientX, e.clientY);
-                    playMagicSound();
-                });
-
-                container.appendChild(star);
+                setTimeout(() => spawnStar(), i * 500);
             }
         }
 
@@ -3008,25 +3157,24 @@
             }, 3500 + Math.random() * 2000);
         }
 
-        // ============ KING POPUP ============
-        let kingMessageIndex = 0;
-        const kingMessages = [
-            { text: 'Где мои девочки? Время для גלידה!', lang: 'ru-RU', display: 'Где мои девочки? Время для גלידה!' },
-            { text: 'Пойдём в ресторан, мисс Пинки!', lang: 'ru-RU', display: 'Пойдём в ресторан, мисс Пинки!' }
-        ];
-
-        function showKingPopup() {
+        // ============ FAMILY POPUPS ============
+        function showKingPopup(message) {
             const popup = document.getElementById('kingPopup');
             const messageEl = document.getElementById('kingMessage');
-            const msg = kingMessages[kingMessageIndex];
-
-            messageEl.textContent = msg.display;
+            messageEl.textContent = message || 'Где мои девочки?';
             popup.classList.add('visible');
+            setTimeout(() => popup.classList.remove('visible'), 4000);
+        }
 
-            // Audio is now played by ElevenLabs in castle click handler
+        function showSanaPopup() {
+            const popup = document.getElementById('sanaPopup');
+            popup.classList.add('visible');
+            setTimeout(() => popup.classList.remove('visible'), 4000);
+        }
 
-            kingMessageIndex = (kingMessageIndex + 1) % kingMessages.length;
-
+        function showVeronikaPopup() {
+            const popup = document.getElementById('veronikaPopup');
+            popup.classList.add('visible');
             setTimeout(() => popup.classList.remove('visible'), 4000);
         }
 
@@ -3838,19 +3986,31 @@
             let castleClickCount = 0;
             document.getElementById('castle').addEventListener('click', () => {
                 initAudio();
-                if (castleClickCount % 2 === 0) {
-                    // Papa says "Where are my girls? Time for ice cream!" in Russian
+                const interaction = castleClickCount % 4;
+
+                if (interaction === 0) {
+                    // Papa: Ice cream
                     playAudio('papa_icecream_ru.mp3');
-                    // Then says ice cream in Hebrew (גלידה)
                     setTimeout(() => playAudio('icecream_he.mp3'), 2500);
-                } else {
-                    // Papa says "Let's go to the restaurant, Miss Pinky!" in Russian
+                    showKingPopup('Где мои девочки? Время для גלידה!');
+                } else if (interaction === 1) {
+                    // Papa: Restaurant
                     playAudio('papa_restaurant_ru.mp3');
-                    // Then says restaurant in Hebrew (מסעדה)
                     setTimeout(() => playAudio('restaurant_he.mp3'), 2500);
+                    showKingPopup('Пойдём в ресторан, мисс Пинки!');
+                } else if (interaction === 2) {
+                    // Sana: Where is my boosa
+                    playAudio('sana_boosa_ru.mp3');
+                    setTimeout(() => playAudio('sana_boosa_he.mp3'), 2000);
+                    showSanaPopup();
+                } else {
+                    // Veronika: Pinky come home
+                    playAudio('veronika_pinky_ru.mp3');
+                    setTimeout(() => playAudio('veronika_pinky_he.mp3'), 2500);
+                    showVeronikaPopup();
                 }
+
                 castleClickCount++;
-                showKingPopup();
                 playMagicSound();
             });
 
