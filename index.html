@@ -460,14 +460,15 @@
         /* Rainbow - using stacked arcs */
         .rainbow {
             position: absolute;
-            top: 50px;
+            top: 20px;
             left: 50%;
             transform: translateX(-50%);
-            width: 400px;
-            height: 200px;
+            width: 800px;
+            height: 400px;
             display: none;
             pointer-events: none;
             overflow: hidden;
+            filter: drop-shadow(0 0 20px rgba(255,255,255,0.5));
         }
 
         .rainbow-arc {
@@ -480,13 +481,13 @@
             border-bottom: none;
         }
 
-        .rainbow-arc:nth-child(1) { width: 400px; height: 200px; border-width: 15px; border-color: #FF0000 transparent transparent transparent; }
-        .rainbow-arc:nth-child(2) { width: 370px; height: 185px; border-width: 15px; border-color: #FF7F00 transparent transparent transparent; }
-        .rainbow-arc:nth-child(3) { width: 340px; height: 170px; border-width: 15px; border-color: #FFFF00 transparent transparent transparent; }
-        .rainbow-arc:nth-child(4) { width: 310px; height: 155px; border-width: 15px; border-color: #00FF00 transparent transparent transparent; }
-        .rainbow-arc:nth-child(5) { width: 280px; height: 140px; border-width: 15px; border-color: #0000FF transparent transparent transparent; }
-        .rainbow-arc:nth-child(6) { width: 250px; height: 125px; border-width: 15px; border-color: #4B0082 transparent transparent transparent; }
-        .rainbow-arc:nth-child(7) { width: 220px; height: 110px; border-width: 15px; border-color: #9400D3 transparent transparent transparent; }
+        .rainbow-arc:nth-child(1) { width: 800px; height: 400px; border-width: 28px; border-color: #FF0000 transparent transparent transparent; filter: drop-shadow(0 0 8px #FF0000); }
+        .rainbow-arc:nth-child(2) { width: 744px; height: 372px; border-width: 28px; border-color: #FF7F00 transparent transparent transparent; filter: drop-shadow(0 0 8px #FF7F00); }
+        .rainbow-arc:nth-child(3) { width: 688px; height: 344px; border-width: 28px; border-color: #FFFF00 transparent transparent transparent; filter: drop-shadow(0 0 8px #FFFF00); }
+        .rainbow-arc:nth-child(4) { width: 632px; height: 316px; border-width: 28px; border-color: #00FF00 transparent transparent transparent; filter: drop-shadow(0 0 8px #00FF00); }
+        .rainbow-arc:nth-child(5) { width: 576px; height: 288px; border-width: 28px; border-color: #00BFFF transparent transparent transparent; filter: drop-shadow(0 0 8px #00BFFF); }
+        .rainbow-arc:nth-child(6) { width: 520px; height: 260px; border-width: 28px; border-color: #0000FF transparent transparent transparent; filter: drop-shadow(0 0 8px #0000FF); }
+        .rainbow-arc:nth-child(7) { width: 464px; height: 232px; border-width: 28px; border-color: #8B00FF transparent transparent transparent; filter: drop-shadow(0 0 8px #8B00FF); }
 
         .rainbow.visible {
             display: block;
@@ -494,10 +495,10 @@
         }
 
         @keyframes rainbowFadeInOut {
-            0% { opacity: 0; }
-            10% { opacity: 0.8; }
-            80% { opacity: 0.8; }
-            100% { opacity: 0; }
+            0% { opacity: 0; transform: translateX(-50%) scale(0.5); }
+            15% { opacity: 1; transform: translateX(-50%) scale(1); }
+            85% { opacity: 1; transform: translateX(-50%) scale(1); }
+            100% { opacity: 0; transform: translateX(-50%) scale(1.1); }
         }
 
         /* Sun dance animation when cloud is clicked */
