@@ -2042,96 +2042,59 @@
             }
         }
 
-        // Speech synthesis with natural voice selection
-        let cachedVoices = {};
+        // ElevenLabs Audio - Natural voice audio files
+        const audioCache = {};
 
-        function getBestVoice(lang) {
-            if (cachedVoices[lang]) return cachedVoices[lang];
-
-            const voices = speechSynthesis.getVoices();
-
-            // Prefer natural/premium voices
-            const preferredKeywords = ['Natural', 'Premium', 'Enhanced', 'Google', 'Microsoft', 'Samantha', 'Daniel', 'Karen', 'Milena', 'Yuri', 'Carmit'];
-
-            // Find voices for this language
-            const langVoices = voices.filter(v => v.lang.startsWith(lang.split('-')[0]));
-
-            // Try to find a preferred voice
-            for (const keyword of preferredKeywords) {
-                const match = langVoices.find(v => v.name.includes(keyword));
-                if (match) {
-                    cachedVoices[lang] = match;
-                    return match;
-                }
+        function preloadAudio(filename) {
+            if (!audioCache[filename]) {
+                audioCache[filename] = new Audio(`audio/${filename}`);
+                audioCache[filename].preload = 'auto';
             }
-
-            // Fall back to any voice for this language
-            if (langVoices.length > 0) {
-                cachedVoices[lang] = langVoices[0];
-                return langVoices[0];
-            }
-
-            return null;
+            return audioCache[filename];
         }
 
-        function speak(text, lang = 'en-US', rate = 1, pitch = 1.2) {
-            if (!soundEnabled) return;
+        function playAudio(filename) {
+            if (!soundEnabled) return Promise.resolve();
 
-            // Cancel any ongoing speech to avoid overlap
-            speechSynthesis.cancel();
-
-            const utterance = new SpeechSynthesisUtterance(text);
-            utterance.lang = lang;
-
-            // Add natural variation
-            utterance.rate = rate + (Math.random() * 0.1 - 0.05);
-            utterance.pitch = pitch + (Math.random() * 0.15 - 0.075);
-            utterance.volume = 0.9 + (Math.random() * 0.1);
-
-            // Try to use a better voice
-            const voice = getBestVoice(lang);
-            if (voice) {
-                utterance.voice = voice;
-            }
-
-            speechSynthesis.speak(utterance);
+            const audio = preloadAudio(filename);
+            audio.currentTime = 0;
+            return audio.play().catch(e => console.log('Audio play error:', e));
         }
 
-        // Bilingual speech - Russian first, then Hebrew (for teaching Hebrew to Russian speakers)
-        function speakBilingual(russian, hebrew, delay = 1200) {
+        // Bilingual audio - Russian first, then Hebrew (ElevenLabs voices)
+        function speakBilingual(wordKey, delay = 1000) {
             if (!soundEnabled) return;
 
-            // Speak Russian with warm, friendly tone
-            const ruUtterance = new SpeechSynthesisUtterance(russian);
-            ruUtterance.lang = 'ru-RU';
-            ruUtterance.rate = 0.8 + (Math.random() * 0.1);
-            ruUtterance.pitch = 1.0 + (Math.random() * 0.2);
-            ruUtterance.volume = 0.95;
-            const ruVoice = getBestVoice('ru-RU');
-            if (ruVoice) ruUtterance.voice = ruVoice;
+            // Play Russian audio
+            playAudio(`${wordKey}_ru.mp3`);
 
-            speechSynthesis.cancel();
-            speechSynthesis.speak(ruUtterance);
-
-            // Then Hebrew with slightly different tone
+            // Then Hebrew audio after delay
             setTimeout(() => {
-                const heUtterance = new SpeechSynthesisUtterance(hebrew);
-                heUtterance.lang = 'he-IL';
-                heUtterance.rate = 0.75 + (Math.random() * 0.1);
-                heUtterance.pitch = 1.1 + (Math.random() * 0.2);
-                heUtterance.volume = 1.0;
-                const heVoice = getBestVoice('he-IL');
-                if (heVoice) heUtterance.voice = heVoice;
-
-                speechSynthesis.speak(heUtterance);
+                playAudio(`${wordKey}_he.mp3`);
             }, delay);
         }
 
-        // Preload voices when available
-        if (speechSynthesis.onvoiceschanged !== undefined) {
-            speechSynthesis.onvoiceschanged = () => {
-                cachedVoices = {}; // Reset cache when voices change
-            };
+        // Fallback speech synthesis for phrases not pre-recorded
+        function speak(text, lang = 'en-US', rate = 1, pitch = 1.2) {
+            if (!soundEnabled) return;
+            speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = lang;
+            utterance.rate = rate;
+            utterance.pitch = pitch;
+            speechSynthesis.speak(utterance);
+        }
+
+        // Preload all audio files
+        function preloadAllAudio() {
+            const words = ['flower', 'sun', 'cloud', 'rain', 'tree', 'pond', 'fish', 'castle', 'sky', 'grass',
+                          'papa_horse', 'elephant', 'lion', 'bear', 'giraffe', 'zebra', 'cow', 'pig', 'sheep',
+                          'goat', 'deer', 'camel', 'kangaroo', 'crocodile', 'hippo', 'rhino', 'tiger',
+                          'leopard', 'dog', 'cat', 'rabbit', 'fox', 'squirrel'];
+            words.forEach(word => {
+                preloadAudio(`${word}_ru.mp3`);
+                preloadAudio(`${word}_he.mp3`);
+            });
         }
 
         // ============ GAME STATE ============
@@ -2486,29 +2449,29 @@
 
         // ============ WALKING ANIMALS ============
         const animals = [
-            { emoji: '🐴', russian: 'папа лошадь', hebrew: 'אבא סוס', sound: 'neigh' },
-            { emoji: '🐘', russian: 'слон', hebrew: 'פיל', sound: 'trumpet' },
-            { emoji: '🦁', russian: 'лев', hebrew: 'אריה', sound: 'roar' },
-            { emoji: '🐻', russian: 'медведь', hebrew: 'דוב', sound: 'growl' },
-            { emoji: '🦒', russian: 'жираф', hebrew: 'ג׳ירפה', sound: null },
-            { emoji: '🦓', russian: 'зебра', hebrew: 'זברה', sound: null },
-            { emoji: '🐄', russian: 'корова', hebrew: 'פרה', sound: 'moo' },
-            { emoji: '🐷', russian: 'свинья', hebrew: 'חזיר', sound: 'oink' },
-            { emoji: '🐑', russian: 'овца', hebrew: 'כבש', sound: 'baa' },
-            { emoji: '🐐', russian: 'коза', hebrew: 'עז', sound: 'baa' },
-            { emoji: '🦌', russian: 'олень', hebrew: 'אייל', sound: null },
-            { emoji: '🐪', russian: 'верблюд', hebrew: 'גמל', sound: null },
-            { emoji: '🦘', russian: 'кенгуру', hebrew: 'קנגורו', sound: null },
-            { emoji: '🐊', russian: 'крокодил', hebrew: 'תנין', sound: null },
-            { emoji: '🦛', russian: 'бегемот', hebrew: 'היפופוטם', sound: null },
-            { emoji: '🦏', russian: 'носорог', hebrew: 'קרנף', sound: null },
-            { emoji: '🐅', russian: 'тигр', hebrew: 'נמר', sound: 'roar' },
-            { emoji: '🐆', russian: 'леопард', hebrew: 'ברדלס', sound: 'roar' },
-            { emoji: '🐕', russian: 'собака', hebrew: 'כלב', sound: 'bark' },
-            { emoji: '🐈', russian: 'кошка', hebrew: 'חתול', sound: 'meow' },
-            { emoji: '🐇', russian: 'кролик', hebrew: 'ארנב', sound: null },
-            { emoji: '🦊', russian: 'лиса', hebrew: 'שועל', sound: null },
-            { emoji: '🐿️', russian: 'белка', hebrew: 'סנאי', sound: null },
+            { emoji: '🐴', audioKey: 'papa_horse', sound: 'neigh' },
+            { emoji: '🐘', audioKey: 'elephant', sound: 'trumpet' },
+            { emoji: '🦁', audioKey: 'lion', sound: 'roar' },
+            { emoji: '🐻', audioKey: 'bear', sound: 'growl' },
+            { emoji: '🦒', audioKey: 'giraffe', sound: null },
+            { emoji: '🦓', audioKey: 'zebra', sound: null },
+            { emoji: '🐄', audioKey: 'cow', sound: 'moo' },
+            { emoji: '🐷', audioKey: 'pig', sound: 'oink' },
+            { emoji: '🐑', audioKey: 'sheep', sound: 'baa' },
+            { emoji: '🐐', audioKey: 'goat', sound: 'baa' },
+            { emoji: '🦌', audioKey: 'deer', sound: null },
+            { emoji: '🐪', audioKey: 'camel', sound: null },
+            { emoji: '🦘', audioKey: 'kangaroo', sound: null },
+            { emoji: '🐊', audioKey: 'crocodile', sound: null },
+            { emoji: '🦛', audioKey: 'hippo', sound: null },
+            { emoji: '🦏', audioKey: 'rhino', sound: null },
+            { emoji: '🐅', audioKey: 'tiger', sound: 'roar' },
+            { emoji: '🐆', audioKey: 'leopard', sound: 'roar' },
+            { emoji: '🐕', audioKey: 'dog', sound: 'bark' },
+            { emoji: '🐈', audioKey: 'cat', sound: 'meow' },
+            { emoji: '🐇', audioKey: 'rabbit', sound: null },
+            { emoji: '🦊', audioKey: 'fox', sound: null },
+            { emoji: '🐿️', audioKey: 'squirrel', sound: null },
         ];
 
         function playAnimalSound(sound) {
@@ -2568,7 +2531,7 @@
 
             animal.addEventListener('click', () => {
                 initAudio();
-                speakBilingual(animalData.russian, animalData.hebrew, 1000);
+                speakBilingual(animalData.audioKey);
                 if (animalData.sound) {
                     setTimeout(() => playAnimalSound(animalData.sound), 1800);
                 }
@@ -2874,7 +2837,7 @@
                     e.preventDefault();
                     initAudio();
                     playMagicSound();
-                    speakBilingual('цветок', 'פרח'); // flower
+                    speakBilingual('flower'); // цветок / פרח
                     const rect = flower.getBoundingClientRect();
                     sendButterflyToPinky(rect.left + rect.width/2, rect.top);
                 };
@@ -2910,7 +2873,7 @@
             // Environment
             document.getElementById('sun').addEventListener('click', () => {
                 initAudio();
-                speakBilingual('солнце', 'שמש'); // sun
+                speakBilingual('sun'); // солнце / שמש
                 const rainbow = document.getElementById('rainbow');
                 rainbow.classList.toggle('visible');
                 playMagicSound();
@@ -2921,11 +2884,11 @@
                 cloud.addEventListener('click', () => {
                     initAudio();
                     playMagicSound();
-                    speakBilingual('облако', 'ענן'); // cloud
+                    speakBilingual('cloud'); // облако / ענן
                     cloudClickCount++;
                     if (cloudClickCount % 2 === 1) {
                         makeItRain();
-                        setTimeout(() => speakBilingual('дождь', 'גשם'), 1500); // rain
+                        setTimeout(() => speakBilingual('rain'), 1500); // дождь / גשם
                     } else {
                         makeLightning();
                     }
@@ -2935,7 +2898,7 @@
             document.getElementById('tree').addEventListener('click', (e) => {
                 initAudio();
                 playMagicSound();
-                speakBilingual('дерево', 'עץ'); // tree
+                speakBilingual('tree'); // дерево / עץ
                 createBird(e.clientX, e.clientY - 50);
                 setTimeout(() => createBird(e.clientX + 30, e.clientY - 30), 300);
                 createSparkles(e.clientX, e.clientY);
@@ -2943,7 +2906,7 @@
 
             document.getElementById('pond').addEventListener('click', (e) => {
                 initAudio();
-                speakBilingual('пруд', 'בריכה'); // pond
+                speakBilingual('pond'); // пруд / בריכה
                 const pond = document.getElementById('pond');
                 const fish = document.getElementById('fish');
 
@@ -2966,7 +2929,7 @@
                 void fish.offsetWidth;
                 fish.classList.add('jump');
                 playSplashSound();
-                setTimeout(() => speakBilingual('рыба', 'דג'), 300); // fish
+                setTimeout(() => speakBilingual('fish'), 300); // рыба / דג
 
                 // Pinky goes crazy
                 const dog = document.getElementById('dog');
@@ -2980,7 +2943,7 @@
 
             document.getElementById('castle').addEventListener('click', () => {
                 initAudio();
-                speakBilingual('замок', 'טירה'); // castle
+                speakBilingual('castle'); // замок / טירה
                 showKingPopup();
                 playMagicSound();
             });
@@ -2997,7 +2960,7 @@
             document.getElementById('sky').addEventListener('click', (e) => {
                 initAudio();
                 playMagicSound();
-                speakBilingual('небо', 'שמיים'); // sky
+                speakBilingual('sky'); // небо / שמיים
                 // Create a star
                 const star = document.createElement('div');
                 star.textContent = '⭐';
@@ -3018,7 +2981,7 @@
             document.getElementById('grassContainer').addEventListener('click', (e) => {
                 initAudio();
                 playMagicSound();
-                speakBilingual('трава', 'דשא'); // grass
+                speakBilingual('grass'); // трава / דשא
                 createSparkles(e.clientX, e.clientY);
             });
         }
@@ -3059,8 +3022,8 @@
             createTitleSparkles();
             setupEventListeners();
 
-            // Preload voices
-            speechSynthesis.getVoices();
+            // Preload ElevenLabs audio files
+            preloadAllAudio();
 
             console.log('🏰 Princess Garden Adventure loaded! 🦋');
         }
