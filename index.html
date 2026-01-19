@@ -1768,7 +1768,7 @@
         </div>
 
         <!-- Ground -->
-        <div class="ground"></div>
+        <div class="ground" id="ground"></div>
         <div class="grass-container" id="grassContainer"></div>
 
         <!-- Castle -->
@@ -3337,6 +3337,14 @@
 
             // Grass click
             document.getElementById('grassContainer').addEventListener('click', (e) => {
+                initAudio();
+                playMagicSound();
+                speakBilingual('grass'); // трава / דשא
+                createSparkles(e.clientX, e.clientY);
+            });
+
+            // Ground click (darker green area below)
+            document.getElementById('ground').addEventListener('click', (e) => {
                 initAudio();
                 playMagicSound();
                 speakBilingual('grass'); // трава / דשא
