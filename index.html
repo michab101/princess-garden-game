@@ -443,6 +443,7 @@
             cursor: pointer;
             transition: transform 0.3s;
             filter: drop-shadow(5px 5px 10px rgba(0,0,0,0.3));
+            z-index: 10;
         }
 
         .castle:hover { transform: scale(1.05); }
@@ -529,6 +530,7 @@
             cursor: pointer;
             transition: transform 0.3s;
             filter: drop-shadow(5px 5px 10px rgba(0,0,0,0.2));
+            z-index: 10;
         }
 
         .tree:hover { transform: scale(1.05); }
@@ -1421,22 +1423,22 @@
         .walking-animal {
             position: absolute;
             bottom: 8%;
-            font-size: 60px;
+            font-size: 140px;
             z-index: 50;
             cursor: pointer;
             transition: transform 0.2s;
         }
 
         .walking-animal:hover {
-            transform: scale(1.2);
+            transform: scale(1.3);
         }
 
         .walking-animal.walk-left {
-            animation: walkLeft 12s linear forwards;
+            animation: walkLeft 25s linear forwards;
         }
 
         .walking-animal.walk-right {
-            animation: walkRight 12s linear forwards;
+            animation: walkRight 25s linear forwards;
         }
 
         @keyframes walkLeft {
@@ -1510,9 +1512,9 @@
             top: 0;
             left: 0;
             width: 100%;
-            height: 60%;
+            height: 40%;
             cursor: pointer;
-            z-index: 1;
+            z-index: 0;
         }
 
         .ground {
@@ -1538,9 +1540,104 @@
             .win-title { font-size: 36px; }
             .win-button { padding: 12px 30px; font-size: 18px; }
         }
+        /* ============ PASSWORD SCREEN ============ */
+        .password-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+        }
+
+        .password-screen.hidden {
+            display: none;
+        }
+
+        .password-title {
+            font-size: 48px;
+            color: white;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.3);
+            margin-bottom: 30px;
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+        }
+
+        .password-subtitle {
+            font-size: 24px;
+            color: #FFD700;
+            margin-bottom: 20px;
+        }
+
+        .password-input {
+            font-size: 28px;
+            padding: 15px 30px;
+            border: 4px solid #FFD700;
+            border-radius: 25px;
+            text-align: center;
+            outline: none;
+            background: white;
+            color: #4A0080;
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+        }
+
+        .password-input::placeholder {
+            color: #ccc;
+        }
+
+        .password-button {
+            margin-top: 20px;
+            font-size: 24px;
+            padding: 15px 40px;
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            border: none;
+            border-radius: 30px;
+            color: #4A0080;
+            cursor: pointer;
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            font-weight: bold;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+            transition: transform 0.2s;
+        }
+
+        .password-button:hover {
+            transform: scale(1.1);
+        }
+
+        .password-error {
+            color: #FF6B6B;
+            font-size: 18px;
+            margin-top: 15px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .password-error.visible {
+            opacity: 1;
+        }
+
+        .password-hint {
+            color: rgba(255,255,255,0.7);
+            font-size: 16px;
+            margin-top: 30px;
+        }
     </style>
 </head>
 <body>
+    <!-- ============ PASSWORD SCREEN ============ -->
+    <div class="password-screen" id="passwordScreen">
+        <div class="password-title">🏰 Princess Garden 🦋</div>
+        <div class="password-subtitle">Enter the secret password:</div>
+        <input type="password" class="password-input" id="passwordInput" placeholder="Password..." autocomplete="off">
+        <button class="password-button" id="passwordButton">Enter 🔑</button>
+        <div class="password-error" id="passwordError">Wrong password! Try again.</div>
+        <div class="password-hint">Hint: What's our puppy's name? 🐕</div>
+    </div>
+
     <!-- ============ TITLE SCREEN ============ -->
     <div class="title-screen" id="titleScreen">
         <div class="title-sparkles" id="titleSparkles"></div>
@@ -2410,7 +2507,7 @@
             container.appendChild(animal);
 
             // Remove after animation
-            setTimeout(() => animal.remove(), 13000);
+            setTimeout(() => animal.remove(), 26000);
         }
 
         function scheduleAnimals() {
@@ -2838,8 +2935,38 @@
             });
         }
 
+        // ============ PASSWORD PROTECTION ============
+        function checkPassword() {
+            const input = document.getElementById('passwordInput');
+            const error = document.getElementById('passwordError');
+            const password = input.value.toLowerCase().trim();
+
+            if (password === 'pinky') {
+                document.getElementById('passwordScreen').classList.add('hidden');
+                localStorage.setItem('princessGameAuth', 'true');
+            } else {
+                error.classList.add('visible');
+                input.value = '';
+                setTimeout(() => error.classList.remove('visible'), 2000);
+            }
+        }
+
+        function setupPasswordScreen() {
+            // Check if already authenticated
+            if (localStorage.getItem('princessGameAuth') === 'true') {
+                document.getElementById('passwordScreen').classList.add('hidden');
+                return;
+            }
+
+            document.getElementById('passwordButton').addEventListener('click', checkPassword);
+            document.getElementById('passwordInput').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') checkPassword();
+            });
+        }
+
         // ============ INITIALIZATION ============
         function init() {
+            setupPasswordScreen();
             generateGrass();
             createTitleSparkles();
             setupEventListeners();
