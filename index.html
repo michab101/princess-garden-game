@@ -3159,9 +3159,9 @@
                 <div class="butterfly-wing bottom-right" style="background: linear-gradient(225deg, ${colorSet.secondary}, ${colorSet.primary});"></div>
             `;
 
-            // Random position in the garden area
+            // Random position in the sky area only
             butterfly.style.left = (10 + Math.random() * 80) + '%';
-            butterfly.style.top = (30 + Math.random() * 40) + '%';
+            butterfly.style.top = (5 + Math.random() * 20) + '%';
 
             // Add click handler
             butterfly.addEventListener('click', (e) => {
@@ -3178,7 +3178,7 @@
             function flutter() {
                 if (!butterfly.parentNode) return;
                 const newX = Math.max(5, Math.min(90, parseFloat(butterfly.style.left) + (Math.random() - 0.5) * 20));
-                const newY = Math.max(25, Math.min(70, parseFloat(butterfly.style.top) + (Math.random() - 0.5) * 15));
+                const newY = Math.max(5, Math.min(25, parseFloat(butterfly.style.top) + (Math.random() - 0.5) * 10));
                 butterfly.style.transition = 'left 3s ease-in-out, top 3s ease-in-out';
                 butterfly.style.left = newX + '%';
                 butterfly.style.top = newY + '%';
@@ -4408,6 +4408,9 @@
                     playMagicSound();
                     speakBilingual('cloud'); // облако / ענן
                     makeSunDance();
+                    // Rain and lightning
+                    makeItRain();
+                    setTimeout(() => makeLightning(), 300);
                 });
             });
 
@@ -4478,8 +4481,8 @@
                 } else if (interaction === 1) {
                     // Papa: Restaurant
                     playAudio('papa_restaurant_ru.mp3');
-                    setTimeout(() => playAudio('restaurant_he.mp3'), 2500);
-                    showKingPopup('Пойдём в ресторан, мисс Пинки!');
+                    setTimeout(() => playAudio('restaurant_he.mp3'), 2000);
+                    showKingPopup('Пойдём в ресторан!');
                 } else if (interaction === 2) {
                     // Sana: Where is my boosa (Russian only, once)
                     playAudio('sana_boosa_ru.mp3');
