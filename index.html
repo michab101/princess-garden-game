@@ -261,7 +261,7 @@
         .moon {
             position: absolute;
             top: 40px;
-            left: 80px;
+            left: 25%;
             width: 70px;
             height: 70px;
             background: radial-gradient(circle at 30% 30%, #FFFACD 0%, #F0E68C 50%, #DAA520 100%);
@@ -429,27 +429,70 @@
 
         .cloud:hover { transform: scale(1.1); }
 
-        /* Rainbow */
+        /* Rainbow - using stacked arcs */
         .rainbow {
             position: absolute;
-            top: 30px;
+            top: 50px;
             left: 50%;
             transform: translateX(-50%);
-            width: 500px;
-            height: 250px;
-            border-radius: 250px 250px 0 0;
-            background:
-                linear-gradient(180deg, transparent 0%, transparent 14%),
-                conic-gradient(from 180deg at 50% 100%,
-                    #FF0000 0deg, #FF7F00 25deg, #FFFF00 50deg,
-                    #00FF00 75deg, #0000FF 100deg, #4B0082 125deg,
-                    #9400D3 150deg, transparent 180deg);
-            opacity: 0;
-            transition: opacity 1s;
+            width: 400px;
+            height: 200px;
+            display: none;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .rainbow-arc {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            border-radius: 50% 50% 0 0;
+            border-style: solid;
+            border-bottom: none;
+        }
+
+        .rainbow-arc:nth-child(1) { width: 400px; height: 200px; border-width: 15px; border-color: #FF0000 transparent transparent transparent; }
+        .rainbow-arc:nth-child(2) { width: 370px; height: 185px; border-width: 15px; border-color: #FF7F00 transparent transparent transparent; }
+        .rainbow-arc:nth-child(3) { width: 340px; height: 170px; border-width: 15px; border-color: #FFFF00 transparent transparent transparent; }
+        .rainbow-arc:nth-child(4) { width: 310px; height: 155px; border-width: 15px; border-color: #00FF00 transparent transparent transparent; }
+        .rainbow-arc:nth-child(5) { width: 280px; height: 140px; border-width: 15px; border-color: #0000FF transparent transparent transparent; }
+        .rainbow-arc:nth-child(6) { width: 250px; height: 125px; border-width: 15px; border-color: #4B0082 transparent transparent transparent; }
+        .rainbow-arc:nth-child(7) { width: 220px; height: 110px; border-width: 15px; border-color: #9400D3 transparent transparent transparent; }
+
+        .rainbow.visible {
+            display: block;
+            animation: rainbowFadeInOut 10s ease-in-out forwards;
+        }
+
+        @keyframes rainbowFadeInOut {
+            0% { opacity: 0; }
+            10% { opacity: 0.8; }
+            80% { opacity: 0.8; }
+            100% { opacity: 0; }
+        }
+
+        /* Rainbow prompt tooltip */
+        .rainbow-prompt {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px 40px;
+            border-radius: 20px;
+            font-size: 24px;
+            color: #4A0080;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            z-index: 1000;
+            animation: promptPulse 1s ease-in-out infinite;
             pointer-events: none;
         }
 
-        .rainbow.visible { opacity: 0.6; }
+        @keyframes promptPulse {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); }
+            50% { transform: translate(-50%, -50%) scale(1.05); }
+        }
 
         /* Ground */
         .ground {
@@ -1540,6 +1583,16 @@
             100% { left: -15%; transform: scaleX(1) translateY(0); }
         }
 
+        @keyframes simpleBounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-40px); }
+        }
+
+        @keyframes simpleBounceFlipped {
+            0%, 100% { transform: scaleX(-1) translateY(0); }
+            50% { transform: scaleX(-1) translateY(-40px); }
+        }
+
         @keyframes walkRightBounce {
             0% { left: -15%; transform: scaleX(-1) translateY(0); }
             5% { transform: scaleX(-1) translateY(-40px); }
@@ -1714,7 +1767,15 @@
         <div class="cloud cloud-1" id="cloud1"></div>
         <div class="cloud cloud-2" id="cloud2"></div>
         <div class="cloud cloud-3" id="cloud3"></div>
-        <div class="rainbow" id="rainbow"></div>
+        <div class="rainbow" id="rainbow">
+            <div class="rainbow-arc"></div>
+            <div class="rainbow-arc"></div>
+            <div class="rainbow-arc"></div>
+            <div class="rainbow-arc"></div>
+            <div class="rainbow-arc"></div>
+            <div class="rainbow-arc"></div>
+            <div class="rainbow-arc"></div>
+        </div>
 
         <!-- Ground -->
         <div class="ground"></div>
@@ -2224,11 +2285,25 @@
             const words = ['flower', 'sun', 'cloud', 'rain', 'tree', 'pond', 'fish', 'castle', 'sky', 'grass',
                           'papa_horse', 'elephant', 'lion', 'bear', 'giraffe', 'zebra', 'cow', 'pig', 'sheep',
                           'goat', 'deer', 'camel', 'kangaroo', 'crocodile', 'hippo', 'rhino', 'tiger',
-                          'leopard', 'dog', 'cat', 'rabbit', 'fox', 'squirrel'];
+                          'leopard', 'dog', 'cat', 'rabbit', 'fox', 'squirrel', 'moon'];
             words.forEach(word => {
                 preloadAudio(`${word}_ru.mp3`);
                 preloadAudio(`${word}_he.mp3`);
             });
+            // Extra audio files
+            preloadAudio('princess_ellie_ru.mp3');
+            preloadAudio('princess_ellie_he.mp3');
+            preloadAudio('princess_maya_ru.mp3');
+            preloadAudio('princess_maya_he.mp3');
+            preloadAudio('maya_sana_ru.mp3');
+            preloadAudio('maya_sana_he.mp3');
+            preloadAudio('maya_boosa.mp3');
+            preloadAudio('pinky_ru.mp3');
+            preloadAudio('pinky_he.mp3');
+            preloadAudio('papa_icecream_ru.mp3');
+            preloadAudio('icecream_he.mp3');
+            preloadAudio('papa_restaurant_ru.mp3');
+            preloadAudio('restaurant_he.mp3');
         }
 
         // ============ GAME STATE ============
@@ -2680,33 +2755,33 @@
             setTimeout(() => animal.remove(), 26000);
         }
 
-        // Touch drag for walking animals
+        // Touch and mouse drag for walking animals
         function makeAnimalDraggable(element) {
             let isDragging = false;
             let startX, startY, startLeft, startBottom;
+            let wasWalkingRight = false;
 
-            element.addEventListener('touchstart', (e) => {
+            function startDrag(clientX, clientY) {
                 isDragging = true;
-                const touch = e.touches[0];
-                startX = touch.clientX;
-                startY = touch.clientY;
+                startX = clientX;
+                startY = clientY;
                 const rect = element.getBoundingClientRect();
                 const container = document.getElementById('gameContainer').getBoundingClientRect();
                 startLeft = rect.left - container.left;
                 startBottom = container.bottom - rect.bottom;
-                // Stop the walking animation
+                wasWalkingRight = element.classList.contains('walk-right');
                 element.style.animation = 'none';
                 element.style.transition = 'none';
-            }, { passive: true });
+                element.style.left = startLeft + 'px';
+            }
 
-            element.addEventListener('touchmove', (e) => {
+            function moveDrag(clientX, clientY, e) {
                 if (!isDragging) return;
-                const touch = e.touches[0];
-                const deltaX = touch.clientX - startX;
-                const deltaY = touch.clientY - startY;
+                const deltaX = clientX - startX;
+                const deltaY = clientY - startY;
 
                 if (Math.abs(deltaX) > 5 || Math.abs(deltaY) > 5) {
-                    e.preventDefault();
+                    if (e) e.preventDefault();
                     const container = document.getElementById('gameContainer').getBoundingClientRect();
                     const newLeft = Math.max(0, Math.min(container.width - 60, startLeft + deltaX));
                     const newBottom = Math.max(0, Math.min(container.height - 80, startBottom - deltaY));
@@ -2714,11 +2789,54 @@
                     element.style.right = 'auto';
                     element.style.bottom = newBottom + 'px';
                 }
-            }, { passive: false });
+            }
 
-            element.addEventListener('touchend', () => {
+            function endDrag() {
+                if (!isDragging) return;
                 isDragging = false;
+
+                const container = document.getElementById('gameContainer').getBoundingClientRect();
+                const rect = element.getBoundingClientRect();
+                const currentLeft = rect.left - container.left;
+                const currentLeftPercent = (currentLeft / container.width) * 100;
+
+                let targetLeft, remainingDistance;
+                if (wasWalkingRight) {
+                    targetLeft = '110%';
+                    remainingDistance = (110 - currentLeftPercent) / 125;
+                } else {
+                    targetLeft = '-15%';
+                    remainingDistance = (currentLeftPercent + 15) / 125;
+                }
+
+                const remainingTime = Math.max(2, remainingDistance * 25);
+                element.style.transition = `left ${remainingTime}s linear`;
+                const bounceAnim = wasWalkingRight ? 'simpleBounceFlipped' : 'simpleBounce';
+                element.style.animation = `${bounceAnim} 0.5s ease-in-out infinite`;
+
+                requestAnimationFrame(() => {
+                    element.style.left = targetLeft;
+                });
+            }
+
+            // Touch events
+            element.addEventListener('touchstart', (e) => {
+                startDrag(e.touches[0].clientX, e.touches[0].clientY);
+            }, { passive: true });
+            element.addEventListener('touchmove', (e) => {
+                moveDrag(e.touches[0].clientX, e.touches[0].clientY, e);
+            }, { passive: false });
+            element.addEventListener('touchend', endDrag);
+
+            // Mouse events
+            element.addEventListener('mousedown', (e) => {
+                e.preventDefault();
+                startDrag(e.clientX, e.clientY);
             });
+            document.addEventListener('mousemove', (e) => {
+                moveDrag(e.clientX, e.clientY, e);
+            });
+            document.addEventListener('mouseup', endDrag);
         }
 
         function scheduleAnimals() {
@@ -3035,9 +3153,14 @@
                 createHeart(e.clientX, e.clientY);
                 createSparkles(e.clientX, e.clientY);
                 playHeartSound();
-                // Russian "Принцесса Майя" then Hebrew "נסיכה מאיה"
+                // Russian "Princess Maya" then Hebrew "Princess Maya"
                 playAudio('princess_maya_ru.mp3');
                 setTimeout(() => playAudio('princess_maya_he.mp3'), 1200);
+                // Russian "Where is my Sana?" then Hebrew "Where is my Sana?"
+                setTimeout(() => playAudio('maya_sana_ru.mp3'), 2400);
+                setTimeout(() => playAudio('maya_sana_he.mp3'), 3600);
+                // Adult female "maya boosa maya boosa"
+                setTimeout(() => playAudio('maya_boosa.mp3'), 4800);
             });
 
             document.getElementById('dog').addEventListener('click', (e) => {
@@ -3050,13 +3173,53 @@
                 setTimeout(() => playBarkSound(), 2400);
             });
 
-            // Environment
+            // Environment - Rainbow interaction
+            let waitingForSunClick = false;
+            let rainbowPrompt = null;
+
+            function showRainbowPrompt() {
+                if (rainbowPrompt) return;
+                rainbowPrompt = document.createElement('div');
+                rainbowPrompt.className = 'rainbow-prompt';
+                rainbowPrompt.textContent = 'Press the sun! ☀️';
+                document.body.appendChild(rainbowPrompt);
+                waitingForSunClick = true;
+                // Auto-hide prompt after 5 seconds if sun not pressed
+                setTimeout(() => {
+                    if (rainbowPrompt) {
+                        rainbowPrompt.remove();
+                        rainbowPrompt = null;
+                        waitingForSunClick = false;
+                    }
+                }, 5000);
+            }
+
+            function showRainbowWithFade() {
+                const rainbow = document.getElementById('rainbow');
+                // Reset animation by removing and re-adding class
+                rainbow.classList.remove('visible');
+                void rainbow.offsetWidth; // Force reflow
+                rainbow.classList.add('visible');
+                // Remove class after animation completes (10 seconds)
+                setTimeout(() => {
+                    rainbow.classList.remove('visible');
+                }, 10000);
+            }
+
             document.getElementById('sun').addEventListener('click', () => {
                 initAudio();
                 speakBilingual('sun'); // солнце / שמש
-                const rainbow = document.getElementById('rainbow');
-                rainbow.classList.toggle('visible');
                 playMagicSound();
+
+                if (waitingForSunClick) {
+                    // Cloud was pressed, show rainbow
+                    if (rainbowPrompt) {
+                        rainbowPrompt.remove();
+                        rainbowPrompt = null;
+                    }
+                    waitingForSunClick = false;
+                    showRainbowWithFade();
+                }
             });
 
             document.getElementById('moon').addEventListener('click', () => {
@@ -3085,19 +3248,12 @@
                 }
             });
 
-            let cloudClickCount = 0;
             document.querySelectorAll('.cloud').forEach(cloud => {
                 cloud.addEventListener('click', () => {
                     initAudio();
                     playMagicSound();
                     speakBilingual('cloud'); // облако / ענן
-                    cloudClickCount++;
-                    if (cloudClickCount % 2 === 1) {
-                        makeItRain();
-                        setTimeout(() => speakBilingual('rain'), 1500); // дождь / גשם
-                    } else {
-                        makeLightning();
-                    }
+                    showRainbowPrompt();
                 });
             });
 
@@ -3237,46 +3393,63 @@
             });
         }
 
-        // ============ TOUCH DRAG FOR CHARACTERS ============
+        // ============ TOUCH AND MOUSE DRAG FOR CHARACTERS ============
         function makeDraggable(element) {
             let isDragging = false;
             let startX, startY, startLeft, startBottom;
             let hasMoved = false;
 
-            element.addEventListener('touchstart', (e) => {
+            function startDrag(clientX, clientY) {
                 isDragging = true;
                 hasMoved = false;
-                const touch = e.touches[0];
-                startX = touch.clientX;
-                startY = touch.clientY;
+                startX = clientX;
+                startY = clientY;
                 const rect = element.getBoundingClientRect();
                 const container = document.getElementById('gameContainer').getBoundingClientRect();
                 startLeft = rect.left - container.left;
                 startBottom = container.bottom - rect.bottom;
                 element.style.transition = 'none';
-            }, { passive: true });
+            }
 
-            element.addEventListener('touchmove', (e) => {
+            function moveDrag(clientX, clientY, e) {
                 if (!isDragging) return;
-                const touch = e.touches[0];
-                const deltaX = touch.clientX - startX;
-                const deltaY = touch.clientY - startY;
+                const deltaX = clientX - startX;
+                const deltaY = clientY - startY;
 
                 if (Math.abs(deltaX) > 10 || Math.abs(deltaY) > 10) {
                     hasMoved = true;
-                    e.preventDefault();
+                    if (e) e.preventDefault();
                     const container = document.getElementById('gameContainer').getBoundingClientRect();
                     const newLeft = Math.max(0, Math.min(container.width - 100, startLeft + deltaX));
                     const newBottom = Math.max(0, Math.min(container.height - 150, startBottom - deltaY));
                     element.style.left = (newLeft / container.width * 100) + '%';
                     element.style.bottom = (newBottom / container.height * 100) + '%';
                 }
-            }, { passive: false });
+            }
 
-            element.addEventListener('touchend', () => {
+            function endDrag() {
                 isDragging = false;
                 element.style.transition = '';
+            }
+
+            // Touch events
+            element.addEventListener('touchstart', (e) => {
+                startDrag(e.touches[0].clientX, e.touches[0].clientY);
+            }, { passive: true });
+            element.addEventListener('touchmove', (e) => {
+                moveDrag(e.touches[0].clientX, e.touches[0].clientY, e);
+            }, { passive: false });
+            element.addEventListener('touchend', endDrag);
+
+            // Mouse events
+            element.addEventListener('mousedown', (e) => {
+                e.preventDefault();
+                startDrag(e.clientX, e.clientY);
             });
+            document.addEventListener('mousemove', (e) => {
+                moveDrag(e.clientX, e.clientY, e);
+            });
+            document.addEventListener('mouseup', endDrag);
 
             // Return whether it was a drag or a tap
             element.wasDragged = () => hasMoved;
