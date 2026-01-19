@@ -3171,13 +3171,15 @@
                 <div class="butterfly-wing bottom-right" style="background: linear-gradient(225deg, ${colorSet.secondary}, ${colorSet.primary});"></div>
             `;
 
-            // Add click handler to say butterfly in Russian/Hebrew
+            // Add click handler to say butterfly in Russian/Hebrew and give 1 point
             butterfly.addEventListener('click', (e) => {
                 e.stopPropagation();
                 initAudio();
                 speakBilingual('butterfly');
                 createSparkles(e.clientX, e.clientY);
                 playMagicSound();
+                gameState.score += 1;
+                updateUI();
             });
 
             document.body.appendChild(butterfly);
@@ -3224,13 +3226,15 @@
             butterfly.style.left = (10 + Math.random() * 80) + '%';
             butterfly.style.top = (5 + Math.random() * 20) + '%';
 
-            // Add click handler - disappear and spawn new one
+            // Add click handler - give 1 point, disappear and spawn new one
             butterfly.addEventListener('click', (e) => {
                 e.stopPropagation();
                 initAudio();
                 speakBilingual('butterfly');
                 createSparkles(e.clientX, e.clientY);
                 playMagicSound();
+                gameState.score += 1;
+                updateUI();
 
                 // Butterfly disappears
                 butterfly.style.transition = 'transform 0.3s, opacity 0.3s';
@@ -4369,7 +4373,7 @@
             document.getElementById('nextLevelBtn').addEventListener('click', nextLevel);
             document.getElementById('playAgainBtn').addEventListener('click', restartGame);
 
-            // Flowers - send butterflies, disappear and regrow
+            // Flowers - disappear and regrow (no butterflies)
             document.querySelectorAll('.flower').forEach(flower => {
                 const handler = (e) => {
                     e.preventDefault();
@@ -4378,8 +4382,7 @@
                     initAudio();
                     playMagicSound();
                     speakBilingual('flower'); // цветок / פרח
-                    const rect = flower.getBoundingClientRect();
-                    sendButterflyToPinky(rect.left + rect.width/2, rect.top);
+                    createSparkles(e.clientX || e.touches[0].clientX, e.clientY || e.touches[0].clientY);
 
                     // Flower disappears
                     flower.style.transition = 'transform 0.3s, opacity 0.3s';
