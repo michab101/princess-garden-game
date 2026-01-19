@@ -82,7 +82,8 @@
         }
 
         .title-character:nth-child(3) img {
-            object-position: center 20%;
+            object-position: center 15%;
+            transform: scale(0.85);
         }
 
         @keyframes characterFloat {
@@ -188,11 +189,17 @@
             transform: translateY(0);
         }
 
+        .story-images {
+            display: flex;
+            gap: 30px;
+            justify-content: center;
+            margin: 30px 0;
+        }
+
         .story-image {
             width: 150px;
             height: 150px;
             border-radius: 50%;
-            margin: 30px 0;
             border: 5px solid #FFD700;
             opacity: 0;
             transform: scale(0);
@@ -209,6 +216,10 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
+        }
+
+        .story-image:nth-child(2) img {
+            object-position: center 30%;
         }
 
         .skip-button {
@@ -2447,7 +2458,10 @@
     <!-- ============ STORY SCREEN ============ -->
     <div class="story-screen" id="storyScreen">
         <div class="story-text" id="storyText"></div>
-        <div class="story-image" id="storyImage"></div>
+        <div class="story-images" id="storyImages">
+            <div class="story-image" id="storyImage1"></div>
+            <div class="story-image" id="storyImage2"></div>
+        </div>
         <button class="skip-button" id="skipStory">Skip</button>
     </div>
 
@@ -4246,12 +4260,11 @@
 
         // ============ STORY SEQUENCE ============
         const storySequence = [
-            { text: "Once upon a time in a magical garden...", image: null },
-            { text: "There lived two beautiful princesses...", image: "images/Ellie.jpeg" },
-            { text: "Princess Ellie and Princess Maya!", image: "images/Maya.jpeg" },
-            { text: "And their playful puppy, Ms. Pinky!", image: "images/Pinky.jpeg" },
-            { text: "But oh no! Ms. Pinky loves to run away!", image: "images/Pinky.jpeg" },
-            { text: "Help the princesses catch her with magical butterflies!", image: null }
+            { text: "Once upon a time in a magical garden...", images: [], audio: null },
+            { text: "There lived Princess Ellie...", images: ["images/Ellie.jpeg"], audio: "princess_ellie", keepPrevious: false },
+            { text: "...and Princess Maya!", images: ["images/Maya.jpeg"], audio: "princess_maya", keepPrevious: true },
+            { text: "And their playful puppy, Ms. Pinky!", images: ["images/Pinky.jpeg"], audio: "pinky", keepPrevious: false },
+            { text: "Click on the butterflies to earn stars!", images: [], audio: null, keepPrevious: false }
         ];
 
         let storyIndex = 0;
@@ -4260,7 +4273,8 @@
         function showStory() {
             const screen = document.getElementById('storyScreen');
             const textEl = document.getElementById('storyText');
-            const imageEl = document.getElementById('storyImage');
+            const image1El = document.getElementById('storyImage1');
+            const image2El = document.getElementById('storyImage2');
 
             screen.classList.add('visible');
 
@@ -4274,22 +4288,43 @@
                 const story = storySequence[storyIndex];
 
                 textEl.classList.remove('visible');
-                imageEl.classList.remove('visible');
+
+                // Only hide images if not keeping previous
+                if (!story.keepPrevious) {
+                    image1El.classList.remove('visible');
+                    image2El.classList.remove('visible');
+                    image1El.innerHTML = '';
+                    image2El.innerHTML = '';
+                }
 
                 setTimeout(() => {
                     textEl.textContent = story.text;
                     textEl.classList.add('visible');
 
-                    if (story.image) {
-                        imageEl.innerHTML = `<img src="${story.image}" alt="">`;
-                        setTimeout(() => imageEl.classList.add('visible'), 300);
+                    // Handle images
+                    if (story.images && story.images.length > 0) {
+                        if (story.keepPrevious) {
+                            // Add to second slot, keep first
+                            image2El.innerHTML = `<img src="${story.images[0]}" alt="">`;
+                            setTimeout(() => image2El.classList.add('visible'), 300);
+                        } else {
+                            // Show in first slot
+                            image1El.innerHTML = `<img src="${story.images[0]}" alt="">`;
+                            setTimeout(() => image1El.classList.add('visible'), 300);
+                        }
                     }
 
-                    speak(story.text, 'en-US', 0.9, 1.1);
+                    // Play audio: Russian then Hebrew
+                    if (story.audio) {
+                        playAudio(story.audio + '_ru.mp3');
+                        setTimeout(() => playAudio(story.audio + '_he.mp3'), 1200);
+                    } else {
+                        speak(story.text, 'en-US', 0.9, 1.1);
+                    }
                 }, 300);
 
                 storyIndex++;
-                storyTimer = setTimeout(showNext, 3500);
+                storyTimer = setTimeout(showNext, story.audio ? 3000 : 3500);
             }
 
             showNext();
