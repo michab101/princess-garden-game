@@ -1088,7 +1088,8 @@
 
         .dog {
             bottom: 15%;
-            left: 62%;
+            left: 50%;
+            transform: translateX(-50%);
         }
 
         .dog .character-frame {
@@ -4343,7 +4344,7 @@
 
             // Reset Pinky position
             const dog = document.getElementById('dog');
-            dog.style.left = '62%';
+            dog.style.left = '50%';
             dog.style.bottom = '15%';
 
             playLevelUpSound();
@@ -4366,7 +4367,7 @@
             spawnPowerups();
 
             const dog = document.getElementById('dog');
-            dog.style.left = '62%';
+            dog.style.left = '50%';
             dog.style.bottom = '15%';
         }
 
