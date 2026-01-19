@@ -871,10 +871,16 @@
         }
 
         .dog .character-frame {
-            width: 160px;
-            height: 160px;
+            width: 180px;
+            height: 180px;
             border-color: #FFB6C1;
             animation-delay: -1s;
+        }
+
+        .dog .character-frame img {
+            object-fit: contain;
+            object-position: center;
+            background: #FFF0F5;
         }
 
         .dog .character-crown {
@@ -1519,7 +1525,7 @@
             .start-button { font-size: 24px; padding: 15px 40px; }
             .game-title { font-size: 22px; top: 70px; }
             .character-frame { width: 100px; height: 100px; }
-            .dog .character-frame { width: 120px; height: 120px; }
+            .dog .character-frame { width: 140px; height: 140px; }
             .character-crown { font-size: 25px; }
             .character-name { font-size: 12px; }
             .castle { transform: scale(0.7); left: 10px; }
@@ -2472,7 +2478,7 @@
             messageEl.textContent = msg.display;
             popup.classList.add('visible');
 
-            speak(msg.text, msg.lang, 0.9, 1);
+            // Audio is now played by ElevenLabs in castle click handler
 
             kingMessageIndex = (kingMessageIndex + 1) % kingMessages.length;
 
