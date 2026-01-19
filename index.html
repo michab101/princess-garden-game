@@ -804,16 +804,40 @@
 
         .fish {
             position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            opacity: 0;
+            top: 40%;
+            left: 20%;
+            opacity: 1;
             z-index: 10;
+            cursor: pointer;
+            animation: fishSwim 6s ease-in-out infinite;
+            pointer-events: auto;
         }
 
         .fish.jump {
             animation: fishJump 1.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
-            opacity: 1;
+        }
+
+        @keyframes fishSwim {
+            0%, 100% {
+                left: 15%;
+                top: 40%;
+                transform: scaleX(1);
+            }
+            25% {
+                left: 60%;
+                top: 55%;
+                transform: scaleX(1);
+            }
+            50% {
+                left: 70%;
+                top: 35%;
+                transform: scaleX(-1);
+            }
+            75% {
+                left: 30%;
+                top: 50%;
+                transform: scaleX(-1);
+            }
         }
 
         .fish-body {
@@ -2616,7 +2640,7 @@
         <!-- Papa Micha Horse Popup -->
         <div class="papa-horse-popup" id="papaHorsePopup">
             <div class="papa-horse-emoji">🐴🏇</div>
-            <div class="papa-horse-image"><img src="images/micha2.jpeg" alt="Papa Micha"></div>
+            <div class="papa-horse-image"><img src="images/micha2.jpg" alt="Papa Micha"></div>
             <div class="papa-horse-title">Papa Micha</div>
             <div class="papa-horse-message" id="papaHorseMessage">Лошадка! סוס!</div>
         </div>
@@ -3082,13 +3106,18 @@
 
         function createFloatingHearts() {
             const hearts = ['❤️', '💖', '💕', '💗', '💝', '🩷', '💜', '🩵'];
-            for (let i = 0; i < 8; i++) {
+            const isDesktop = window.innerWidth > 768;
+            const baseSize = isDesktop ? 100 : 50;
+            const sizeVariation = isDesktop ? 80 : 40;
+            const heartCount = isDesktop ? 12 : 8;
+
+            for (let i = 0; i < heartCount; i++) {
                 setTimeout(() => {
                     const heart = document.createElement('div');
                     heart.textContent = hearts[Math.floor(Math.random() * hearts.length)];
                     heart.style.cssText = `
                         position: fixed;
-                        font-size: ${50 + Math.random() * 40}px;
+                        font-size: ${baseSize + Math.random() * sizeVariation}px;
                         left: ${10 + Math.random() * 80}%;
                         bottom: -60px;
                         z-index: 200;
@@ -4102,8 +4131,6 @@
         }
 
         function sendButterflyToPinky(x, y) {
-            if (!gameState.gameStarted || gameState.gamePaused) return;
-
             const dog = document.getElementById('dog');
             const rect = dog.getBoundingClientRect();
             const targetX = rect.left + rect.width / 2;
@@ -4119,7 +4146,8 @@
                         y + (Math.random() - 0.5) * 30,
                         targetX,
                         targetY,
-                        catchButterfly
+                        // Only catch butterfly if game is active
+                        (gameState.gameStarted && !gameState.gamePaused) ? catchButterfly : null
                     );
                 }, i * 200);
             }
@@ -4522,9 +4550,15 @@
                 }
 
                 fish.classList.remove('jump');
+                fish.style.animation = 'none';
                 void fish.offsetWidth;
                 fish.classList.add('jump');
                 playSplashSound();
+                // Resume swimming after jump
+                setTimeout(() => {
+                    fish.classList.remove('jump');
+                    fish.style.animation = 'fishSwim 6s ease-in-out infinite';
+                }, 1800);
 
                 // Pinky goes crazy
                 const dog = document.getElementById('dog');
@@ -4544,18 +4578,24 @@
                 createSparkles(e.clientX, e.clientY);
             });
 
-            // Fish appears periodically
+            // Fish jumps periodically
             function fishJumpPeriodically() {
                 const fish = document.getElementById('fish');
                 if (fish && gameState.gameStarted) {
                     fish.classList.remove('jump');
+                    fish.style.animation = 'none';
                     void fish.offsetWidth;
                     fish.classList.add('jump');
                     playSplashSound();
+                    // Resume swimming after jump completes
+                    setTimeout(() => {
+                        fish.classList.remove('jump');
+                        fish.style.animation = 'fishSwim 6s ease-in-out infinite';
+                    }, 1800);
                 }
-                setTimeout(fishJumpPeriodically, 8000 + Math.random() * 7000);
+                setTimeout(fishJumpPeriodically, 12000 + Math.random() * 8000);
             }
-            setTimeout(fishJumpPeriodically, 5000);
+            setTimeout(fishJumpPeriodically, 10000);
 
             let castleClickCount = 0;
             document.getElementById('castle').addEventListener('click', () => {
