@@ -1940,6 +1940,11 @@
             transform: scale(1.3);
         }
 
+        .animal-inner {
+            display: inline-block;
+            transition: transform 0.3s ease-out;
+        }
+
         .walking-animal.walk-left {
             animation: walkLeft 25s linear forwards;
         }
@@ -3573,7 +3578,7 @@
             popup.style.position = 'fixed';
             popup.style.left = Math.min(x, window.innerWidth - 250) + 'px';
             popup.style.top = Math.max(y - 200, 50) + 'px';
-            popup.style.transform = 'scale(0)';
+            popup.style.transform = ''; // Clear inline transform so CSS can take over
             popup.classList.add('visible');
             setTimeout(() => popup.classList.remove('visible'), 3000);
         }
@@ -3803,7 +3808,12 @@
             const container = document.getElementById('gameContainer');
             const animal = document.createElement('div');
             animal.className = 'walking-animal';
-            animal.textContent = animalData.emoji;
+
+            // Wrap emoji in inner span for click animation
+            const innerSpan = document.createElement('span');
+            innerSpan.className = 'animal-inner';
+            innerSpan.textContent = animalData.emoji;
+            animal.appendChild(innerSpan);
 
             const goRight = direction === 'random' ? Math.random() > 0.5 : direction === 'right';
             animal.classList.add(goRight ? 'walk-right' : 'walk-left');
@@ -3824,13 +3834,12 @@
                     animal.getBoundingClientRect().top
                 );
 
-                // Jump high and get big animation
-                const originalTransform = animal.style.transform || '';
-                animal.style.transition = 'transform 0.3s ease-out';
-                animal.style.transform = 'translateY(-100px) scale(1.8)';
+                // Jump high and get big animation on inner span (doesn't break walking)
+                innerSpan.style.transition = 'transform 0.3s ease-out';
+                innerSpan.style.transform = 'translateY(-100px) scale(1.8)';
                 setTimeout(() => {
-                    animal.style.transition = 'transform 0.3s ease-in';
-                    animal.style.transform = originalTransform;
+                    innerSpan.style.transition = 'transform 0.3s ease-in';
+                    innerSpan.style.transform = '';
                 }, 300);
 
                 // Show Papa Micha popup when clicking horse
