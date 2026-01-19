@@ -2137,32 +2137,22 @@
             cat: 'חתול',
             rabbit: 'ארנב',
             fox: 'שועל',
-            squirrel: 'סנאי'
+            squirrel: 'סנאי',
+            princess_ellie: 'נסיכה אלי',
+            princess_maya: 'נסיכה מאיה',
+            pinky: 'כלבלב פינקי'
         };
 
-        // Speak Hebrew using browser's speech synthesis
-        function speakHebrew(text) {
-            if (!soundEnabled) return;
-            const utterance = new SpeechSynthesisUtterance(text);
-            utterance.lang = 'he-IL';
-            utterance.rate = 0.9;
-            utterance.pitch = 1.1;
-            speechSynthesis.speak(utterance);
-        }
-
-        // Bilingual audio - Russian (ElevenLabs) then Hebrew (browser speech)
+        // Bilingual audio - Russian (ElevenLabs) then Hebrew (Microsoft Edge TTS)
         function speakBilingual(wordKey, delay = 1200) {
             if (!soundEnabled) return;
 
             // Play Russian audio from ElevenLabs
             playAudio(`${wordKey}_ru.mp3`);
 
-            // Then Hebrew using browser's native speech synthesis
+            // Then Hebrew audio from Microsoft Edge TTS
             setTimeout(() => {
-                const hebrewText = hebrewWords[wordKey];
-                if (hebrewText) {
-                    speakHebrew(hebrewText);
-                }
+                playAudio(`${wordKey}_he.mp3`);
             }, delay);
         }
 
@@ -2540,25 +2530,25 @@
             { emoji: '🐘', audioKey: 'elephant', soundFile: 'elephant_sound.mp3' },
             { emoji: '🦁', audioKey: 'lion', soundFile: 'lion_sound.mp3' },
             { emoji: '🐻', audioKey: 'bear', soundFile: 'bear_sound.mp3' },
-            { emoji: '🦒', audioKey: 'giraffe', soundFile: null },
-            { emoji: '🦓', audioKey: 'zebra', soundFile: null },
+            { emoji: '🦒', audioKey: 'giraffe', soundFile: 'giraffe_sound.mp3' },
+            { emoji: '🦓', audioKey: 'zebra', soundFile: 'zebra_sound.mp3' },
             { emoji: '🐄', audioKey: 'cow', soundFile: 'cow_sound.mp3' },
             { emoji: '🐷', audioKey: 'pig', soundFile: 'pig_sound.mp3' },
             { emoji: '🐑', audioKey: 'sheep', soundFile: 'sheep_sound.mp3' },
             { emoji: '🐐', audioKey: 'goat', soundFile: 'goat_sound.mp3' },
-            { emoji: '🦌', audioKey: 'deer', soundFile: null },
-            { emoji: '🐪', audioKey: 'camel', soundFile: null },
-            { emoji: '🦘', audioKey: 'kangaroo', soundFile: null },
-            { emoji: '🐊', audioKey: 'crocodile', soundFile: null },
-            { emoji: '🦛', audioKey: 'hippo', soundFile: null },
-            { emoji: '🦏', audioKey: 'rhino', soundFile: null },
+            { emoji: '🦌', audioKey: 'deer', soundFile: 'deer_sound.mp3' },
+            { emoji: '🐪', audioKey: 'camel', soundFile: 'camel_sound.mp3' },
+            { emoji: '🦘', audioKey: 'kangaroo', soundFile: 'kangaroo_sound.mp3' },
+            { emoji: '🐊', audioKey: 'crocodile', soundFile: 'crocodile_sound.mp3' },
+            { emoji: '🦛', audioKey: 'hippo', soundFile: 'hippo_sound.mp3' },
+            { emoji: '🦏', audioKey: 'rhino', soundFile: 'rhino_sound.mp3' },
             { emoji: '🐅', audioKey: 'tiger', soundFile: 'lion_sound.mp3' },
             { emoji: '🐆', audioKey: 'leopard', soundFile: 'lion_sound.mp3' },
             { emoji: '🐕', audioKey: 'dog', soundFile: 'dog_sound.mp3' },
             { emoji: '🐈', audioKey: 'cat', soundFile: 'cat_sound.mp3' },
-            { emoji: '🐇', audioKey: 'rabbit', soundFile: null },
-            { emoji: '🦊', audioKey: 'fox', soundFile: null },
-            { emoji: '🐿️', audioKey: 'squirrel', soundFile: null },
+            { emoji: '🐇', audioKey: 'rabbit', soundFile: 'rabbit_sound.mp3' },
+            { emoji: '🦊', audioKey: 'fox', soundFile: 'fox_sound.mp3' },
+            { emoji: '🐿️', audioKey: 'squirrel', soundFile: 'squirrel_sound.mp3' },
         ];
 
         function playAnimalSound(sound) {
@@ -2933,13 +2923,15 @@
                 flower.addEventListener('touchstart', handler, { passive: false });
             });
 
-            // Characters
+            // Characters - Russian then Hebrew
             document.getElementById('princess1').addEventListener('click', (e) => {
                 initAudio();
                 createHeart(e.clientX, e.clientY);
                 createSparkles(e.clientX, e.clientY);
                 playHeartSound();
-                speak('Princess Ellie!', 'en-US', 1, 1.3);
+                // Russian "Принцесса Элли" then Hebrew "נסיכה אלי"
+                playAudio('princess_ellie_ru.mp3');
+                setTimeout(() => playAudio('princess_ellie_he.mp3'), 1200);
             });
 
             document.getElementById('princess2').addEventListener('click', (e) => {
@@ -2947,14 +2939,19 @@
                 createHeart(e.clientX, e.clientY);
                 createSparkles(e.clientX, e.clientY);
                 playHeartSound();
-                speak('Princess Maya!', 'en-US', 1, 1.3);
+                // Russian "Принцесса Майя" then Hebrew "נסיכה מאיה"
+                playAudio('princess_maya_ru.mp3');
+                setTimeout(() => playAudio('princess_maya_he.mp3'), 1200);
             });
 
             document.getElementById('dog').addEventListener('click', (e) => {
                 initAudio();
                 createHeart(e.clientX, e.clientY);
                 createSparkles(e.clientX, e.clientY);
-                playBarkSound();
+                // Russian "Собачка Пинки" then Hebrew "כלבלב פינקי" then bark
+                playAudio('pinky_ru.mp3');
+                setTimeout(() => playAudio('pinky_he.mp3'), 1200);
+                setTimeout(() => playBarkSound(), 2400);
             });
 
             // Environment
@@ -3032,8 +3029,8 @@
                 initAudio();
                 // Papa says "Where are my girls? Time for ice cream!" in Russian
                 playAudio('papa_icecream_ru.mp3');
-                // Then says ice cream in Hebrew (גלידה) using browser speech
-                setTimeout(() => speakHebrew('גלידה'), 2500);
+                // Then says ice cream in Hebrew (גלידה)
+                setTimeout(() => playAudio('icecream_he.mp3'), 2500);
                 showKingPopup();
                 playMagicSound();
             });
@@ -3098,6 +3095,9 @@
                 document.getElementById('passwordScreen').classList.add('hidden');
                 return;
             }
+
+            // Auto-focus password input
+            document.getElementById('passwordInput').focus();
 
             document.getElementById('passwordButton').addEventListener('click', checkPassword);
             document.getElementById('passwordInput').addEventListener('keypress', (e) => {
