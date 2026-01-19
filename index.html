@@ -507,9 +507,9 @@
 
         @keyframes sunDance {
             0%, 100% { transform: scale(1) rotate(0deg); }
-            25% { transform: scale(1.8) rotate(-15deg); }
-            50% { transform: scale(1.6) rotate(15deg); }
-            75% { transform: scale(1.8) rotate(-10deg); }
+            25% { transform: scale(2.5) rotate(-20deg); }
+            50% { transform: scale(2.2) rotate(20deg); }
+            75% { transform: scale(2.5) rotate(-15deg); }
         }
 
         /* Ground */
@@ -2487,6 +2487,7 @@
             pond: 'בריכה',
             fish: 'דג',
             castle: 'טירה',
+            home: 'בית',
             sky: 'שמיים',
             grass: 'דשא',
             moon: 'ירח',
@@ -4005,6 +4006,9 @@
             function endDrag() {
                 isDragging = false;
                 element.style.transition = '';
+
+                // Check if both princesses are at the castle
+                checkPrincessesAtCastle();
             }
 
             // Touch events
@@ -4028,6 +4032,45 @@
 
             // Return whether it was a drag or a tap
             element.wasDragged = () => hasMoved;
+        }
+
+        let princessesAtCastleAnnounced = false;
+
+        function checkPrincessesAtCastle() {
+            const castle = document.getElementById('castle');
+            const princess1 = document.getElementById('princess1');
+            const princess2 = document.getElementById('princess2');
+
+            if (!castle || !princess1 || !princess2) return;
+
+            const castleRect = castle.getBoundingClientRect();
+            const p1Rect = princess1.getBoundingClientRect();
+            const p2Rect = princess2.getBoundingClientRect();
+
+            // Check if princess center is within castle bounds (with some margin)
+            const margin = 50;
+            const p1AtCastle = p1Rect.left < castleRect.right + margin &&
+                              p1Rect.right > castleRect.left - margin &&
+                              p1Rect.bottom > castleRect.top - margin &&
+                              p1Rect.top < castleRect.bottom + margin;
+
+            const p2AtCastle = p2Rect.left < castleRect.right + margin &&
+                              p2Rect.right > castleRect.left - margin &&
+                              p2Rect.bottom > castleRect.top - margin &&
+                              p2Rect.top < castleRect.bottom + margin;
+
+            if (p1AtCastle && p2AtCastle && !princessesAtCastleAnnounced) {
+                princessesAtCastleAnnounced = true;
+                initAudio();
+                speakBilingual('home');
+                createSparkles(castleRect.left + castleRect.width / 2, castleRect.top);
+                playMagicSound();
+
+                // Reset after 5 seconds so it can be triggered again
+                setTimeout(() => {
+                    princessesAtCastleAnnounced = false;
+                }, 5000);
+            }
         }
 
         function setupDraggableCharacters() {
