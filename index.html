@@ -1,0 +1,2864 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Princess Garden Adventure</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏰</text></svg>">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            overflow: hidden;
+            font-family: 'Comic Sans MS', 'Chalkboard', cursive, sans-serif;
+            touch-action: manipulation;
+            background: #000;
+        }
+
+        /* ============ TITLE SCREEN ============ */
+        .title-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(180deg, #FF9AA2 0%, #FFB7B2 25%, #FFDAC1 50%, #E2F0CB 75%, #B5EAD7 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 3000;
+            transition: opacity 1s, transform 1s;
+        }
+
+        .title-screen.hidden {
+            opacity: 0;
+            transform: scale(1.1);
+            pointer-events: none;
+        }
+
+        .title-logo {
+            font-size: 48px;
+            color: #4A0080;
+            text-shadow: 3px 3px 0 #FFD700, 6px 6px 0 #FF69B4;
+            animation: titleBounce 2s ease-in-out infinite;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        @keyframes titleBounce {
+            0%, 100% { transform: translateY(0) rotate(-2deg); }
+            50% { transform: translateY(-20px) rotate(2deg); }
+        }
+
+        .title-characters {
+            display: flex;
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .title-character {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            border: 5px solid #FFD700;
+            overflow: hidden;
+            animation: characterFloat 3s ease-in-out infinite;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .title-character:nth-child(2) { animation-delay: -1s; }
+        .title-character:nth-child(3) { animation-delay: -2s; }
+
+        .title-character img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        @keyframes characterFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+
+        .title-subtitle {
+            font-size: 24px;
+            color: #9370DB;
+            margin-bottom: 40px;
+            animation: subtitlePulse 2s ease-in-out infinite;
+        }
+
+        @keyframes subtitlePulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(1.05); }
+        }
+
+        .start-button {
+            font-size: 32px;
+            padding: 20px 60px;
+            background: linear-gradient(135deg, #FF69B4, #FFD700);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-family: inherit;
+            box-shadow: 0 10px 30px rgba(255, 105, 180, 0.5), inset 0 -5px 0 rgba(0,0,0,0.2);
+            transition: all 0.2s;
+            animation: buttonGlow 2s ease-in-out infinite;
+        }
+
+        .start-button:hover {
+            transform: scale(1.1) translateY(-5px);
+            box-shadow: 0 15px 40px rgba(255, 105, 180, 0.6);
+        }
+
+        .start-button:active {
+            transform: scale(1.05);
+        }
+
+        @keyframes buttonGlow {
+            0%, 100% { box-shadow: 0 10px 30px rgba(255, 105, 180, 0.5), inset 0 -5px 0 rgba(0,0,0,0.2); }
+            50% { box-shadow: 0 10px 50px rgba(255, 215, 0, 0.8), inset 0 -5px 0 rgba(0,0,0,0.2); }
+        }
+
+        .title-sparkles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .title-sparkle {
+            position: absolute;
+            font-size: 30px;
+            animation: sparkleFloat 4s ease-in-out infinite;
+        }
+
+        @keyframes sparkleFloat {
+            0%, 100% { transform: translateY(0) rotate(0deg); opacity: 1; }
+            50% { transform: translateY(-30px) rotate(180deg); opacity: 0.5; }
+        }
+
+        /* ============ STORY SCREEN ============ */
+        .story-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 2500;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s;
+        }
+
+        .story-screen.visible {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .story-text {
+            font-size: 28px;
+            color: #FFD700;
+            text-align: center;
+            max-width: 80%;
+            line-height: 1.6;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s;
+        }
+
+        .story-text.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .story-image {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            margin: 30px 0;
+            border: 5px solid #FFD700;
+            opacity: 0;
+            transform: scale(0);
+            transition: all 0.5s;
+            overflow: hidden;
+        }
+
+        .story-image.visible {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .story-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .skip-button {
+            position: absolute;
+            bottom: 30px;
+            right: 30px;
+            padding: 10px 30px;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 2px solid white;
+            border-radius: 25px;
+            font-size: 18px;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        /* ============ GAME CONTAINER ============ */
+        .game-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* ============ SKY & BACKGROUND ============ */
+        .sky {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 60%;
+            background: linear-gradient(180deg, #87CEEB 0%, #B0E0E6 50%, #F0F8FF 100%);
+            transition: background 3s;
+        }
+
+        /* Sun with rays */
+        .sun {
+            position: absolute;
+            top: 30px;
+            right: 80px;
+            width: 100px;
+            height: 100px;
+            background: radial-gradient(circle, #FFD700 0%, #FFA500 100%);
+            border-radius: 50%;
+            box-shadow: 0 0 60px #FFD700, 0 0 100px #FFA500;
+            cursor: pointer;
+            transition: transform 0.3s;
+            animation: sunPulse 4s ease-in-out infinite;
+        }
+
+        .sun::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 150%;
+            height: 150%;
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpolygon fill='%23FFD700' points='50,0 54,40 60,35 54,45 100,50 54,55 60,65 54,60 50,100 46,60 40,65 46,55 0,50 46,45 40,35 46,40' opacity='0.5'/%3E%3C/svg%3E");
+            transform: translate(-50%, -50%);
+            animation: sunRays 20s linear infinite;
+            pointer-events: none;
+        }
+
+        @keyframes sunPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        @keyframes sunRays {
+            from { transform: translate(-50%, -50%) rotate(0deg); }
+            to { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        .sun:hover { transform: scale(1.2); }
+
+        /* Clouds */
+        .cloud {
+            position: absolute;
+            background: white;
+            border-radius: 50px;
+            cursor: pointer;
+            filter: drop-shadow(0 5px 10px rgba(0,0,0,0.1));
+            transition: transform 0.3s;
+        }
+
+        .cloud::before, .cloud::after {
+            content: '';
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+        }
+
+        .cloud-1 {
+            width: 150px;
+            height: 60px;
+            top: 80px;
+            animation: cloudFloat1 30s linear infinite;
+        }
+
+        .cloud-1::before {
+            width: 70px;
+            height: 70px;
+            top: -35px;
+            left: 25px;
+        }
+
+        .cloud-1::after {
+            width: 50px;
+            height: 50px;
+            top: -25px;
+            left: 75px;
+        }
+
+        .cloud-2 {
+            width: 120px;
+            height: 50px;
+            top: 140px;
+            animation: cloudFloat2 25s linear infinite;
+        }
+
+        .cloud-2::before {
+            width: 55px;
+            height: 55px;
+            top: -28px;
+            left: 20px;
+        }
+
+        .cloud-2::after {
+            width: 40px;
+            height: 40px;
+            top: -18px;
+            left: 60px;
+        }
+
+        .cloud-3 {
+            width: 100px;
+            height: 40px;
+            top: 50px;
+            animation: cloudFloat3 35s linear infinite;
+        }
+
+        .cloud-3::before {
+            width: 45px;
+            height: 45px;
+            top: -22px;
+            left: 15px;
+        }
+
+        .cloud-3::after {
+            width: 35px;
+            height: 35px;
+            top: -15px;
+            left: 50px;
+        }
+
+        @keyframes cloudFloat1 {
+            from { left: -200px; }
+            to { left: 110%; }
+        }
+
+        @keyframes cloudFloat2 {
+            from { left: -180px; }
+            to { left: 110%; }
+        }
+
+        @keyframes cloudFloat3 {
+            from { left: -150px; }
+            to { left: 110%; }
+        }
+
+        .cloud:hover { transform: scale(1.1); }
+
+        /* Rainbow */
+        .rainbow {
+            position: absolute;
+            top: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 500px;
+            height: 250px;
+            border-radius: 250px 250px 0 0;
+            background:
+                linear-gradient(180deg, transparent 0%, transparent 14%),
+                conic-gradient(from 180deg at 50% 100%,
+                    #FF0000 0deg, #FF7F00 25deg, #FFFF00 50deg,
+                    #00FF00 75deg, #0000FF 100deg, #4B0082 125deg,
+                    #9400D3 150deg, transparent 180deg);
+            opacity: 0;
+            transition: opacity 1s;
+            pointer-events: none;
+        }
+
+        .rainbow.visible { opacity: 0.6; }
+
+        /* Ground */
+        .ground {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 45%;
+            background: linear-gradient(180deg, #90EE90 0%, #7CB342 20%, #558B2F 100%);
+        }
+
+        /* Grass blades */
+        .grass-container {
+            position: absolute;
+            bottom: 40%;
+            left: 0;
+            width: 100%;
+            height: 60px;
+            overflow: hidden;
+        }
+
+        .grass-blade {
+            position: absolute;
+            bottom: 0;
+            width: 8px;
+            height: 40px;
+            background: linear-gradient(to top, #228B22, #32CD32);
+            border-radius: 50% 50% 0 0;
+            transform-origin: bottom center;
+            animation: grassSway 2s ease-in-out infinite;
+        }
+
+        @keyframes grassSway {
+            0%, 100% { transform: rotate(-5deg); }
+            50% { transform: rotate(5deg); }
+        }
+
+        /* ============ CASTLE ============ */
+        .castle {
+            position: absolute;
+            bottom: 42%;
+            left: 30px;
+            cursor: pointer;
+            transition: transform 0.3s;
+            filter: drop-shadow(5px 5px 10px rgba(0,0,0,0.3));
+        }
+
+        .castle:hover { transform: scale(1.05); }
+
+        .castle-base {
+            display: flex;
+            align-items: flex-end;
+        }
+
+        .castle-tower {
+            width: 50px;
+            height: 100px;
+            background: linear-gradient(135deg, #E6B0AA, #D7BDE2);
+            position: relative;
+            border: 3px solid #9B59B6;
+        }
+
+        .castle-tower::before {
+            content: '';
+            position: absolute;
+            top: -35px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-left: 30px solid transparent;
+            border-right: 30px solid transparent;
+            border-bottom: 35px solid #8E44AD;
+        }
+
+        .castle-tower::after {
+            content: '🚩';
+            position: absolute;
+            top: -55px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 20px;
+        }
+
+        .castle-tower.main {
+            width: 70px;
+            height: 90px;
+            margin: 0 -5px;
+        }
+
+        .castle-window {
+            width: 15px;
+            height: 20px;
+            background: linear-gradient(to bottom, #FFE4B5, #87CEEB);
+            border-radius: 8px 8px 0 0;
+            position: absolute;
+            top: 25px;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 2px solid #4A0080;
+        }
+
+        .castle-door {
+            width: 25px;
+            height: 40px;
+            background: linear-gradient(to bottom, #5D4037, #3E2723);
+            border-radius: 12px 12px 0 0;
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 2px solid #4A0080;
+        }
+
+        .castle-door::after {
+            content: '';
+            position: absolute;
+            right: 5px;
+            top: 50%;
+            width: 5px;
+            height: 5px;
+            background: #FFD700;
+            border-radius: 50%;
+        }
+
+        /* ============ TREE ============ */
+        .tree {
+            position: absolute;
+            bottom: 42%;
+            right: 12%;
+            cursor: pointer;
+            transition: transform 0.3s;
+            filter: drop-shadow(5px 5px 10px rgba(0,0,0,0.2));
+        }
+
+        .tree:hover { transform: scale(1.05); }
+
+        .tree-trunk {
+            width: 35px;
+            height: 70px;
+            background: linear-gradient(90deg, #8B4513, #A0522D, #8B4513);
+            margin: 0 auto;
+            border-radius: 5px;
+        }
+
+        .tree-leaves {
+            width: 140px;
+            height: 140px;
+            background: radial-gradient(ellipse at center, #32CD32 0%, #228B22 50%, #006400 100%);
+            border-radius: 50%;
+            position: relative;
+            top: 20px;
+            animation: treeSway 4s ease-in-out infinite;
+        }
+
+        @keyframes treeSway {
+            0%, 100% { transform: rotate(-1deg); }
+            50% { transform: rotate(1deg); }
+        }
+
+        /* ============ POND ============ */
+        .pond {
+            position: absolute;
+            bottom: 8%;
+            right: 8%;
+            width: 180px;
+            height: 90px;
+            background: linear-gradient(180deg, #87CEFA 0%, #4169E1 50%, #1E90FF 100%);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: transform 0.3s;
+            box-shadow: inset 0 0 30px rgba(0,0,0,0.3), 0 5px 15px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+
+        .pond:hover { transform: scale(1.05); }
+
+        .pond-shine {
+            position: absolute;
+            top: 10px;
+            left: 20px;
+            width: 40px;
+            height: 20px;
+            background: rgba(255,255,255,0.4);
+            border-radius: 50%;
+            animation: pondShine 3s ease-in-out infinite;
+        }
+
+        @keyframes pondShine {
+            0%, 100% { opacity: 0.4; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(1.1); }
+        }
+
+        .lily-pad {
+            position: absolute;
+            width: 35px;
+            height: 28px;
+            background: radial-gradient(ellipse at center, #32CD32, #228B22);
+            border-radius: 50%;
+            animation: lilyFloat 3s ease-in-out infinite;
+        }
+
+        .lily-pad::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 45%;
+            width: 3px;
+            height: 50%;
+            background: #4169E1;
+        }
+
+        .lily-pad.pad1 { top: 25px; left: 25px; }
+        .lily-pad.pad2 { top: 45px; left: 110px; animation-delay: -1s; }
+
+        @keyframes lilyFloat {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-3px) rotate(3deg); }
+        }
+
+        .fish {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            opacity: 0;
+            z-index: 10;
+        }
+
+        .fish.jump {
+            animation: fishJump 1.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+            opacity: 1;
+        }
+
+        .fish-body {
+            width: 40px;
+            height: 24px;
+            background: linear-gradient(135deg, #FF6B6B 0%, #FF8E53 50%, #FFBE76 100%);
+            border-radius: 50% 50% 40% 40% / 60% 60% 40% 40%;
+            position: relative;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+
+        .fish-body::before {
+            content: '';
+            position: absolute;
+            left: 8px;
+            top: 8px;
+            width: 6px;
+            height: 6px;
+            background: #000;
+            border-radius: 50%;
+            box-shadow: inset 2px 2px 0 rgba(255,255,255,0.5);
+        }
+
+        .fish-body::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 5px;
+            width: 15px;
+            height: 8px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 50%;
+        }
+
+        .fish-tail {
+            position: absolute;
+            right: -18px;
+            top: 0;
+            width: 0;
+            height: 0;
+            border-left: 22px solid #FF6B6B;
+            border-top: 12px solid transparent;
+            border-bottom: 12px solid transparent;
+            animation: tailWag 0.15s ease-in-out infinite alternate;
+        }
+
+        @keyframes tailWag {
+            from { transform: rotate(-10deg); }
+            to { transform: rotate(10deg); }
+        }
+
+        @keyframes fishJump {
+            0% {
+                transform: translate(-50%, 100%) rotate(45deg) scale(0.5);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            25% {
+                transform: translate(-30%, -180%) rotate(15deg) scale(1.2);
+            }
+            40% {
+                transform: translate(0%, -220%) rotate(-5deg) scale(1.3);
+            }
+            55% {
+                transform: translate(30%, -180%) rotate(-25deg) scale(1.2);
+            }
+            70% {
+                transform: translate(50%, -50%) rotate(-45deg) scale(1);
+            }
+            85% {
+                transform: translate(60%, 50%) rotate(-60deg) scale(0.8);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(70%, 150%) rotate(-70deg) scale(0.5);
+                opacity: 0;
+            }
+        }
+
+        /* Water splash effect */
+        .splash {
+            position: absolute;
+            font-size: 24px;
+            animation: splashAnim 0.6s ease-out forwards;
+            pointer-events: none;
+        }
+
+        @keyframes splashAnim {
+            0% { transform: scale(0.5) translateY(0); opacity: 1; }
+            100% { transform: scale(1.5) translateY(-30px); opacity: 0; }
+        }
+
+        /* ============ FLOWERS ============ */
+        .flower {
+            position: absolute;
+            cursor: pointer;
+            transition: transform 0.3s;
+            animation: flowerSway 3s ease-in-out infinite;
+        }
+
+        .flower:hover { transform: scale(1.3) rotate(10deg); }
+
+        .flower-stem {
+            width: 4px;
+            height: 50px;
+            background: linear-gradient(to top, #228B22, #32CD32);
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            border-radius: 2px;
+        }
+
+        .flower-head {
+            position: relative;
+            width: 40px;
+            height: 40px;
+        }
+
+        .flower-petal {
+            position: absolute;
+            width: 15px;
+            height: 20px;
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+        }
+
+        .flower-center {
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            background: radial-gradient(circle, #FFD700, #FFA500);
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 2;
+        }
+
+        @keyframes flowerSway {
+            0%, 100% { transform: rotate(-3deg); }
+            50% { transform: rotate(3deg); }
+        }
+
+        .flower-1 { bottom: 38%; left: 18%; animation-delay: 0s; }
+        .flower-2 { bottom: 36%; left: 38%; animation-delay: -1s; }
+        .flower-3 { bottom: 40%; right: 28%; animation-delay: -2s; }
+        .flower-4 { bottom: 34%; left: 55%; animation-delay: -0.5s; }
+        .flower-5 { bottom: 42%; left: 75%; animation-delay: -1.5s; }
+
+        /* ============ CHARACTERS ============ */
+        .character {
+            position: absolute;
+            cursor: pointer;
+            transition: transform 0.3s, left 1.5s ease-in-out, bottom 1.5s ease-in-out;
+            z-index: 50;
+        }
+
+        .character:hover { transform: scale(1.1); }
+
+        .character-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .character-crown {
+            font-size: 35px;
+            animation: crownBob 2s ease-in-out infinite;
+            filter: drop-shadow(0 2px 5px rgba(0,0,0,0.3));
+        }
+
+        @keyframes crownBob {
+            0%, 100% { transform: translateY(0) rotate(-5deg); }
+            50% { transform: translateY(-8px) rotate(5deg); }
+        }
+
+        .character-frame {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            border: 6px solid;
+            overflow: hidden;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+            animation: characterBounce 2s ease-in-out infinite;
+        }
+
+        .character-frame img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+
+        @keyframes characterBounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+
+        .character-name {
+            margin-top: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            color: #4A0080;
+            text-shadow: 1px 1px 0 white, -1px -1px 0 white, 1px -1px 0 white, -1px 1px 0 white;
+            background: rgba(255,255,255,0.8);
+            padding: 3px 12px;
+            border-radius: 15px;
+        }
+
+        .princess-1 {
+            bottom: 18%;
+            left: 22%;
+        }
+
+        .princess-1 .character-frame {
+            border-color: #FF69B4;
+            animation-delay: 0s;
+        }
+
+        .princess-2 {
+            bottom: 20%;
+            left: 42%;
+        }
+
+        .princess-2 .character-frame {
+            border-color: #DDA0DD;
+            animation-delay: -0.5s;
+        }
+
+        .dog {
+            bottom: 15%;
+            left: 62%;
+        }
+
+        .dog .character-frame {
+            width: 130px;
+            height: 130px;
+            border-color: #FFB6C1;
+            animation-delay: -1s;
+        }
+
+        .dog .character-crown {
+            display: none;
+        }
+
+        .dog-bow {
+            font-size: 28px;
+            margin-top: 5px;
+            animation: bowWiggle 1s ease-in-out infinite;
+        }
+
+        @keyframes bowWiggle {
+            0%, 100% { transform: rotate(-10deg); }
+            50% { transform: rotate(10deg); }
+        }
+
+        .dog.excited {
+            animation: dogExcited 0.3s ease-in-out 5;
+        }
+
+        @keyframes dogExcited {
+            0%, 100% { transform: rotate(0deg) scale(1); }
+            25% { transform: rotate(-10deg) scale(1.1); }
+            75% { transform: rotate(10deg) scale(1.1); }
+        }
+
+        /* ============ UI ELEMENTS ============ */
+        .game-ui {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        .game-ui > * {
+            pointer-events: auto;
+        }
+
+        .ui-left {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .ui-right {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            align-items: flex-end;
+        }
+
+        .sound-toggle, .music-toggle {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #fff, #f0f0f0);
+            border: 3px solid #FFD700;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            transition: transform 0.2s;
+        }
+
+        .sound-toggle:hover, .music-toggle:hover {
+            transform: scale(1.1);
+        }
+
+        .level-display {
+            background: linear-gradient(135deg, #9370DB, #4A0080);
+            color: white;
+            padding: 10px 25px;
+            border-radius: 25px;
+            font-size: 20px;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+
+        .score-display {
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            color: #4A0080;
+            padding: 10px 25px;
+            border-radius: 25px;
+            font-size: 20px;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .butterfly-counter {
+            background: linear-gradient(135deg, #FF69B4, #FFB6C1);
+            color: white;
+            padding: 12px 25px;
+            border-radius: 25px;
+            font-size: 22px;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+
+        /* ============ GAME TITLE ============ */
+        .game-title {
+            position: absolute;
+            top: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 32px;
+            color: #4A0080;
+            text-shadow: 2px 2px 0 #FFD700, 4px 4px 0 #FF69B4;
+            white-space: nowrap;
+            cursor: pointer;
+            transition: transform 0.3s;
+            z-index: 10;
+        }
+
+        .game-title:hover {
+            transform: translateX(-50%) scale(1.1);
+        }
+
+        /* ============ INSTRUCTIONS POPUP ============ */
+        .instructions-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            background: linear-gradient(135deg, #FFF5EE, #FFE4E1);
+            border-radius: 30px;
+            padding: 40px;
+            text-align: center;
+            z-index: 2000;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+            max-width: 90%;
+            width: 500px;
+            transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        .instructions-popup.visible {
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .instructions-popup h2 {
+            color: #4A0080;
+            font-size: 28px;
+            margin-bottom: 20px;
+        }
+
+        .instructions-popup p {
+            color: #666;
+            font-size: 18px;
+            margin: 15px 0;
+            line-height: 1.5;
+        }
+
+        .instructions-popup .emoji-big {
+            font-size: 50px;
+            margin: 15px 0;
+        }
+
+        .instructions-popup button {
+            margin-top: 20px;
+            padding: 15px 40px;
+            font-size: 22px;
+            background: linear-gradient(135deg, #FF69B4, #FFD700);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            font-family: inherit;
+            box-shadow: 0 5px 20px rgba(255, 105, 180, 0.5);
+            transition: transform 0.2s;
+        }
+
+        .instructions-popup button:hover {
+            transform: scale(1.05);
+        }
+
+        /* ============ EFFECTS ============ */
+        .sparkle {
+            position: fixed;
+            width: 15px;
+            height: 15px;
+            pointer-events: none;
+            z-index: 200;
+        }
+
+        .sparkle::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: currentColor;
+            clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+            animation: sparkleAnim 0.8s ease-out forwards;
+        }
+
+        @keyframes sparkleAnim {
+            0% { transform: scale(0) rotate(0deg); opacity: 1; }
+            50% { transform: scale(1.5) rotate(180deg); opacity: 1; }
+            100% { transform: scale(0) rotate(360deg); opacity: 0; }
+        }
+
+        .butterfly {
+            position: fixed;
+            pointer-events: none;
+            z-index: 150;
+        }
+
+        .butterfly-wing {
+            width: 18px;
+            height: 22px;
+            border-radius: 50% 50% 20% 50%;
+            position: absolute;
+        }
+
+        .butterfly-wing.left {
+            animation: wingFlap 0.15s ease-in-out infinite alternate;
+        }
+
+        .butterfly-wing.right {
+            left: 14px;
+            transform: scaleX(-1);
+            animation: wingFlap 0.15s ease-in-out infinite alternate-reverse;
+        }
+
+        @keyframes wingFlap {
+            from { transform: rotateY(0deg); }
+            to { transform: rotateY(70deg); }
+        }
+
+        /* Rain */
+        .rain-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 500;
+        }
+
+        .raindrop {
+            position: absolute;
+            width: 3px;
+            height: 25px;
+            background: linear-gradient(transparent, rgba(100, 149, 237, 0.8));
+            border-radius: 0 0 5px 5px;
+            animation: rainFall 0.6s linear forwards;
+        }
+
+        @keyframes rainFall {
+            to { transform: translateY(100vh); }
+        }
+
+        /* Lightning */
+        .lightning {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: white;
+            opacity: 0;
+            pointer-events: none;
+            z-index: 600;
+        }
+
+        .lightning.flash {
+            animation: lightningFlash 0.2s ease-out;
+        }
+
+        @keyframes lightningFlash {
+            0%, 100% { opacity: 0; }
+            10%, 30% { opacity: 0.9; }
+            20% { opacity: 0.3; }
+        }
+
+        /* Hearts */
+        .heart {
+            position: fixed;
+            font-size: 35px;
+            pointer-events: none;
+            z-index: 200;
+            animation: heartFloat 1.5s ease-out forwards;
+        }
+
+        @keyframes heartFloat {
+            0% { transform: scale(0) translateY(0); opacity: 1; }
+            50% { transform: scale(1.3) translateY(-50px); opacity: 1; }
+            100% { transform: scale(0.8) translateY(-120px); opacity: 0; }
+        }
+
+        /* Bird */
+        .bird {
+            position: fixed;
+            font-size: 35px;
+            pointer-events: none;
+            z-index: 150;
+            animation: birdFly 3s ease-in-out forwards;
+        }
+
+        @keyframes birdFly {
+            0% { transform: translate(0, 0) scaleX(1); }
+            25% { transform: translate(80px, -40px) scaleX(1); }
+            50% { transform: translate(160px, -20px) scaleX(1); }
+            75% { transform: translate(240px, -60px) scaleX(1); }
+            100% { transform: translate(350px, -100px) scaleX(1); opacity: 0; }
+        }
+
+        /* ============ KING POPUP ============ */
+        .king-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            border-radius: 30px;
+            padding: 35px;
+            text-align: center;
+            z-index: 1500;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+            transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        .king-popup.visible {
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .king-popup .king-crown {
+            font-size: 70px;
+            animation: kingCrownBounce 0.5s ease-in-out infinite alternate;
+        }
+
+        @keyframes kingCrownBounce {
+            from { transform: rotate(-5deg); }
+            to { transform: rotate(5deg); }
+        }
+
+        .king-popup .king-image {
+            width: 160px;
+            height: 160px;
+            border-radius: 50%;
+            border: 6px solid #4A0080;
+            margin: 15px auto;
+            overflow: hidden;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        }
+
+        .king-popup .king-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .king-popup .king-title {
+            font-size: 26px;
+            color: #4A0080;
+            margin: 10px 0;
+            font-weight: bold;
+        }
+
+        .king-popup .king-message {
+            font-size: 20px;
+            color: #333;
+            background: rgba(255,255,255,0.5);
+            padding: 10px 20px;
+            border-radius: 15px;
+        }
+
+        /* ============ WIN SCREEN ============ */
+        .win-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(255, 182, 193, 0.98), rgba(255, 218, 185, 0.98));
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s;
+        }
+
+        .win-screen.visible {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .win-title {
+            font-size: 52px;
+            color: #4A0080;
+            text-shadow: 3px 3px 0 #FFD700;
+            animation: winTitleBounce 0.5s ease-out infinite alternate;
+            margin-bottom: 20px;
+        }
+
+        @keyframes winTitleBounce {
+            from { transform: scale(1) rotate(-2deg); }
+            to { transform: scale(1.05) rotate(2deg); }
+        }
+
+        .win-stars {
+            font-size: 60px;
+            margin: 20px 0;
+        }
+
+        .win-stars span {
+            display: inline-block;
+            animation: starPop 0.5s ease-out backwards;
+        }
+
+        .win-stars span:nth-child(1) { animation-delay: 0.2s; }
+        .win-stars span:nth-child(2) { animation-delay: 0.4s; }
+        .win-stars span:nth-child(3) { animation-delay: 0.6s; }
+
+        @keyframes starPop {
+            0% { transform: scale(0) rotate(-180deg); }
+            100% { transform: scale(1) rotate(0deg); }
+        }
+
+        .win-message {
+            font-size: 26px;
+            color: #9370DB;
+            margin: 20px 0;
+        }
+
+        .win-buttons {
+            display: flex;
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .win-button {
+            padding: 18px 45px;
+            font-size: 24px;
+            border: none;
+            border-radius: 35px;
+            cursor: pointer;
+            font-family: inherit;
+            font-weight: bold;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+            transition: transform 0.2s;
+        }
+
+        .win-button:hover {
+            transform: scale(1.1) translateY(-5px);
+        }
+
+        .win-button.next-level {
+            background: linear-gradient(135deg, #9370DB, #4A0080);
+            color: white;
+        }
+
+        .win-button.play-again {
+            background: linear-gradient(135deg, #FF69B4, #FFD700);
+            color: white;
+        }
+
+        /* ============ COLLECTIBLE GEMS ============ */
+        .gem {
+            position: absolute;
+            font-size: 30px;
+            cursor: pointer;
+            animation: gemFloat 2s ease-in-out infinite, gemGlow 1s ease-in-out infinite alternate;
+            filter: drop-shadow(0 0 10px currentColor);
+            z-index: 80;
+        }
+
+        @keyframes gemFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        @keyframes gemGlow {
+            from { filter: drop-shadow(0 0 5px currentColor); }
+            to { filter: drop-shadow(0 0 20px currentColor); }
+        }
+
+        .gem.collected {
+            animation: gemCollect 0.5s ease-out forwards;
+            pointer-events: none;
+        }
+
+        @keyframes gemCollect {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.5); opacity: 1; }
+            100% { transform: scale(0) translateY(-50px); opacity: 0; }
+        }
+
+        /* ============ POWER-UPS ============ */
+        .powerup {
+            position: absolute;
+            font-size: 40px;
+            cursor: pointer;
+            animation: powerupBounce 1s ease-in-out infinite;
+            filter: drop-shadow(0 5px 15px rgba(0,0,0,0.3));
+            z-index: 85;
+        }
+
+        @keyframes powerupBounce {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-15px) scale(1.1); }
+        }
+
+        .powerup.collected {
+            animation: powerupCollect 0.6s ease-out forwards;
+            pointer-events: none;
+        }
+
+        @keyframes powerupCollect {
+            0% { transform: scale(1) rotate(0deg); opacity: 1; }
+            100% { transform: scale(2) rotate(360deg); opacity: 0; }
+        }
+
+        /* Power-up active indicators */
+        .powerup-active {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, #FFD700, #FF69B4);
+            color: #4A0080;
+            padding: 15px 30px;
+            border-radius: 30px;
+            font-size: 22px;
+            font-weight: bold;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+            z-index: 200;
+            animation: powerupActiveGlow 0.5s ease-in-out infinite alternate;
+        }
+
+        @keyframes powerupActiveGlow {
+            from { box-shadow: 0 5px 20px rgba(255, 215, 0, 0.5); }
+            to { box-shadow: 0 5px 40px rgba(255, 105, 180, 0.8); }
+        }
+
+        /* ============ WALKING ANIMALS ============ */
+        .walking-animal {
+            position: absolute;
+            bottom: 8%;
+            font-size: 60px;
+            z-index: 50;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .walking-animal:hover {
+            transform: scale(1.2);
+        }
+
+        .walking-animal.walk-left {
+            animation: walkLeft 12s linear forwards;
+        }
+
+        .walking-animal.walk-right {
+            animation: walkRight 12s linear forwards;
+        }
+
+        @keyframes walkLeft {
+            0% { left: 110%; transform: scaleX(-1); }
+            100% { left: -15%; transform: scaleX(-1); }
+        }
+
+        @keyframes walkRight {
+            0% { left: -15%; transform: scaleX(1); }
+            100% { left: 110%; transform: scaleX(1); }
+        }
+
+        .walking-animal.bounce {
+            animation-name: walkLeftBounce;
+        }
+
+        .walking-animal.walk-right.bounce {
+            animation-name: walkRightBounce;
+        }
+
+        @keyframes walkLeftBounce {
+            0% { left: 110%; transform: scaleX(-1) translateY(0); }
+            5% { transform: scaleX(-1) translateY(-15px); }
+            10% { transform: scaleX(-1) translateY(0); }
+            15% { transform: scaleX(-1) translateY(-15px); }
+            20% { transform: scaleX(-1) translateY(0); }
+            25% { transform: scaleX(-1) translateY(-15px); }
+            30% { transform: scaleX(-1) translateY(0); }
+            35% { transform: scaleX(-1) translateY(-15px); }
+            40% { transform: scaleX(-1) translateY(0); }
+            45% { transform: scaleX(-1) translateY(-15px); }
+            50% { transform: scaleX(-1) translateY(0); }
+            55% { transform: scaleX(-1) translateY(-15px); }
+            60% { transform: scaleX(-1) translateY(0); }
+            65% { transform: scaleX(-1) translateY(-15px); }
+            70% { transform: scaleX(-1) translateY(0); }
+            75% { transform: scaleX(-1) translateY(-15px); }
+            80% { transform: scaleX(-1) translateY(0); }
+            85% { transform: scaleX(-1) translateY(-15px); }
+            90% { transform: scaleX(-1) translateY(0); }
+            95% { transform: scaleX(-1) translateY(-15px); }
+            100% { left: -15%; transform: scaleX(-1) translateY(0); }
+        }
+
+        @keyframes walkRightBounce {
+            0% { left: -15%; transform: scaleX(1) translateY(0); }
+            5% { transform: scaleX(1) translateY(-15px); }
+            10% { transform: scaleX(1) translateY(0); }
+            15% { transform: scaleX(1) translateY(-15px); }
+            20% { transform: scaleX(1) translateY(0); }
+            25% { transform: scaleX(1) translateY(-15px); }
+            30% { transform: scaleX(1) translateY(0); }
+            35% { transform: scaleX(1) translateY(-15px); }
+            40% { transform: scaleX(1) translateY(0); }
+            45% { transform: scaleX(1) translateY(-15px); }
+            50% { transform: scaleX(1) translateY(0); }
+            55% { transform: scaleX(1) translateY(-15px); }
+            60% { transform: scaleX(1) translateY(0); }
+            65% { transform: scaleX(1) translateY(-15px); }
+            70% { transform: scaleX(1) translateY(0); }
+            75% { transform: scaleX(1) translateY(-15px); }
+            80% { transform: scaleX(1) translateY(0); }
+            85% { transform: scaleX(1) translateY(-15px); }
+            90% { transform: scaleX(1) translateY(0); }
+            95% { transform: scaleX(1) translateY(-15px); }
+            100% { left: 110%; transform: scaleX(1) translateY(0); }
+        }
+
+        .sky {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 60%;
+            cursor: pointer;
+            z-index: 1;
+        }
+
+        .ground {
+            cursor: pointer;
+        }
+
+        /* ============ MOBILE ============ */
+        @media (max-width: 768px) {
+            .title-logo { font-size: 32px; }
+            .start-button { font-size: 24px; padding: 15px 40px; }
+            .game-title { font-size: 22px; top: 70px; }
+            .character-frame { width: 100px; height: 100px; }
+            .dog .character-frame { width: 90px; height: 90px; }
+            .character-crown { font-size: 25px; }
+            .character-name { font-size: 12px; }
+            .castle { transform: scale(0.7); left: 10px; }
+            .tree { transform: scale(0.7); }
+            .pond { width: 130px; height: 65px; }
+            .level-display, .score-display, .butterfly-counter {
+                font-size: 14px;
+                padding: 8px 15px;
+            }
+            .win-title { font-size: 36px; }
+            .win-button { padding: 12px 30px; font-size: 18px; }
+        }
+    </style>
+</head>
+<body>
+    <!-- ============ TITLE SCREEN ============ -->
+    <div class="title-screen" id="titleScreen">
+        <div class="title-sparkles" id="titleSparkles"></div>
+        <div class="title-logo">Princess Garden Adventure</div>
+        <div class="title-characters">
+            <div class="title-character"><img src="images/Ellie.jpeg" alt="Ellie"></div>
+            <div class="title-character"><img src="images/Maya.jpeg" alt="Maya"></div>
+            <div class="title-character"><img src="images/Pinky.jpeg" alt="Pinky"></div>
+        </div>
+        <div class="title-subtitle">Help the princesses catch Ms. Pinky!</div>
+        <button class="start-button" id="startButton">Play!</button>
+    </div>
+
+    <!-- ============ STORY SCREEN ============ -->
+    <div class="story-screen" id="storyScreen">
+        <div class="story-text" id="storyText"></div>
+        <div class="story-image" id="storyImage"></div>
+        <button class="skip-button" id="skipStory">Skip</button>
+    </div>
+
+    <!-- ============ GAME CONTAINER ============ -->
+    <div class="game-container" id="gameContainer">
+        <!-- Sky -->
+        <div class="sky" id="sky"></div>
+        <div class="sun" id="sun"></div>
+        <div class="cloud cloud-1" id="cloud1"></div>
+        <div class="cloud cloud-2" id="cloud2"></div>
+        <div class="cloud cloud-3" id="cloud3"></div>
+        <div class="rainbow" id="rainbow"></div>
+
+        <!-- Ground -->
+        <div class="ground"></div>
+        <div class="grass-container" id="grassContainer"></div>
+
+        <!-- Castle -->
+        <div class="castle" id="castle">
+            <div class="castle-base">
+                <div class="castle-tower">
+                    <div class="castle-window"></div>
+                </div>
+                <div class="castle-tower main">
+                    <div class="castle-window"></div>
+                    <div class="castle-door"></div>
+                </div>
+                <div class="castle-tower">
+                    <div class="castle-window"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tree -->
+        <div class="tree" id="tree">
+            <div class="tree-leaves"></div>
+            <div class="tree-trunk"></div>
+        </div>
+
+        <!-- Pond -->
+        <div class="pond" id="pond">
+            <div class="pond-shine"></div>
+            <div class="lily-pad pad1"></div>
+            <div class="lily-pad pad2"></div>
+            <div class="fish" id="fish">
+                <div class="fish-body"></div>
+                <div class="fish-tail"></div>
+            </div>
+        </div>
+
+        <!-- Flowers -->
+        <div class="flower flower-1" id="flower1">
+            <div class="flower-stem"></div>
+            <div class="flower-head">
+                <div class="flower-petal" style="background: #FF69B4; transform: translate(-50%, -50%) translateX(-15px);"></div>
+                <div class="flower-petal" style="background: #FF69B4; transform: translate(-50%, -50%) translateX(15px);"></div>
+                <div class="flower-petal" style="background: #FF69B4; transform: translate(-50%, -50%) translateY(-15px);"></div>
+                <div class="flower-petal" style="background: #FF69B4; transform: translate(-50%, -50%) translateY(15px);"></div>
+                <div class="flower-center"></div>
+            </div>
+        </div>
+
+        <div class="flower flower-2" id="flower2">
+            <div class="flower-stem"></div>
+            <div class="flower-head">
+                <div class="flower-petal" style="background: #DDA0DD; transform: translate(-50%, -50%) translateX(-15px);"></div>
+                <div class="flower-petal" style="background: #DDA0DD; transform: translate(-50%, -50%) translateX(15px);"></div>
+                <div class="flower-petal" style="background: #DDA0DD; transform: translate(-50%, -50%) translateY(-15px);"></div>
+                <div class="flower-petal" style="background: #DDA0DD; transform: translate(-50%, -50%) translateY(15px);"></div>
+                <div class="flower-center"></div>
+            </div>
+        </div>
+
+        <div class="flower flower-3" id="flower3">
+            <div class="flower-stem"></div>
+            <div class="flower-head">
+                <div class="flower-petal" style="background: #87CEEB; transform: translate(-50%, -50%) translateX(-15px);"></div>
+                <div class="flower-petal" style="background: #87CEEB; transform: translate(-50%, -50%) translateX(15px);"></div>
+                <div class="flower-petal" style="background: #87CEEB; transform: translate(-50%, -50%) translateY(-15px);"></div>
+                <div class="flower-petal" style="background: #87CEEB; transform: translate(-50%, -50%) translateY(15px);"></div>
+                <div class="flower-center"></div>
+            </div>
+        </div>
+
+        <div class="flower flower-4" id="flower4">
+            <div class="flower-stem"></div>
+            <div class="flower-head">
+                <div class="flower-petal" style="background: #FFB6C1; transform: translate(-50%, -50%) translateX(-15px);"></div>
+                <div class="flower-petal" style="background: #FFB6C1; transform: translate(-50%, -50%) translateX(15px);"></div>
+                <div class="flower-petal" style="background: #FFB6C1; transform: translate(-50%, -50%) translateY(-15px);"></div>
+                <div class="flower-petal" style="background: #FFB6C1; transform: translate(-50%, -50%) translateY(15px);"></div>
+                <div class="flower-center"></div>
+            </div>
+        </div>
+
+        <div class="flower flower-5" id="flower5">
+            <div class="flower-stem"></div>
+            <div class="flower-head">
+                <div class="flower-petal" style="background: #98D8C8; transform: translate(-50%, -50%) translateX(-15px);"></div>
+                <div class="flower-petal" style="background: #98D8C8; transform: translate(-50%, -50%) translateX(15px);"></div>
+                <div class="flower-petal" style="background: #98D8C8; transform: translate(-50%, -50%) translateY(-15px);"></div>
+                <div class="flower-petal" style="background: #98D8C8; transform: translate(-50%, -50%) translateY(15px);"></div>
+                <div class="flower-center"></div>
+            </div>
+        </div>
+
+        <!-- Characters -->
+        <div class="character princess-1" id="princess1">
+            <div class="character-wrapper">
+                <div class="character-crown">👑</div>
+                <div class="character-frame">
+                    <img src="images/Ellie.jpeg" alt="Princess Ellie">
+                </div>
+                <div class="character-name">Princess Ellie</div>
+            </div>
+        </div>
+
+        <div class="character princess-2" id="princess2">
+            <div class="character-wrapper">
+                <div class="character-crown">👑</div>
+                <div class="character-frame">
+                    <img src="images/Maya.jpeg" alt="Princess Maya">
+                </div>
+                <div class="character-name">Princess Maya</div>
+            </div>
+        </div>
+
+        <div class="character dog" id="dog">
+            <div class="character-wrapper">
+                <div class="character-crown">👑</div>
+                <div class="character-frame">
+                    <img src="images/Pinky.jpeg" alt="Ms. Pinky">
+                </div>
+                <div class="dog-bow">🎀</div>
+                <div class="character-name">Ms. Pinky</div>
+            </div>
+        </div>
+
+        <!-- UI -->
+        <div class="game-ui">
+            <div class="ui-left">
+                <button class="sound-toggle" id="soundToggle">🔊</button>
+                <button class="music-toggle" id="musicToggle">🎵</button>
+            </div>
+            <div class="ui-right">
+                <div class="level-display" id="levelDisplay">Level 1</div>
+                <div class="score-display" id="scoreDisplay">⭐ 0</div>
+                <div class="butterfly-counter" id="butterflyCounter">🦋 0 / 5</div>
+            </div>
+        </div>
+
+        <!-- Game Title -->
+        <div class="game-title" id="gameTitle">✨ Princess Garden ✨</div>
+
+        <!-- Rain & Lightning -->
+        <div class="rain-container" id="rainContainer"></div>
+        <div class="lightning" id="lightning"></div>
+
+        <!-- King Popup -->
+        <div class="king-popup" id="kingPopup">
+            <div class="king-crown">👑</div>
+            <div class="king-image"><img src="images/micha.jpeg" alt="King Papa Micha"></div>
+            <div class="king-title">King Papa Micha</div>
+            <div class="king-message" id="kingMessage">איפה הבנות שלי? זמן לגלידה!</div>
+        </div>
+    </div>
+
+    <!-- ============ INSTRUCTIONS POPUP ============ -->
+    <div class="instructions-popup" id="instructionsPopup">
+        <h2>How to Play!</h2>
+        <div class="emoji-big">🌸 🦋 🐕</div>
+        <p><strong>Tap the flowers</strong> to release butterflies!</p>
+        <p>The butterflies will fly to <strong>Ms. Pinky</strong></p>
+        <p>Catch her with <strong>5 butterflies</strong> to win!</p>
+        <p>Collect <strong>gems</strong> ⭐ for bonus points!</p>
+        <button id="startGameBtn">Let's Go!</button>
+    </div>
+
+    <!-- ============ WIN SCREEN ============ -->
+    <div class="win-screen" id="winScreen">
+        <div class="win-title">Level Complete!</div>
+        <div class="win-stars" id="winStars">
+            <span>⭐</span>
+            <span>⭐</span>
+            <span>⭐</span>
+        </div>
+        <div class="win-message" id="winMessage">You caught Ms. Pinky!</div>
+        <div class="win-buttons">
+            <button class="win-button next-level" id="nextLevelBtn">Next Level</button>
+            <button class="win-button play-again" id="playAgainBtn">Play Again</button>
+        </div>
+    </div>
+
+    <script>
+        // ============ AUDIO SYSTEM ============
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        let audioCtx = null;
+        let soundEnabled = true;
+        let musicEnabled = true;
+        let musicInterval = null;
+
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new AudioContext();
+            }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+        }
+
+        function playTone(frequency, duration, type = 'sine', volume = 0.3) {
+            if (!soundEnabled || !audioCtx) return;
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.frequency.value = frequency;
+            osc.type = type;
+            gain.gain.setValueAtTime(volume, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+            osc.start(audioCtx.currentTime);
+            osc.stop(audioCtx.currentTime + duration);
+        }
+
+        function playMagicSound() {
+            playTone(523, 0.1);
+            setTimeout(() => playTone(659, 0.1), 50);
+            setTimeout(() => playTone(784, 0.15), 100);
+        }
+
+        function playCollectSound() {
+            playTone(880, 0.1);
+            setTimeout(() => playTone(1047, 0.15), 80);
+        }
+
+        function playSplashSound() {
+            playTone(200, 0.2, 'triangle');
+            setTimeout(() => playTone(150, 0.15, 'triangle'), 80);
+        }
+
+        function playBirdSound() {
+            playTone(800, 0.08);
+            setTimeout(() => playTone(1000, 0.08), 80);
+            setTimeout(() => playTone(900, 0.1), 160);
+        }
+
+        function playHeartSound() {
+            playTone(440, 0.12);
+            setTimeout(() => playTone(554, 0.15), 80);
+        }
+
+        function playBarkSound() {
+            playTone(350, 0.1, 'sawtooth', 0.2);
+            setTimeout(() => playTone(280, 0.12, 'sawtooth', 0.2), 100);
+        }
+
+        function playThunderSound() {
+            if (!audioCtx) return;
+            const bufferSize = audioCtx.sampleRate * 0.6;
+            const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+            const data = buffer.getChannelData(0);
+            for (let i = 0; i < bufferSize; i++) {
+                data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / bufferSize, 1.5);
+            }
+            const noise = audioCtx.createBufferSource();
+            noise.buffer = buffer;
+            const filter = audioCtx.createBiquadFilter();
+            filter.type = 'lowpass';
+            filter.frequency.value = 150;
+            const gain = audioCtx.createGain();
+            gain.gain.setValueAtTime(0.4, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.6);
+            noise.connect(filter);
+            filter.connect(gain);
+            gain.connect(audioCtx.destination);
+            noise.start();
+        }
+
+        function playWinSound() {
+            const notes = [523, 659, 784, 1047];
+            notes.forEach((note, i) => {
+                setTimeout(() => playTone(note, 0.3, 'sine', 0.25), i * 150);
+            });
+        }
+
+        function playLevelUpSound() {
+            const notes = [392, 523, 659, 784, 1047, 1319];
+            notes.forEach((note, i) => {
+                setTimeout(() => playTone(note, 0.2, 'sine', 0.2), i * 100);
+            });
+        }
+
+        // Background Music - Soft music box lullaby style
+        function playMusicBoxNote(frequency, duration) {
+            if (!musicEnabled || !audioCtx) return;
+
+            // Create a softer, music-box like sound
+            const osc = audioCtx.createOscillator();
+            const osc2 = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            const filter = audioCtx.createBiquadFilter();
+
+            // Main tone
+            osc.type = 'sine';
+            osc.frequency.value = frequency;
+
+            // Harmonic for richness
+            osc2.type = 'sine';
+            osc2.frequency.value = frequency * 2;
+
+            // Soft filter
+            filter.type = 'lowpass';
+            filter.frequency.value = 2000;
+            filter.Q.value = 1;
+
+            osc.connect(filter);
+            osc2.connect(filter);
+            filter.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            // Soft attack and decay like a music box
+            gain.gain.setValueAtTime(0, audioCtx.currentTime);
+            gain.gain.linearRampToValueAtTime(0.04, audioCtx.currentTime + 0.02);
+            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+
+            osc.start(audioCtx.currentTime);
+            osc2.start(audioCtx.currentTime);
+            osc.stop(audioCtx.currentTime + duration);
+            osc2.stop(audioCtx.currentTime + duration);
+        }
+
+        function playBackgroundMusic() {
+            if (!musicEnabled || !audioCtx) return;
+            if (musicInterval) return; // Already playing
+
+            // Gentle lullaby melody (Twinkle Twinkle style)
+            const melody = [
+                { note: 262, dur: 0.6 }, // C4
+                { note: 262, dur: 0.6 }, // C4
+                { note: 392, dur: 0.6 }, // G4
+                { note: 392, dur: 0.6 }, // G4
+                { note: 440, dur: 0.6 }, // A4
+                { note: 440, dur: 0.6 }, // A4
+                { note: 392, dur: 1.0 }, // G4
+                { note: 0, dur: 0.4 },   // rest
+                { note: 349, dur: 0.6 }, // F4
+                { note: 349, dur: 0.6 }, // F4
+                { note: 330, dur: 0.6 }, // E4
+                { note: 330, dur: 0.6 }, // E4
+                { note: 294, dur: 0.6 }, // D4
+                { note: 294, dur: 0.6 }, // D4
+                { note: 262, dur: 1.0 }, // C4
+                { note: 0, dur: 0.6 },   // rest
+                { note: 392, dur: 0.6 }, // G4
+                { note: 392, dur: 0.6 }, // G4
+                { note: 349, dur: 0.6 }, // F4
+                { note: 349, dur: 0.6 }, // F4
+                { note: 330, dur: 0.6 }, // E4
+                { note: 330, dur: 0.6 }, // E4
+                { note: 294, dur: 1.0 }, // D4
+                { note: 0, dur: 0.4 },   // rest
+                { note: 392, dur: 0.6 }, // G4
+                { note: 392, dur: 0.6 }, // G4
+                { note: 349, dur: 0.6 }, // F4
+                { note: 349, dur: 0.6 }, // F4
+                { note: 330, dur: 0.6 }, // E4
+                { note: 330, dur: 0.6 }, // E4
+                { note: 294, dur: 1.0 }, // D4
+                { note: 0, dur: 0.8 },   // rest
+            ];
+
+            let noteIndex = 0;
+
+            function playNextNote() {
+                if (!musicEnabled) return;
+
+                const { note, dur } = melody[noteIndex];
+                if (note > 0) {
+                    playMusicBoxNote(note, dur * 0.9);
+                }
+
+                noteIndex = (noteIndex + 1) % melody.length;
+                musicInterval = setTimeout(playNextNote, dur * 500);
+            }
+
+            playNextNote();
+        }
+
+        function stopBackgroundMusic() {
+            if (musicInterval) {
+                clearTimeout(musicInterval);
+                musicInterval = null;
+            }
+        }
+
+        // Speech synthesis
+        function speak(text, lang = 'en-US', rate = 1, pitch = 1.2) {
+            if (!soundEnabled) return;
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = lang;
+            utterance.rate = rate;
+            utterance.pitch = pitch;
+            speechSynthesis.speak(utterance);
+        }
+
+        // ============ GAME STATE ============
+        let gameState = {
+            level: 1,
+            score: 0,
+            butterfliesCaught: 0,
+            butterfliesNeeded: 5,
+            gameStarted: false,
+            gamePaused: false,
+            pinkySpeed: 1.5,
+            gems: [],
+            powerups: []
+        };
+
+        // Level configurations
+        const levelConfig = {
+            1: { butterflies: 5, pinkySpeed: 1.5, gems: 3, powerups: 1 },
+            2: { butterflies: 7, pinkySpeed: 1.2, gems: 4, powerups: 1 },
+            3: { butterflies: 10, pinkySpeed: 1, gems: 5, powerups: 2 },
+            4: { butterflies: 12, pinkySpeed: 0.8, gems: 6, powerups: 2 },
+            5: { butterflies: 15, pinkySpeed: 0.6, gems: 8, powerups: 3 }
+        };
+
+        // ============ VISUAL EFFECTS ============
+        function createSparkle(x, y, color = null) {
+            const sparkle = document.createElement('div');
+            sparkle.className = 'sparkle';
+            sparkle.style.left = x + 'px';
+            sparkle.style.top = y + 'px';
+            sparkle.style.color = color || ['#FFD700', '#FF69B4', '#87CEEB', '#DDA0DD', '#98D8C8'][Math.floor(Math.random() * 5)];
+            document.body.appendChild(sparkle);
+            setTimeout(() => sparkle.remove(), 800);
+        }
+
+        function createSparkles(x, y, count = 8) {
+            for (let i = 0; i < count; i++) {
+                setTimeout(() => {
+                    createSparkle(
+                        x + (Math.random() - 0.5) * 60,
+                        y + (Math.random() - 0.5) * 60
+                    );
+                }, i * 40);
+            }
+        }
+
+        function createHeart(x, y) {
+            const heart = document.createElement('div');
+            heart.className = 'heart';
+            heart.textContent = ['❤️', '💖', '💕', '💗', '💝'][Math.floor(Math.random() * 5)];
+            heart.style.left = x + 'px';
+            heart.style.top = y + 'px';
+            document.body.appendChild(heart);
+            setTimeout(() => heart.remove(), 1500);
+        }
+
+        function createBird(x, y) {
+            const bird = document.createElement('div');
+            bird.className = 'bird';
+            bird.textContent = ['🐦', '🐤', '🦜'][Math.floor(Math.random() * 3)];
+            bird.style.left = x + 'px';
+            bird.style.top = y + 'px';
+            document.body.appendChild(bird);
+            playBirdSound();
+            setTimeout(() => bird.remove(), 3000);
+        }
+
+        function createButterfly(x, y, targetX, targetY, onReach) {
+            const butterfly = document.createElement('div');
+            butterfly.className = 'butterfly';
+            butterfly.style.left = x + 'px';
+            butterfly.style.top = y + 'px';
+
+            const color = ['#FF69B4', '#DDA0DD', '#87CEEB', '#FFB6C1', '#98D8C8'][Math.floor(Math.random() * 5)];
+            butterfly.innerHTML = `
+                <div class="butterfly-wing left" style="background: ${color};"></div>
+                <div class="butterfly-wing right" style="background: ${color};"></div>
+            `;
+
+            document.body.appendChild(butterfly);
+
+            // Animate to target
+            butterfly.style.transition = `left ${gameState.pinkySpeed}s ease-in-out, top ${gameState.pinkySpeed}s ease-in-out`;
+
+            setTimeout(() => {
+                butterfly.style.left = targetX + 'px';
+                butterfly.style.top = targetY + 'px';
+            }, 50);
+
+            setTimeout(() => {
+                butterfly.remove();
+                if (onReach) onReach();
+            }, gameState.pinkySpeed * 1000);
+        }
+
+        function makeItRain() {
+            const container = document.getElementById('rainContainer');
+            for (let i = 0; i < 60; i++) {
+                setTimeout(() => {
+                    const drop = document.createElement('div');
+                    drop.className = 'raindrop';
+                    drop.style.left = Math.random() * 100 + '%';
+                    drop.style.animationDuration = (0.4 + Math.random() * 0.3) + 's';
+                    container.appendChild(drop);
+                    setTimeout(() => drop.remove(), 700);
+                }, i * 15);
+            }
+        }
+
+        function makeLightning() {
+            const lightning = document.getElementById('lightning');
+            lightning.classList.remove('flash');
+            void lightning.offsetWidth;
+            lightning.classList.add('flash');
+            if (soundEnabled) playThunderSound();
+        }
+
+        // ============ GRASS GENERATION ============
+        function generateGrass() {
+            const container = document.getElementById('grassContainer');
+            container.innerHTML = '';
+            const bladeCount = Math.floor(window.innerWidth / 12);
+            for (let i = 0; i < bladeCount; i++) {
+                const blade = document.createElement('div');
+                blade.className = 'grass-blade';
+                blade.style.left = (i * 12 + Math.random() * 6) + 'px';
+                blade.style.height = (30 + Math.random() * 25) + 'px';
+                blade.style.animationDelay = (Math.random() * 2) + 's';
+                container.appendChild(blade);
+            }
+        }
+
+        // ============ TITLE SCREEN SPARKLES ============
+        function createTitleSparkles() {
+            const container = document.getElementById('titleSparkles');
+            const sparkles = ['✨', '⭐', '💫', '🌟', '💖'];
+            for (let i = 0; i < 15; i++) {
+                const sparkle = document.createElement('div');
+                sparkle.className = 'title-sparkle';
+                sparkle.textContent = sparkles[Math.floor(Math.random() * sparkles.length)];
+                sparkle.style.left = Math.random() * 100 + '%';
+                sparkle.style.top = Math.random() * 100 + '%';
+                sparkle.style.animationDelay = (Math.random() * 4) + 's';
+                container.appendChild(sparkle);
+            }
+        }
+
+        // ============ COLLECTIBLES ============
+        function spawnGems() {
+            // Remove existing gems
+            document.querySelectorAll('.gem').forEach(g => g.remove());
+            gameState.gems = [];
+
+            const config = levelConfig[gameState.level] || levelConfig[5];
+            const gemTypes = ['💎', '🌟', '⭐', '💫'];
+
+            for (let i = 0; i < config.gems; i++) {
+                const gem = document.createElement('div');
+                gem.className = 'gem';
+                gem.textContent = gemTypes[Math.floor(Math.random() * gemTypes.length)];
+                gem.style.left = (15 + Math.random() * 70) + '%';
+                gem.style.bottom = (15 + Math.random() * 25) + '%';
+                gem.style.animationDelay = (Math.random() * 2) + 's';
+                gem.dataset.points = 10 + Math.floor(Math.random() * 20);
+
+                gem.addEventListener('click', () => collectGem(gem));
+                gem.addEventListener('touchstart', (e) => { e.preventDefault(); collectGem(gem); });
+
+                document.getElementById('gameContainer').appendChild(gem);
+                gameState.gems.push(gem);
+            }
+        }
+
+        function collectGem(gem) {
+            if (gem.classList.contains('collected')) return;
+            gem.classList.add('collected');
+
+            const points = parseInt(gem.dataset.points);
+            gameState.score += points;
+            updateUI();
+
+            playCollectSound();
+            const rect = gem.getBoundingClientRect();
+            createSparkles(rect.left + rect.width/2, rect.top + rect.height/2, 10);
+
+            setTimeout(() => gem.remove(), 500);
+        }
+
+        function spawnPowerups() {
+            document.querySelectorAll('.powerup').forEach(p => p.remove());
+
+            const config = levelConfig[gameState.level] || levelConfig[5];
+            const powerupTypes = [
+                { emoji: '⚡', effect: 'speed', name: 'Super Speed!' },
+                { emoji: '❄️', effect: 'freeze', name: 'Freeze Pinky!' },
+                { emoji: '🦋', effect: 'multifly', name: 'Triple Butterflies!' }
+            ];
+
+            for (let i = 0; i < config.powerups; i++) {
+                setTimeout(() => {
+                    if (!gameState.gameStarted) return;
+
+                    const type = powerupTypes[Math.floor(Math.random() * powerupTypes.length)];
+                    const powerup = document.createElement('div');
+                    powerup.className = 'powerup';
+                    powerup.textContent = type.emoji;
+                    powerup.style.left = (20 + Math.random() * 60) + '%';
+                    powerup.style.bottom = (45 + Math.random() * 10) + '%';
+                    powerup.dataset.effect = type.effect;
+                    powerup.dataset.name = type.name;
+
+                    powerup.addEventListener('click', () => collectPowerup(powerup));
+                    powerup.addEventListener('touchstart', (e) => { e.preventDefault(); collectPowerup(powerup); });
+
+                    document.getElementById('gameContainer').appendChild(powerup);
+                }, 5000 + i * 10000);
+            }
+        }
+
+        function collectPowerup(powerup) {
+            if (powerup.classList.contains('collected')) return;
+            powerup.classList.add('collected');
+
+            const effect = powerup.dataset.effect;
+            const name = powerup.dataset.name;
+
+            playLevelUpSound();
+            const rect = powerup.getBoundingClientRect();
+            createSparkles(rect.left, rect.top, 15);
+
+            // Show powerup notification
+            showPowerupActive(name);
+
+            // Apply effect
+            switch (effect) {
+                case 'speed':
+                    const oldSpeed = gameState.pinkySpeed;
+                    gameState.pinkySpeed = 0.5;
+                    setTimeout(() => gameState.pinkySpeed = oldSpeed, 5000);
+                    break;
+                case 'freeze':
+                    const dog = document.getElementById('dog');
+                    dog.style.transition = 'none';
+                    setTimeout(() => dog.style.transition = '', 4000);
+                    break;
+                case 'multifly':
+                    // Next 3 flower clicks spawn 3 butterflies
+                    window.multiflyCount = 3;
+                    break;
+            }
+
+            setTimeout(() => powerup.remove(), 600);
+        }
+
+        function showPowerupActive(name) {
+            const existing = document.querySelector('.powerup-active');
+            if (existing) existing.remove();
+
+            const indicator = document.createElement('div');
+            indicator.className = 'powerup-active';
+            indicator.textContent = name;
+            document.body.appendChild(indicator);
+
+            setTimeout(() => indicator.remove(), 3000);
+        }
+
+        // ============ CHARACTER MOVEMENT ============
+        function movePinkyRandomly() {
+            if (!gameState.gameStarted || gameState.gamePaused) return;
+
+            const dog = document.getElementById('dog');
+            const newLeft = 20 + Math.random() * 55;
+            const newBottom = 10 + Math.random() * 20;
+
+            dog.style.left = newLeft + '%';
+            dog.style.bottom = newBottom + '%';
+
+            // Random bark
+            if (Math.random() > 0.7) {
+                playBarkSound();
+            }
+        }
+
+        function startPinkyMovement() {
+            setInterval(() => {
+                if (gameState.gameStarted && !gameState.gamePaused) {
+                    movePinkyRandomly();
+                }
+            }, 3000 + Math.random() * 2000);
+        }
+
+        // Princess movement - they run around too!
+        function movePrincess1Randomly() {
+            if (!gameState.gameStarted || gameState.gamePaused) return;
+
+            const princess = document.getElementById('princess1');
+            const newLeft = 10 + Math.random() * 35; // Left side area
+            const newBottom = 12 + Math.random() * 18;
+
+            princess.style.left = newLeft + '%';
+            princess.style.bottom = newBottom + '%';
+        }
+
+        function movePrincess2Randomly() {
+            if (!gameState.gameStarted || gameState.gamePaused) return;
+
+            const princess = document.getElementById('princess2');
+            const newLeft = 30 + Math.random() * 35; // Middle area
+            const newBottom = 14 + Math.random() * 18;
+
+            princess.style.left = newLeft + '%';
+            princess.style.bottom = newBottom + '%';
+        }
+
+        function animatePrincesses() {
+            // Princess 1 moves every 4-6 seconds
+            setInterval(() => {
+                if (gameState.gameStarted && !gameState.gamePaused) {
+                    movePrincess1Randomly();
+                }
+            }, 4000 + Math.random() * 2000);
+
+            // Princess 2 moves every 3-5 seconds (slightly different timing)
+            setInterval(() => {
+                if (gameState.gameStarted && !gameState.gamePaused) {
+                    movePrincess2Randomly();
+                }
+            }, 3500 + Math.random() * 2000);
+        }
+
+        // ============ KING POPUP ============
+        let kingMessageIndex = 0;
+        const kingMessages = [
+            { text: 'Где мои девочки? Время для גלידה!', lang: 'ru-RU', display: 'Где мои девочки? Время для גלידה!' },
+            { text: 'Пойдём в ресторан, мисс Пинки!', lang: 'ru-RU', display: 'Пойдём в ресторан, мисс Пинки!' }
+        ];
+
+        function showKingPopup() {
+            const popup = document.getElementById('kingPopup');
+            const messageEl = document.getElementById('kingMessage');
+            const msg = kingMessages[kingMessageIndex];
+
+            messageEl.textContent = msg.display;
+            popup.classList.add('visible');
+
+            speak(msg.text, msg.lang, 0.9, 1);
+
+            kingMessageIndex = (kingMessageIndex + 1) % kingMessages.length;
+
+            setTimeout(() => popup.classList.remove('visible'), 4000);
+        }
+
+        // ============ WALKING ANIMALS ============
+        const animals = [
+            { emoji: '🐴', hebrew: 'סוס', sound: 'neigh' },
+            { emoji: '🐘', hebrew: 'פיל', sound: 'trumpet' },
+            { emoji: '🦁', hebrew: 'אריה', sound: 'roar' },
+            { emoji: '🐻', hebrew: 'דוב', sound: 'growl' },
+            { emoji: '🦒', hebrew: 'ג׳ירפה', sound: null },
+            { emoji: '🦓', hebrew: 'זברה', sound: null },
+            { emoji: '🐄', hebrew: 'פרה', sound: 'moo' },
+            { emoji: '🐷', hebrew: 'חזיר', sound: 'oink' },
+            { emoji: '🐑', hebrew: 'כבש', sound: 'baa' },
+            { emoji: '🐐', hebrew: 'עז', sound: 'baa' },
+            { emoji: '🦌', hebrew: 'אייל', sound: null },
+            { emoji: '🐪', hebrew: 'גמל', sound: null },
+            { emoji: '🦘', hebrew: 'קנגורו', sound: null },
+            { emoji: '🐊', hebrew: 'תנין', sound: null },
+            { emoji: '🦛', hebrew: 'היפופוטם', sound: null },
+            { emoji: '🦏', hebrew: 'קרנף', sound: null },
+            { emoji: '🐅', hebrew: 'נמר', sound: 'roar' },
+            { emoji: '🐆', hebrew: 'ברדלס', sound: 'roar' },
+            { emoji: '🐕', hebrew: 'כלב', sound: 'bark' },
+            { emoji: '🐈', hebrew: 'חתול', sound: 'meow' },
+            { emoji: '🐇', hebrew: 'ארנב', sound: null },
+            { emoji: '🦊', hebrew: 'שועל', sound: null },
+            { emoji: '🐿️', hebrew: 'סנאי', sound: null },
+        ];
+
+        function playAnimalSound(sound) {
+            if (!soundEnabled || !audioCtx) return;
+
+            switch(sound) {
+                case 'neigh':
+                    playTone(400, 0.3, 'sawtooth', 0.3);
+                    setTimeout(() => playTone(500, 0.4, 'sawtooth', 0.25), 300);
+                    break;
+                case 'trumpet':
+                    playTone(200, 0.5, 'sawtooth', 0.4);
+                    setTimeout(() => playTone(250, 0.3, 'sawtooth', 0.3), 400);
+                    break;
+                case 'roar':
+                    playTone(100, 0.6, 'sawtooth', 0.5);
+                    setTimeout(() => playTone(80, 0.4, 'sawtooth', 0.4), 300);
+                    break;
+                case 'growl':
+                    playTone(90, 0.5, 'sawtooth', 0.4);
+                    break;
+                case 'moo':
+                    playTone(150, 0.6, 'sawtooth', 0.3);
+                    setTimeout(() => playTone(120, 0.4, 'sawtooth', 0.25), 400);
+                    break;
+                case 'oink':
+                    playTone(300, 0.2, 'square', 0.3);
+                    setTimeout(() => playTone(350, 0.15, 'square', 0.25), 150);
+                    break;
+                case 'baa':
+                    playTone(350, 0.3, 'sawtooth', 0.25);
+                    setTimeout(() => playTone(300, 0.3, 'sawtooth', 0.2), 250);
+                    break;
+                case 'bark':
+                    playTone(400, 0.15, 'square', 0.4);
+                    setTimeout(() => playTone(450, 0.1, 'square', 0.3), 150);
+                    break;
+                case 'meow':
+                    playTone(500, 0.3, 'sine', 0.3);
+                    setTimeout(() => playTone(600, 0.2, 'sine', 0.2), 200);
+                    break;
+            }
+        }
+
+        function spawnAnimal(animalData, direction = 'random') {
+            const container = document.getElementById('gameContainer');
+            const animal = document.createElement('div');
+            animal.className = 'walking-animal';
+            animal.textContent = animalData.emoji;
+
+            const goRight = direction === 'random' ? Math.random() > 0.5 : direction === 'right';
+            animal.classList.add(goRight ? 'walk-right' : 'walk-left');
+            animal.classList.add('bounce');
+
+            // Random vertical position
+            animal.style.bottom = (5 + Math.random() * 8) + '%';
+
+            animal.addEventListener('click', () => {
+                initAudio();
+                speak(animalData.hebrew, 'he-IL', 0.9, 1.2);
+                if (animalData.sound) {
+                    setTimeout(() => playAnimalSound(animalData.sound), 400);
+                }
+                createSparkles(
+                    animal.getBoundingClientRect().left + 30,
+                    animal.getBoundingClientRect().top
+                );
+            });
+
+            container.appendChild(animal);
+
+            // Remove after animation
+            setTimeout(() => animal.remove(), 13000);
+        }
+
+        function scheduleAnimals() {
+            // Horse at 5 seconds
+            setTimeout(() => spawnAnimal(animals[0], 'right'), 5000);
+
+            // Elephant at 20 seconds
+            setTimeout(() => spawnAnimal(animals[1], 'left'), 20000);
+
+            // Lion at 40 seconds
+            setTimeout(() => spawnAnimal(animals[2], 'right'), 40000);
+
+            // Bear at 55 seconds
+            setTimeout(() => spawnAnimal(animals[3], 'left'), 55000);
+
+            // Then random animals every 15-25 seconds
+            let animalIndex = 4;
+            function spawnNextAnimal() {
+                if (!gameState.gameStarted) return;
+
+                const randomAnimal = animals[animalIndex % animals.length];
+                spawnAnimal(randomAnimal);
+                animalIndex++;
+
+                setTimeout(spawnNextAnimal, 15000 + Math.random() * 10000);
+            }
+
+            setTimeout(spawnNextAnimal, 70000);
+        }
+
+        // ============ GAME LOGIC ============
+        function updateUI() {
+            document.getElementById('levelDisplay').textContent = `Level ${gameState.level}`;
+            document.getElementById('scoreDisplay').textContent = `⭐ ${gameState.score}`;
+            document.getElementById('butterflyCounter').textContent = `🦋 ${gameState.butterfliesCaught} / ${gameState.butterfliesNeeded}`;
+        }
+
+        function catchButterfly() {
+            gameState.butterfliesCaught++;
+            gameState.score += 5;
+            updateUI();
+
+            const dog = document.getElementById('dog');
+            dog.classList.remove('excited');
+            void dog.offsetWidth;
+            dog.classList.add('excited');
+
+            playBarkSound();
+
+            if (gameState.butterfliesCaught >= gameState.butterfliesNeeded) {
+                winLevel();
+            } else {
+                movePinkyRandomly();
+            }
+        }
+
+        function sendButterflyToPinky(x, y) {
+            if (!gameState.gameStarted || gameState.gamePaused) return;
+
+            const dog = document.getElementById('dog');
+            const rect = dog.getBoundingClientRect();
+            const targetX = rect.left + rect.width / 2;
+            const targetY = rect.top + rect.height / 2;
+
+            const count = window.multiflyCount > 0 ? 3 : 1;
+            if (window.multiflyCount > 0) window.multiflyCount--;
+
+            for (let i = 0; i < count; i++) {
+                setTimeout(() => {
+                    createButterfly(
+                        x + (Math.random() - 0.5) * 30,
+                        y + (Math.random() - 0.5) * 30,
+                        targetX,
+                        targetY,
+                        catchButterfly
+                    );
+                }, i * 200);
+            }
+
+            createSparkles(x, y);
+            playMagicSound();
+        }
+
+        function winLevel() {
+            gameState.gamePaused = true;
+
+            playWinSound();
+
+            // Calculate stars based on performance
+            const stars = Math.min(3, Math.floor(gameState.score / 50) + 1);
+            const starsContainer = document.getElementById('winStars');
+            starsContainer.innerHTML = '';
+            for (let i = 0; i < 3; i++) {
+                const star = document.createElement('span');
+                star.textContent = i < stars ? '⭐' : '☆';
+                star.style.opacity = i < stars ? '1' : '0.3';
+                starsContainer.appendChild(star);
+            }
+
+            document.getElementById('winMessage').textContent =
+                gameState.level >= 5 ? 'You completed all levels!' : 'You caught Ms. Pinky!';
+
+            document.getElementById('winScreen').classList.add('visible');
+
+            // Celebration sparkles
+            for (let i = 0; i < 40; i++) {
+                setTimeout(() => {
+                    createSparkle(
+                        Math.random() * window.innerWidth,
+                        Math.random() * window.innerHeight
+                    );
+                }, i * 80);
+            }
+
+            speak('Yay! You did it!', 'en-US', 1, 1.4);
+        }
+
+        function nextLevel() {
+            gameState.level = Math.min(gameState.level + 1, 5);
+            const config = levelConfig[gameState.level];
+            gameState.butterfliesNeeded = config.butterflies;
+            gameState.pinkySpeed = config.pinkySpeed;
+            gameState.butterfliesCaught = 0;
+            gameState.gamePaused = false;
+
+            document.getElementById('winScreen').classList.remove('visible');
+
+            updateUI();
+            spawnGems();
+            spawnPowerups();
+
+            // Reset Pinky position
+            const dog = document.getElementById('dog');
+            dog.style.left = '62%';
+            dog.style.bottom = '15%';
+
+            playLevelUpSound();
+        }
+
+        function restartGame() {
+            gameState.level = 1;
+            gameState.score = 0;
+            gameState.butterfliesCaught = 0;
+            gameState.butterfliesNeeded = 5;
+            gameState.pinkySpeed = 1.5;
+            gameState.gamePaused = false;
+
+            document.getElementById('winScreen').classList.remove('visible');
+
+            updateUI();
+            spawnGems();
+            spawnPowerups();
+
+            const dog = document.getElementById('dog');
+            dog.style.left = '62%';
+            dog.style.bottom = '15%';
+        }
+
+        // ============ STORY SEQUENCE ============
+        const storySequence = [
+            { text: "Once upon a time in a magical garden...", image: null },
+            { text: "There lived two beautiful princesses...", image: "images/Ellie.jpeg" },
+            { text: "Princess Ellie and Princess Maya!", image: "images/Maya.jpeg" },
+            { text: "And their playful puppy, Ms. Pinky!", image: "images/Pinky.jpeg" },
+            { text: "But oh no! Ms. Pinky loves to run away!", image: "images/Pinky.jpeg" },
+            { text: "Help the princesses catch her with magical butterflies!", image: null }
+        ];
+
+        let storyIndex = 0;
+        let storyTimer = null;
+
+        function showStory() {
+            const screen = document.getElementById('storyScreen');
+            const textEl = document.getElementById('storyText');
+            const imageEl = document.getElementById('storyImage');
+
+            screen.classList.add('visible');
+
+            function showNext() {
+                if (storyIndex >= storySequence.length) {
+                    screen.classList.remove('visible');
+                    setTimeout(showInstructions, 500);
+                    return;
+                }
+
+                const story = storySequence[storyIndex];
+
+                textEl.classList.remove('visible');
+                imageEl.classList.remove('visible');
+
+                setTimeout(() => {
+                    textEl.textContent = story.text;
+                    textEl.classList.add('visible');
+
+                    if (story.image) {
+                        imageEl.innerHTML = `<img src="${story.image}" alt="">`;
+                        setTimeout(() => imageEl.classList.add('visible'), 300);
+                    }
+
+                    speak(story.text, 'en-US', 0.9, 1.1);
+                }, 300);
+
+                storyIndex++;
+                storyTimer = setTimeout(showNext, 3500);
+            }
+
+            showNext();
+        }
+
+        function skipStory() {
+            if (storyTimer) {
+                clearTimeout(storyTimer);
+                storyTimer = null;
+            }
+            storyIndex = storySequence.length;
+            document.getElementById('storyScreen').classList.remove('visible');
+            showInstructions();
+        }
+
+        function showInstructions() {
+            document.getElementById('instructionsPopup').classList.add('visible');
+        }
+
+        function startGame() {
+            document.getElementById('instructionsPopup').classList.remove('visible');
+            gameState.gameStarted = true;
+            updateUI();
+            spawnGems();
+            spawnPowerups();
+            startPinkyMovement();
+            animatePrincesses();
+            scheduleAnimals();
+
+            if (musicEnabled) {
+                playBackgroundMusic();
+            }
+        }
+
+        // ============ EVENT LISTENERS ============
+        function setupEventListeners() {
+            // Start button
+            document.getElementById('startButton').addEventListener('click', () => {
+                initAudio();
+                document.getElementById('titleScreen').classList.add('hidden');
+                setTimeout(() => showStory(), 500);
+            });
+
+            // Skip story
+            document.getElementById('skipStory').addEventListener('click', skipStory);
+
+            // Start game
+            document.getElementById('startGameBtn').addEventListener('click', startGame);
+
+            // Sound toggle
+            document.getElementById('soundToggle').addEventListener('click', () => {
+                soundEnabled = !soundEnabled;
+                document.getElementById('soundToggle').textContent = soundEnabled ? '🔊' : '🔇';
+            });
+
+            // Music toggle
+            document.getElementById('musicToggle').addEventListener('click', () => {
+                initAudio();
+                musicEnabled = !musicEnabled;
+                document.getElementById('musicToggle').textContent = musicEnabled ? '🎵' : '🎵';
+                document.getElementById('musicToggle').style.opacity = musicEnabled ? '1' : '0.5';
+
+                if (musicEnabled && gameState.gameStarted) {
+                    playBackgroundMusic();
+                } else {
+                    stopBackgroundMusic();
+                }
+            });
+
+            // Win screen buttons
+            document.getElementById('nextLevelBtn').addEventListener('click', nextLevel);
+            document.getElementById('playAgainBtn').addEventListener('click', restartGame);
+
+            // Flowers - send butterflies
+            document.querySelectorAll('.flower').forEach(flower => {
+                const handler = (e) => {
+                    e.preventDefault();
+                    initAudio();
+                    speak('פרח', 'he-IL', 0.9, 1.2); // Perach - flower
+                    const rect = flower.getBoundingClientRect();
+                    sendButterflyToPinky(rect.left + rect.width/2, rect.top);
+                };
+                flower.addEventListener('click', handler);
+                flower.addEventListener('touchstart', handler, { passive: false });
+            });
+
+            // Characters
+            document.getElementById('princess1').addEventListener('click', (e) => {
+                initAudio();
+                createHeart(e.clientX, e.clientY);
+                createSparkles(e.clientX, e.clientY);
+                playHeartSound();
+                speak('Princess Ellie!', 'en-US', 1, 1.3);
+            });
+
+            document.getElementById('princess2').addEventListener('click', (e) => {
+                initAudio();
+                createHeart(e.clientX, e.clientY);
+                createSparkles(e.clientX, e.clientY);
+                playHeartSound();
+                speak('Princess Maya!', 'en-US', 1, 1.3);
+            });
+
+            document.getElementById('dog').addEventListener('click', (e) => {
+                initAudio();
+                createHeart(e.clientX, e.clientY);
+                createSparkles(e.clientX, e.clientY);
+                playBarkSound();
+                setTimeout(() => speak('Gav gav!', 'ru-RU', 0.8, 0.8), 200);
+            });
+
+            // Environment
+            document.getElementById('sun').addEventListener('click', () => {
+                initAudio();
+                speak('שמש', 'he-IL', 0.9, 1.2); // Shemesh - sun
+                const rainbow = document.getElementById('rainbow');
+                rainbow.classList.toggle('visible');
+                playMagicSound();
+            });
+
+            let cloudClickCount = 0;
+            document.querySelectorAll('.cloud').forEach(cloud => {
+                cloud.addEventListener('click', () => {
+                    initAudio();
+                    speak('ענן', 'he-IL', 0.9, 1.2); // Anan - cloud
+                    cloudClickCount++;
+                    if (cloudClickCount % 2 === 1) {
+                        makeItRain();
+                        setTimeout(() => speak('גשם', 'he-IL', 0.9, 1.2), 500); // Geshem - rain
+                    } else {
+                        makeLightning();
+                    }
+                });
+            });
+
+            document.getElementById('tree').addEventListener('click', (e) => {
+                initAudio();
+                speak('עץ', 'he-IL', 0.9, 1.2); // Etz - tree
+                createBird(e.clientX, e.clientY - 50);
+                setTimeout(() => createBird(e.clientX + 30, e.clientY - 30), 300);
+                createSparkles(e.clientX, e.clientY);
+            });
+
+            document.getElementById('pond').addEventListener('click', (e) => {
+                initAudio();
+                speak('בריכה', 'he-IL', 0.9, 1.2); // Breicha - pond
+                const pond = document.getElementById('pond');
+                const fish = document.getElementById('fish');
+
+                // Create splash effect
+                const rect = pond.getBoundingClientRect();
+                for (let i = 0; i < 5; i++) {
+                    setTimeout(() => {
+                        const splash = document.createElement('div');
+                        splash.className = 'splash';
+                        splash.textContent = '💧';
+                        splash.style.position = 'fixed';
+                        splash.style.left = (rect.left + rect.width/2 + (Math.random()-0.5)*60) + 'px';
+                        splash.style.top = (rect.top + 20) + 'px';
+                        document.body.appendChild(splash);
+                        setTimeout(() => splash.remove(), 600);
+                    }, i * 50);
+                }
+
+                fish.classList.remove('jump');
+                void fish.offsetWidth;
+                fish.classList.add('jump');
+                playSplashSound();
+                setTimeout(() => speak('דג', 'he-IL', 0.9, 1.2), 300); // Dag - fish
+
+                // Pinky goes crazy
+                const dog = document.getElementById('dog');
+                dog.classList.remove('excited');
+                void dog.offsetWidth;
+                dog.classList.add('excited');
+                playBarkSound();
+                setTimeout(() => playBarkSound(), 200);
+                setTimeout(() => playBarkSound(), 400);
+            });
+
+            document.getElementById('castle').addEventListener('click', () => {
+                initAudio();
+                speak('טירה', 'he-IL', 0.9, 1.2); // Tira - castle
+                showKingPopup();
+                playMagicSound();
+            });
+
+            document.getElementById('gameTitle').addEventListener('click', (e) => {
+                initAudio();
+                for (let i = 0; i < 20; i++) {
+                    setTimeout(() => createSparkle(e.clientX + (Math.random()-0.5)*100, e.clientY + (Math.random()-0.5)*50), i * 30);
+                }
+                playMagicSound();
+            });
+
+            // Sky click
+            document.getElementById('sky').addEventListener('click', (e) => {
+                initAudio();
+                speak('שמיים', 'he-IL', 0.9, 1.2); // Shamayim - sky
+                // Create a star
+                const star = document.createElement('div');
+                star.textContent = '⭐';
+                star.style.cssText = `
+                    position: fixed;
+                    left: ${e.clientX}px;
+                    top: ${e.clientY}px;
+                    font-size: 30px;
+                    pointer-events: none;
+                    animation: floatUp 2s ease-out forwards;
+                    z-index: 1000;
+                `;
+                document.body.appendChild(star);
+                setTimeout(() => star.remove(), 2000);
+            });
+
+            // Grass click
+            document.getElementById('grassContainer').addEventListener('click', (e) => {
+                initAudio();
+                speak('דשא', 'he-IL', 0.9, 1.2); // Deshe - grass
+                createSparkles(e.clientX, e.clientY);
+            });
+        }
+
+        // ============ INITIALIZATION ============
+        function init() {
+            generateGrass();
+            createTitleSparkles();
+            setupEventListeners();
+
+            // Preload voices
+            speechSynthesis.getVoices();
+
+            console.log('🏰 Princess Garden Adventure loaded! 🦋');
+        }
+
+        // Start when DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', init);
+        } else {
+            init();
+        }
+
+        // Regenerate grass on resize
+        window.addEventListener('resize', generateGrass);
+    </script>
+</body>
+</html>
