@@ -3103,12 +3103,21 @@
                 setTimeout(() => playBarkSound(), 400);
             });
 
+            let castleClickCount = 0;
             document.getElementById('castle').addEventListener('click', () => {
                 initAudio();
-                // Papa says "Where are my girls? Time for ice cream!" in Russian
-                playAudio('papa_icecream_ru.mp3');
-                // Then says ice cream in Hebrew (גלידה)
-                setTimeout(() => playAudio('icecream_he.mp3'), 2500);
+                if (castleClickCount % 2 === 0) {
+                    // Papa says "Where are my girls? Time for ice cream!" in Russian
+                    playAudio('papa_icecream_ru.mp3');
+                    // Then says ice cream in Hebrew (גלידה)
+                    setTimeout(() => playAudio('icecream_he.mp3'), 2500);
+                } else {
+                    // Papa says "Let's go to the restaurant, Miss Pinky!" in Russian
+                    playAudio('papa_restaurant_ru.mp3');
+                    // Then says restaurant in Hebrew (מסעדה)
+                    setTimeout(() => playAudio('restaurant_he.mp3'), 2500);
+                }
+                castleClickCount++;
                 showKingPopup();
                 playMagicSound();
             });
