@@ -2668,7 +2668,7 @@
             </div>
             <div class="ui-right">
                 <div class="level-display" id="levelDisplay">Level 1</div>
-                <div class="score-display" id="scoreDisplay">⭐ 0</div>
+                <div class="score-display" id="scoreDisplay">💎 0</div>
                 <div class="butterfly-counter" id="butterflyCounter">🦋 0 / 5</div>
                 <div class="star-counter" id="starCounter">⭐ 0 / 5</div>
             </div>
@@ -4230,7 +4230,7 @@
         // ============ GAME LOGIC ============
         function updateUI() {
             document.getElementById('levelDisplay').textContent = `Level ${gameState.level}`;
-            document.getElementById('scoreDisplay').textContent = `⭐ ${gameState.score}`;
+            document.getElementById('scoreDisplay').textContent = `💎 ${gameState.score}`;
             document.getElementById('butterflyCounter').textContent = `🦋 ${gameState.butterfliesCaught} / ${gameState.butterfliesNeeded}`;
             document.getElementById('starCounter').textContent = `⭐ ${gameState.starsCaught} / ${gameState.starsNeeded}`;
         }
