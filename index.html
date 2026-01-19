@@ -763,8 +763,8 @@
         }
 
         @keyframes duckFlyIn {
-            0% { top: -50px; left: 110%; transform: scaleX(-1) rotate(-10deg); }
-            100% { top: var(--target-top); left: var(--target-left); transform: scaleX(-1) rotate(0deg); }
+            0% { top: -50px; left: 110%; transform: rotate(-10deg); }
+            100% { top: var(--target-top); left: var(--target-left); transform: rotate(0deg); }
         }
 
         .pond:hover { transform: scale(1.05); }
@@ -1556,11 +1556,11 @@
         /* Flying Bird (crosses sky) */
         .flying-bird {
             position: fixed;
-            font-size: 50px;
+            font-size: 65px;
             cursor: pointer;
             z-index: 100;
             pointer-events: auto;
-            animation: wingFlap 0.3s ease-in-out infinite;
+            padding: 15px;
         }
 
         .flying-bird:hover {
@@ -1568,11 +1568,20 @@
         }
 
         .flying-bird.fly-left {
-            animation: birdFlyLeft 25s linear forwards;
+            animation: birdFlyLeft 18s linear forwards;
         }
 
         .flying-bird.fly-right {
-            animation: birdFlyRight 25s linear forwards;
+            animation: birdFlyRight 18s linear forwards;
+        }
+
+        /* Slow birds (dove) */
+        .flying-bird.slow-bird.fly-left {
+            animation: birdFlyLeft 30s linear forwards;
+        }
+
+        .flying-bird.slow-bird.fly-right {
+            animation: birdFlyRight 30s linear forwards;
         }
 
         @keyframes birdFlyLeft {
@@ -3404,13 +3413,19 @@
 
         // Spawn a flying bird that crosses the sky
         function spawnFlyingBird() {
-            const birdEmojis = ['🐦', '🦅', '🦆', '🦜'];
+            const birdEmojis = ['🐦', '🦅', '🦜', '🕊️'];
             const bird = document.createElement('div');
             bird.className = 'flying-bird';
-            bird.textContent = birdEmojis[Math.floor(Math.random() * birdEmojis.length)];
+            const selectedBird = birdEmojis[Math.floor(Math.random() * birdEmojis.length)];
+            bird.textContent = selectedBird;
 
             const goRight = Math.random() > 0.5;
             bird.classList.add(goRight ? 'fly-right' : 'fly-left');
+
+            // Dove flies slower
+            if (selectedBird === '🕊️') {
+                bird.classList.add('slow-bird');
+            }
 
             // Click handler - say bird in Russian/Hebrew
             bird.addEventListener('click', (e) => {
@@ -3423,8 +3438,8 @@
 
             document.body.appendChild(bird);
 
-            // Remove after animation completes
-            setTimeout(() => bird.remove(), 25000);
+            // Remove after animation completes (30s for slow birds + buffer)
+            setTimeout(() => bird.remove(), 32000);
         }
 
         // Schedule periodic flying birds
