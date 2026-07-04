@@ -108,9 +108,13 @@
 <script type="module">
 let THREE;
 try{
-  THREE=await import('https://cdnjs.cloudflare.com/ajax/libs/three.js/0.160.0/three.module.min.js');
-}catch(err){
-  THREE=await import('https://unpkg.com/three@0.160.0/build/three.module.js');
+  THREE=await import('./three.module.min.js');
+}catch(e1){
+  try{
+    THREE=await import('https://cdnjs.cloudflare.com/ajax/libs/three.js/0.160.0/three.module.min.js');
+  }catch(e2){
+    THREE=await import('https://unpkg.com/three@0.160.0/build/three.module.js');
+  }
 }
 
 class TinyOrbit{
@@ -231,22 +235,25 @@ const drivewayTex=tex(256,256,(g,w,h)=>speckle(g,w,h,'#cdb894',['#a08a63','#e6d9
 const gravelTex=tex(256,256,(g,w,h)=>speckle(g,w,h,'#c9bda2',['#a89a7c','#ded2b6','#93876b'],3000),3,3);
 const asphaltTex=tex(256,256,(g,w,h)=>speckle(g,w,h,'#585a5e',['#4c4e52','#65676b','#525458'],2200),10,1);
 const sidingTex=tex(256,256,(g,w,h)=>{
-  g.fillStyle='#f2e9d6'; g.fillRect(0,0,w,h);
-  g.strokeStyle='rgba(70,60,45,.16)'; g.lineWidth=2;
-  for(let y=14;y<h;y+=18){g.beginPath();g.moveTo(0,y);g.lineTo(w,y);g.stroke();}
-  g.globalAlpha=.05;
-  for(let i=0;i<500;i++){g.fillStyle='#7a6a50';g.fillRect(Math.random()*w,Math.random()*h,2,2);}
+  g.fillStyle='#f4f4ef'; g.fillRect(0,0,w,h);
+  g.strokeStyle='rgba(105,105,100,.22)'; g.lineWidth=2;
+  for(let y=14;y<h;y+=16){g.beginPath();g.moveTo(0,y);g.lineTo(w,y);g.stroke();}
+  g.globalAlpha=.04;
+  for(let i=0;i<400;i++){g.fillStyle='#8a8a80';g.fillRect(Math.random()*w,Math.random()*h,2,2);}
 },2,1);
 const shingleTex=tex(256,256,(g,w,h)=>{
-  g.fillStyle='#4b433a'; g.fillRect(0,0,w,h);
-  g.strokeStyle='rgba(20,16,12,.5)'; g.lineWidth=2;
+  g.fillStyle='#3c4046'; g.fillRect(0,0,w,h);
+  g.strokeStyle='rgba(14,16,20,.55)'; g.lineWidth=2;
   for(let y=0;y<h;y+=22){
     g.beginPath();g.moveTo(0,y);g.lineTo(w,y);g.stroke();
-    g.strokeStyle='rgba(20,16,12,.28)';
+    g.strokeStyle='rgba(14,16,20,.3)';
     const off=(y/22)%2?14:0;
     for(let x=off;x<w;x+=28){g.beginPath();g.moveTo(x,y);g.lineTo(x,y+22);g.stroke();}
-    g.strokeStyle='rgba(20,16,12,.5)';
+    g.strokeStyle='rgba(14,16,20,.55)';
   }
+  g.globalAlpha=.08;
+  for(let i=0;i<300;i++){g.fillStyle=Math.random()>.5?'#565c66':'#2b2e34';
+    g.fillRect(Math.random()*w,Math.random()*h,3,3);}
 },4,2);
 const brickTex=tex(128,128,(g,w,h)=>{
   g.fillStyle='#8a3b2e'; g.fillRect(0,0,w,h);
@@ -316,16 +323,17 @@ const matDrive=new THREE.MeshStandardMaterial({map:drivewayTex,roughness:1});
 const matGravel=new THREE.MeshStandardMaterial({map:gravelTex,roughness:1});
 const matAsphalt=new THREE.MeshStandardMaterial({map:asphaltTex,roughness:1});
 const matSiding=new THREE.MeshStandardMaterial({map:sidingTex,roughness:.92});
-const matTrim=new THREE.MeshStandardMaterial({color:0xf6efdd,roughness:.85});
+const matTrim=new THREE.MeshStandardMaterial({color:0xf7f6f0,roughness:.85});
 const matRoof=new THREE.MeshStandardMaterial({map:shingleTex,roughness:.95});
 const matBrick=new THREE.MeshStandardMaterial({map:brickTex,roughness:.95});
-const matShutter=new THREE.MeshStandardMaterial({color:0x27392c,roughness:.85});
+const matShutter=new THREE.MeshStandardMaterial({color:0x1d2a20,roughness:.85});
+const matIron=new THREE.MeshStandardMaterial({color:0x17181a,roughness:.6,metalness:.5});
 const matDoor=new THREE.MeshStandardMaterial({map:doorTex,roughness:.8});
 const matChrome=new THREE.MeshStandardMaterial({color:0xd9dade,metalness:.95,roughness:.18});
 const matTire=new THREE.MeshStandardMaterial({color:0x141414,roughness:.95});
 const matBlackSoft=new THREE.MeshStandardMaterial({color:0x1c1c1e,roughness:.8});
-const matGuardsRed=new THREE.MeshPhysicalMaterial({color:0xcf2a1f,roughness:.32,metalness:.06,clearcoat:1,clearcoatRoughness:.16});
-const matMGARed=new THREE.MeshPhysicalMaterial({color:0xc81f2c,roughness:.3,metalness:.05,clearcoat:1,clearcoatRoughness:.14});
+const matGuardsRed=new THREE.MeshPhysicalMaterial({color:0xd82918,roughness:.26,metalness:.06,clearcoat:1,clearcoatRoughness:.12});
+const matMGARed=new THREE.MeshPhysicalMaterial({color:0xd41f24,roughness:.24,metalness:.05,clearcoat:1,clearcoatRoughness:.1});
 const matCognac=new THREE.MeshStandardMaterial({color:0x8a5a33,roughness:.75});
 const matBlackLeather=new THREE.MeshStandardMaterial({color:0x232323,roughness:.7});
 const matTrunk=new THREE.MeshStandardMaterial({color:0x5c4a36,roughness:1});
@@ -387,7 +395,7 @@ flat(new THREE.PlaneGeometry(120,90),matGrass,0,0,0);                       // y
 flat(new THREE.PlaneGeometry(220,120),new THREE.MeshStandardMaterial({color:0x466f33,roughness:1}),0,-0.02,-70,false); // rough base
 flat(new THREE.PlaneGeometry(140,74),matFairway,0,0.02,-62);                // fairway
 flat(new THREE.PlaneGeometry(120,8),matAsphalt,0,0.03,43);                  // street
-flat(new THREE.PlaneGeometry(7.2,26),matDrive,10.5,0.04,27);                // drive
+ribbon([[19,42],[16.5,36],[13.5,29.5],[11,23.5],[9.5,18],[9,13],[9,9]],5.2,matDrive,0.045); // curved drive
 flat(new THREE.PlaneGeometry(16.5,11.5),matDrive,9,0.04,9.5);               // apron
 const patio=flat(new THREE.CircleGeometry(4,36),matGravel,-16,0.04,10);
 
@@ -425,7 +433,7 @@ function ribbon(pts,w,mat,y){
 }
 ribbon([[-22,-28],[-8,-35],[6,-45],[16,-57],[22,-67],[24,-76]],1.8,
   new THREE.MeshStandardMaterial({color:0xcfc9b8,roughness:1}),0.07);
-ribbon([[-4,1.4],[-4,6],[0,10],[5,12.5],[8.5,13.8]],1.4,matBrick,0.06);
+ribbon([[-4,2.2],[-4,5.5],[-1.5,9],[2,11.5],[5.5,13]],1.0,matBrick,0.06);
 
 // shoreline band
 flat(new THREE.PlaneGeometry(560,3.4),new THREE.MeshStandardMaterial({color:0xa5926a,roughness:1}),0,0.01,-99,false);
@@ -460,36 +468,108 @@ function windowUnit(w,h,shutters){
   }
   return gp;
 }
-// main block: 16 x 9 footprint, centered (-4,-4), walls 6 high
+// gambrel roof: steep lower slope (holds the dormers) breaking to a shallower cap
+function gambrelRoof(parent,len,halfSpan,rise,cx,topY,cz,breakX=0.40,breakY=0.74){
+  const s=new THREE.Shape();
+  s.moveTo(-halfSpan,0);
+  s.lineTo(-halfSpan*breakX,rise*breakY);
+  s.lineTo(0,rise);
+  s.lineTo(halfSpan*breakX,rise*breakY);
+  s.lineTo(halfSpan,0);
+  const g=new THREE.ExtrudeGeometry(s,{depth:len,bevelEnabled:false});
+  g.rotateY(Math.PI/2);
+  g.translate(cx-len/2,topY,cz);
+  const m=new THREE.Mesh(g,[matSiding,matRoof]);
+  m.castShadow=true; m.receiveShadow=true; parent.add(m); return m;
+}
+// main block: 16 x 9 footprint, one full story + roof story (like the photo)
 const HX=-4,HZ=-4;
-addBox(house,16.4,0.55,9.4,matBrick,HX,0.27,HZ);                 // foundation
-addBox(house,16,6,9,matSiding,HX,3.27,HZ);                       // walls
-gableRoof(house,17.2,5.3,3.4,HX,6.27,HZ);
-addBox(house,1.25,10.9,0.95,matBrick,HX-8.35,5.45,HZ);           // chimneys
-addBox(house,1.25,10.9,0.95,matBrick,HX+8.35,5.45,HZ);
-addBox(house,1.45,0.3,1.15,matBrick,HX-8.35,10.95,HZ);
-addBox(house,1.45,0.3,1.15,matBrick,HX+8.35,10.95,HZ);
+const WALL_H=3.7, EAVE=0.55+WALL_H;               // 4.25
+const RISE=4.6, HSPAN=5.5;
+addBox(house,16.4,0.55,9.4,matBrick,HX,0.27,HZ);                 // brick foundation
+addBox(house,16,WALL_H,9,matSiding,HX,0.55+WALL_H/2,HZ);         // walls
+gambrelRoof(house,17.4,HSPAN,RISE,HX,EAVE,HZ);
+// cornice under the eaves
+addBox(house,16.6,0.24,0.34,matTrim,HX,EAVE-0.02,HZ+4.55);
+addBox(house,16.6,0.24,0.34,matTrim,HX,EAVE-0.02,HZ-4.55);
+// one big brick chimney right of center, corbeled cap
+addBox(house,1.5,7.2,1.15,matBrick,HX+4.2,7.0,HZ);
+addBox(house,1.74,0.34,1.36,matBrick,HX+4.2,10.75,HZ);
+addBox(house,1.56,0.22,1.2,matBrick,HX+4.2,11.0,HZ);
 // corner boards
 [[-8,0],[8,0]].forEach(off=>{
-  addBox(house,0.18,6,0.18,matTrim,HX+off[0],3.27,HZ+4.5);
-  addBox(house,0.18,6,0.18,matTrim,HX+off[0],3.27,HZ-4.5);
+  addBox(house,0.18,WALL_H,0.18,matTrim,HX+off[0],0.55+WALL_H/2,HZ+4.5);
+  addBox(house,0.18,WALL_H,0.18,matTrim,HX+off[0],0.55+WALL_H/2,HZ-4.5);
 });
 // front windows + door (front wall z = HZ+4.5)
 const FZ=HZ+4.53;
-[-6,-3,3,6].forEach(dx=>{
-  const wnd=windowUnit(0.95,1.4,true); wnd.position.set(HX+dx,1.85,FZ); house.add(wnd);
+[-6.2,-3.4,3.4,6.2].forEach(dx=>{
+  const wnd=windowUnit(1.02,1.62,true); wnd.position.set(HX+dx,2.05,FZ); house.add(wnd);
 });
-[-6,-3,0,3,6].forEach(dx=>{
-  const wnd=windowUnit(0.95,1.35,true); wnd.position.set(HX+dx,4.55,FZ); house.add(wnd);
+/* ---------------- portico: pediment, paired columns, lantern ---------------- */
+const portico=new THREE.Group(); house.add(portico);
+// brick stoop + steps + cheek walls
+addBox(portico,2.7,0.5,2.1,matBrick,HX,0.25,FZ+1.0);
+addBox(portico,2.3,0.17,0.55,matBrick,HX,0.34,FZ+2.3);
+addBox(portico,2.3,0.17,0.55,matBrick,HX,0.17,FZ+2.75);
+// paired columns (two each side) with base + capital
+[-1,1].forEach(sd=>{
+  [1.08,0.74].forEach(cx=>{
+    const col=new THREE.Mesh(new THREE.CylinderGeometry(0.085,0.095,2.34,12),matTrim);
+    col.position.set(HX+sd*cx,0.5+1.17,FZ+1.62); col.castShadow=true; portico.add(col);
+    addBox(portico,0.24,0.08,0.24,matTrim,HX+sd*cx,0.56,FZ+1.62);
+    addBox(portico,0.22,0.07,0.22,matTrim,HX+sd*cx,2.82,FZ+1.62);
+  });
+  // pilasters against the wall
+  addBox(portico,0.16,2.34,0.14,matTrim,HX+sd*1.08,0.5+1.17,FZ+0.07);
 });
-// door + surround + steps + sign
-const door=new THREE.Mesh(new THREE.PlaneGeometry(1.15,2.25),matDoor);
-door.position.set(HX,1.45,FZ+0.02); house.add(door);
-addBox(house,1.6,0.14,0.3,matTrim,HX,2.68,FZ+0.06);
-addBox(house,0.16,2.3,0.22,matTrim,HX-0.75,1.45,FZ+0.04);
-addBox(house,0.16,2.3,0.22,matTrim,HX+0.75,1.45,FZ+0.04);
-addBox(house,2.1,0.22,1.3,matBrick,HX,0.11,FZ+0.7);
-addBox(house,1.7,0.2,0.9,matBrick,HX,0.32,FZ+0.45);
+// entablature + pediment (gable faces forward)
+addBox(portico,2.72,0.3,2.0,matTrim,HX,3.02,FZ+0.98);
+(function(){
+  const s=new THREE.Shape();
+  s.moveTo(-1.5,0); s.lineTo(0,0.66); s.lineTo(1.5,0);
+  const g=new THREE.ExtrudeGeometry(s,{depth:2.05,bevelEnabled:false});
+  g.translate(HX,3.17,FZ-0.02);
+  const m=new THREE.Mesh(g,[matTrim,matRoof]);
+  m.castShadow=true; portico.add(m);
+  // raking + horizontal trim on the pediment face
+  addBox(portico,3.1,0.09,0.12,matTrim,HX,3.2,FZ+2.06);
+})();
+// dentil blocks under the pediment
+for(let i=-5;i<=5;i++){
+  addBox(portico,0.09,0.09,0.07,matTrim,HX+i*0.24,2.92,FZ+2.0);
+}
+// hanging lantern under the portico ceiling
+const lantern=new THREE.Group();
+addBox(lantern,0.03,0.22,0.03,matIron,0,0.25,0);
+addBox(lantern,0.2,0.3,0.2,matIron,0,0,0);
+const lanternGlow=new THREE.Mesh(new THREE.BoxGeometry(0.16,0.24,0.16),
+  new THREE.MeshStandardMaterial({color:0xffdca0,emissive:0xffc271,emissiveIntensity:1.6}));
+lantern.add(lanternGlow);
+addBox(lantern,0.24,0.05,0.24,matIron,0,-0.19,0);
+lantern.position.set(HX,2.55,FZ+1.1); portico.add(lantern);
+const lanternLight=new THREE.PointLight(0xffc27a,6,7,2);
+lanternLight.position.set(HX,2.4,FZ+1.1); portico.add(lanternLight);
+// black iron step railings
+[-1,1].forEach(sd=>{
+  const rail=addBox(portico,0.05,0.05,1.5,matIron,HX+sd*1.12,0.98,FZ+2.15);
+  rail.rotation.x=0.2;
+  [1.5,2.1,2.7].forEach((z,i)=>{
+    addBox(portico,0.045,0.85-i*0.16,0.045,matIron,HX+sd*1.12,(0.85-i*0.16)/2+ (i===0?0.5:i===1?0.34:0.0),FZ+z);
+  });
+});
+// door + surround + transom + wreath
+const door=new THREE.Mesh(new THREE.PlaneGeometry(1.15,2.15),matDoor);
+door.position.set(HX,1.58,FZ+0.02); house.add(door);
+const transom=new THREE.Mesh(new THREE.PlaneGeometry(1.1,0.26),
+  new THREE.MeshStandardMaterial({color:0x6b3524,emissive:0xff7a3c,emissiveIntensity:0.9,roughness:.4}));
+transom.position.set(HX,2.79,FZ+0.02); house.add(transom);
+glassMats.push(transom.material);
+addBox(house,0.16,2.5,0.2,matTrim,HX-0.72,1.75,FZ+0.03);
+addBox(house,0.16,2.5,0.2,matTrim,HX+0.72,1.75,FZ+0.03);
+const wreath=new THREE.Mesh(new THREE.TorusGeometry(0.21,0.055,8,18),
+  new THREE.MeshStandardMaterial({color:0x2c4d2b,roughness:1}));
+wreath.position.set(HX,1.95,FZ+0.09); house.add(wreath);
 const signArm=addBox(house,0.1,0.1,1.15,matShutter,HX+3.05,3.5,FZ+0.5);
 const sign=new THREE.Mesh(new THREE.PlaneGeometry(1.15,0.78),
   new THREE.MeshStandardMaterial({map:signTex,side:THREE.DoubleSide,roughness:.9}));
@@ -527,17 +607,25 @@ const club33Tex=tex(1024,252,(g,w,h)=>{
   g.strokeStyle='#8f5a4f'; g.lineWidth=3;
   g.beginPath(); g.arc(cx,cy+33,10,0.3,2.85); g.stroke();
   g.fillStyle='#efe6cf'; g.textAlign='center';
-  g.font='italic 700 92px Georgia'; g.letterSpacing='0px';
-  g.fillText('Remote Club 33',624,118);
-  g.font='700 34px Georgia'; g.letterSpacing='6px';
-  g.fillText('MEMBERS ONLY \u00b7 COWS WELCOME',624,188);
+  // fit text into the space right of the cow emblem (x 280..990)
+  const fit=(txt,style,maxW)=>{
+    let size=parseInt(style.match(/(\d+)px/)[1],10);
+    g.font=style;
+    while(g.measureText(txt).width>maxW&&size>16){
+      size-=2; g.font=style.replace(/\d+px/,size+'px');
+    }
+  };
+  fit('Remote Club 33','italic 700 92px Georgia',640);
+  g.fillText('Remote Club 33',635,118);
+  g.letterSpacing='5px';
+  fit('MEMBERS ONLY \u00b7 COWS WELCOME','700 34px Georgia',640);
+  g.fillText('MEMBERS ONLY \u00b7 COWS WELCOME',635,188);
+  g.letterSpacing='0px';
 });
-const club33=new THREE.Mesh(new THREE.PlaneGeometry(4.4,1.08),
+const club33=new THREE.Mesh(new THREE.PlaneGeometry(2.55,0.6),
   new THREE.MeshStandardMaterial({map:club33Tex,roughness:.8,
     emissive:0xffffff,emissiveMap:club33Tex,emissiveIntensity:0.16}));
-club33.position.set(HX,3.3,FZ+0.06); club33.castShadow=true; house.add(club33);
-addBox(house,0.14,0.1,0.1,matBlackSoft,HX-1.9,2.71,FZ+0.05);
-addBox(house,0.14,0.1,0.1,matBlackSoft,HX+1.9,2.71,FZ+0.05);
+club33.position.set(HX,3.02,FZ+1.99); club33.castShadow=true; house.add(club33);
 // Cows Welcome sign on the front lawn
 const cowsTex=tex(360,180,(g,w,h)=>{
   g.fillStyle='#f4efe2'; g.fillRect(0,0,w,h);
@@ -547,9 +635,13 @@ const cowsTex=tex(360,180,(g,w,h)=>{
   g.beginPath(); g.ellipse(316,140,15,11,-0.6,0,6.283); g.fill();
   g.beginPath(); g.ellipse(58,148,10,8,0.2,0,6.283); g.fill();
   g.fillStyle='#2f4a33'; g.textAlign='center';
-  g.font='700 58px Georgia'; g.fillText('COWS',w/2,82);
-  g.font='700 44px Georgia'; g.letterSpacing='4px';
+  g.font='700 58px Georgia';
+  while(g.measureText('COWS').width>w-100) g.font='700 '+(parseInt(g.font.match(/(\d+)px/)[1],10)-2)+'px Georgia';
+  g.fillText('COWS',w/2,82);
+  g.font='700 44px Georgia'; g.letterSpacing='2px';
+  while(g.measureText('WELCOME').width>w-100) g.font='700 '+(parseInt(g.font.match(/(\d+)px/)[1],10)-2)+'px Georgia';
   g.fillText('WELCOME',w/2,138);
+  g.letterSpacing='0px';
 });
 const cowSign=new THREE.Group();
 const cowPost=addBox(cowSign,0.09,1.1,0.09,matTrim,0,0.55,0);
@@ -559,41 +651,41 @@ cowBoard.position.set(0,1.06,0.05); cowBoard.castShadow=true; cowSign.add(cowBoa
 cowSign.position.set(-7.4,0,5.6); cowSign.rotation.y=0.42; scene.add(cowSign);
 // back windows
 const BZ=HZ-4.53;
-[-6,-3,0,3,6].forEach(dx=>{
-  const a=windowUnit(0.95,1.35,true); a.position.set(HX+dx,4.55,BZ); a.rotation.y=Math.PI; house.add(a);
-  if(dx!==0){const b=windowUnit(0.95,1.4,true); b.position.set(HX+dx,1.85,BZ); b.rotation.y=Math.PI; house.add(b);}
+[-6.2,-3.4,0,3.4,6.2].forEach(dx=>{
+  const b=windowUnit(1.02,1.62,true); b.position.set(HX+dx,2.05,BZ); b.rotation.y=Math.PI; house.add(b);
 });
-// left gable windows
+// left end: ground windows on the wall, upper windows in the gambrel end
 [-2,2].forEach(dz=>{
-  const a=windowUnit(0.9,1.35,true); a.position.set(HX-8.03,1.85,HZ+dz); a.rotation.y=-Math.PI/2; house.add(a);
-  const b=windowUnit(0.9,1.3,true); b.position.set(HX-8.03,4.55,HZ+dz); b.rotation.y=-Math.PI/2; house.add(b);
+  const a=windowUnit(0.95,1.5,true); a.position.set(HX-8.03,2.0,HZ+dz); a.rotation.y=-Math.PI/2; house.add(a);
+  const b=windowUnit(0.8,1.1,false); b.position.set(HX-8.72,5.9,HZ+dz*0.7); b.rotation.y=-Math.PI/2; house.add(b);
 });
-const attic=windowUnit(0.65,0.85,false); attic.position.set(HX-8.03,7.4,HZ); attic.rotation.y=-Math.PI/2; house.add(attic);
-// dormers (front slope)
-function dormer(px){
+const attic=windowUnit(0.6,0.75,false); attic.position.set(HX-8.72,7.7,HZ); attic.rotation.y=-Math.PI/2; house.add(attic);
+// gabled dormers riding low on the steep slope, like the photo
+function dormer(px,baseY,frontZ,scl=1){
   const d=new THREE.Group();
-  addBox(d,1.25,1.5,1.9,matSiding,0,0.75,-0.75);
-  const wnd=windowUnit(0.6,0.85,false); wnd.position.set(0,0.78,0.24); d.add(wnd);
-  const r1=addBox(d,1.05,0.07,2.1,matRoof,-0.42,1.62,-0.7); r1.rotation.z=0.68;
-  const r2=addBox(d,1.05,0.07,2.1,matRoof,0.42,1.62,-0.7); r2.rotation.z=-0.68;
-  d.position.set(px,6.55,FZ-0.75);
-  house.add(d);
+  addBox(d,1.35*scl,1.9*scl,2.2,matSiding,0,0.95*scl,-1.1);
+  const wnd=windowUnit(0.68*scl,1.05*scl,false); wnd.position.set(0,1.02*scl,0.04); d.add(wnd);
+  addBox(d,0.14,0.14,0.1,matTrim,0,2.0*scl,0);
+  const r1=addBox(d,1.1*scl,0.07,2.5,matRoof,-0.38*scl,2.08*scl,-1.05); r1.rotation.z=0.72;
+  const r2=addBox(d,1.1*scl,0.07,2.5,matRoof,0.38*scl,2.08*scl,-1.05); r2.rotation.z=-0.72;
+  d.position.set(px,baseY,frontZ);
+  house.add(d); return d;
 }
-[-6,-3,0,3,6].forEach(dx=>dormer(HX+dx));
+[-6,-3,0,3,6].forEach(dx=>dormer(HX+dx,5.05,HZ+4.15));
 // hyphen connector
-addBox(house,2.6,3,5.4,matSiding,5.3,1.5,-1.5);
-const hyRoof=addBox(house,3,0.12,6,matRoof,5.3,3.15,-1.5); hyRoof.rotation.x=0.09;
+addBox(house,2.6,2.7,5.4,matSiding,5.3,1.35,-1.5);
+const hyRoof=addBox(house,3,0.12,6,matRoof,5.3,2.85,-1.5); hyRoof.rotation.x=0.09;
 // garage with FROG
 const GX=10.9,GZ=-1.2;
 addBox(house,8.6,0.45,7.8,matBrick,GX,0.22,GZ);
-addBox(house,8.4,3.6,7.6,matSiding,GX,2.25,GZ);
-gableRoof(house,9.2,4.1,2.4,GX,4.05,GZ);
-const gd1=new THREE.Mesh(new THREE.PlaneGeometry(2.9,2.5),
+addBox(house,8.4,3.3,7.6,matSiding,GX,2.1,GZ);
+gableRoof(house,9.2,4.1,2.3,GX,3.75,GZ);
+const gd1=new THREE.Mesh(new THREE.PlaneGeometry(2.9,2.4),
   new THREE.MeshStandardMaterial({map:garageDoorTex,roughness:.85}));
-gd1.position.set(GX-2,1.55,GZ+3.83); house.add(gd1);
+gd1.position.set(GX-2,1.45,GZ+3.83); house.add(gd1);
 const gd2=gd1.clone(); gd2.position.x=GX+2; house.add(gd2);
-addBox(house,3.15,0.12,0.14,matTrim,GX-2,2.86,GZ+3.85);
-addBox(house,3.15,0.12,0.14,matTrim,GX+2,2.86,GZ+3.85);
+addBox(house,3.15,0.12,0.14,matTrim,GX-2,2.7,GZ+3.85);
+addBox(house,3.15,0.12,0.14,matTrim,GX+2,2.7,GZ+3.85);
 // FROG dormer + gable window
 (function(){
   const d=new THREE.Group();
@@ -601,16 +693,68 @@ addBox(house,3.15,0.12,0.14,matTrim,GX+2,2.86,GZ+3.85);
   const wnd=windowUnit(0.85,0.85,false); wnd.position.set(0,0.72,0.22); d.add(wnd);
   const r1=addBox(d,1.2,0.07,2,matRoof,-0.5,1.5,-0.65); r1.rotation.z=0.62;
   const r2=addBox(d,1.2,0.07,2,matRoof,0.5,1.5,-0.65); r2.rotation.z=-0.62;
-  d.position.set(GX,4.25,GZ+3.1); house.add(d);
+  d.position.set(GX,3.95,GZ+3.1); house.add(d);
 })();
-const frogW=windowUnit(0.8,0.95,false); frogW.position.set(GX+4.23,4.7,GZ); frogW.rotation.y=Math.PI/2; house.add(frogW);
-// foundation shrubs
-for(let x=-11;x<=3;x+=1.7){
-  if(Math.abs(x-HX)<1.2) continue;
-  const s=new THREE.Mesh(new THREE.IcosahedronGeometry(0.45,1),
-    new THREE.MeshStandardMaterial({color:0x2e5230,roughness:1}));
-  s.position.set(x,0.42,FZ+0.85); s.scale.y=0.85; s.castShadow=true; scene.add(s);
+const frogW=windowUnit(0.8,0.95,false); frogW.position.set(GX+4.23,4.35,GZ); frogW.rotation.y=Math.PI/2; house.add(frogW);
+// rounded boxwoods along the foundation, clipped like the photo
+const matBoxwood=new THREE.MeshStandardMaterial({color:0x2f5330,roughness:1});
+for(let x=-11.4;x<=3.4;x+=1.55){
+  if(Math.abs(x-HX)<1.7) continue;
+  const s=new THREE.Mesh(new THREE.SphereGeometry(0.62,10,8),matBoxwood);
+  s.position.set(x,0.5,FZ+1.0); s.scale.set(1,0.82,0.9); s.castShadow=true; scene.add(s);
 }
+// terracotta planters with flowers flanking the steps
+[-1,1].forEach(sd=>{
+  const pot=new THREE.Mesh(new THREE.CylinderGeometry(0.22,0.16,0.32,10),
+    new THREE.MeshStandardMaterial({color:0xa65a38,roughness:.9}));
+  pot.position.set(HX+sd*1.7,0.16,FZ+2.6); pot.castShadow=true; scene.add(pot);
+  for(let i=0;i<6;i++){
+    const f=new THREE.Mesh(new THREE.SphereGeometry(0.05,6,5),
+      new THREE.MeshStandardMaterial({color:[0xe86ea3,0xf3f0e4,0xd8452f][i%3],roughness:.9}));
+    f.position.set(HX+sd*1.7+(Math.random()-.5)*0.3,0.4+Math.random()*0.1,FZ+2.6+(Math.random()-.5)*0.3);
+    scene.add(f);
+  }
+});
+/* ---------------- lamp posts + dusk accent lighting ---------------- */
+const lampLights=[], uplights=[];
+function lampPost(x,z){
+  const g=new THREE.Group();
+  const post=new THREE.Mesh(new THREE.CylinderGeometry(0.06,0.1,2.5,8),matTrim);
+  post.position.y=1.25; post.castShadow=true; g.add(post);
+  addBox(g,0.3,0.1,0.3,matTrim,0,0.06,0);
+  addBox(g,0.24,0.34,0.24,matIron,0,2.67,0);
+  const glowBox=new THREE.Mesh(new THREE.BoxGeometry(0.19,0.26,0.19),
+    new THREE.MeshStandardMaterial({color:0xffe2ad,emissive:0xffc271,emissiveIntensity:1.4}));
+  glowBox.position.y=2.66; g.add(glowBox);
+  addBox(g,0.1,0.09,0.1,matIron,0,2.9,0);
+  const pl=new THREE.PointLight(0xffc27a,7,11,2);
+  pl.position.y=2.7; g.add(pl); lampLights.push(pl);
+  g.position.set(x,0,z); scene.add(g); return g;
+}
+lampPost(4.6,16.2);
+lampPost(17.2,24.5);
+// warm uplights washing the facade at dusk (the photo's look)
+[[-6.2,0],[-2.0,0],[2.0,0],[6.2,0]].forEach(([dx])=>{
+  const sp=new THREE.SpotLight(0xffa964,0,13,0.62,0.65,1.6);
+  sp.position.set(HX+dx,0.12,FZ+2.6);
+  sp.target.position.set(HX+dx,3.4,FZ-0.4);
+  scene.add(sp); scene.add(sp.target); uplights.push(sp);
+});
+// tall loblolly pines behind the house
+function pine(x,z,h){
+  const g=new THREE.Group();
+  const t=new THREE.Mesh(new THREE.CylinderGeometry(0.18,0.32,h*0.62,7),matTrunk);
+  t.position.y=h*0.31; t.castShadow=true; g.add(t);
+  for(let i=0;i<3;i++){
+    const c=new THREE.Mesh(new THREE.IcosahedronGeometry(h*0.16-(i*h*0.02),1),
+      new THREE.MeshStandardMaterial({color:i%2?0x24422b:0x2d4f33,roughness:1}));
+    c.position.set((Math.random()-0.5)*h*0.08,h*(0.62+i*0.14),(Math.random()-0.5)*h*0.08);
+    c.scale.y=0.8; c.castShadow=true; g.add(c);
+  }
+  g.position.set(x,0,z); scene.add(g); return g;
+}
+pine(-14,-13,14); pine(-6,-15,16); pine(2,-14,13); pine(9,-16,15);
+pine(16,-12,12); pine(-21,-14,12); pine(-12,27,15); pine(27,22,13);
 
 /* ---------------- trees & fence ---------------- */
 function tree(x,z,s,tone){
@@ -758,16 +902,16 @@ porsche.add(carBody([
   [2.12,0.55],[2.12,0.30]
 ],1.34,matGuardsRed,0.14));
 // black rocker/bumper trim
-addBox(porsche,4.1,0.13,1.58,matBlackSoft,0,0.30,0);
+addBox(porsche,3.9,0.13,1.46,matBlackSoft,0,0.28,0);
 // front fenders + headlights
 [-1,1].forEach(sd=>{
-  const f=new THREE.Mesh(new THREE.CapsuleGeometry(0.17,0.75,4,10),matGuardsRed);
-  f.rotation.z=Math.PI/2; f.position.set(-1.5,0.86,sd*0.62); f.castShadow=true; porsche.add(f);
-  const ring=new THREE.Mesh(new THREE.CylinderGeometry(0.155,0.155,0.1,16),matChrome);
-  ring.rotation.z=Math.PI/2; ring.position.set(-1.95,0.86,sd*0.62); porsche.add(ring);
-  const lens=new THREE.Mesh(new THREE.CircleGeometry(0.135,16),
+  const f=new THREE.Mesh(new THREE.CapsuleGeometry(0.16,0.7,4,10),matGuardsRed);
+  f.rotation.z=Math.PI/2; f.position.set(-1.45,0.72,sd*0.5); f.castShadow=true; porsche.add(f);
+  const ring=new THREE.Mesh(new THREE.CylinderGeometry(0.15,0.15,0.1,16),matChrome);
+  ring.rotation.z=Math.PI/2; ring.position.set(-1.86,0.78,sd*0.58); porsche.add(ring);
+  const lens=new THREE.Mesh(new THREE.CircleGeometry(0.13,16),
     new THREE.MeshStandardMaterial({color:0xf4f1e2,roughness:.25,emissive:0xfff2cc,emissiveIntensity:.15}));
-  lens.rotation.y=-Math.PI/2; lens.position.set(-2.005,0.86,sd*0.62); porsche.add(lens);
+  lens.rotation.y=-Math.PI/2; lens.position.set(-1.915,0.78,sd*0.58); porsche.add(lens);
   // rear hips
   const hip=new THREE.Mesh(new THREE.SphereGeometry(0.34,12,10),matGuardsRed);
   hip.scale.set(1.7,0.62,0.62); hip.position.set(1.25,0.6,sd*0.66); hip.castShadow=true; porsche.add(hip);
@@ -776,21 +920,23 @@ addBox(porsche,4.1,0.13,1.58,matBlackSoft,0,0.30,0);
     const mr=addBox(porsche,0.09,0.07,0.13,matGuardsRed,-0.5,1.02,sd*0.72);
   }
 });
-// windshield
-const wsFrame=addBox(porsche,0.07,0.55,1.32,matBlackSoft,-0.42,1.14,0); wsFrame.rotation.z=-0.42;
-const ws=new THREE.Mesh(new THREE.PlaneGeometry(1.22,0.5),matCarGlass);
-ws.rotation.y=Math.PI/2; ws.rotation.x=0; ws.position.set(-0.415,1.13,0);
-ws.rotation.z=-0.42; porsche.add(ws);
+// windshield: slim raked A-pillars + header + glass
+[-1,1].forEach(sd=>{
+  const ap=addBox(porsche,0.055,0.54,0.06,matBlackSoft,-0.42,1.12,sd*0.6); ap.rotation.z=-0.4;
+});
+addBox(porsche,0.055,0.05,1.26,matBlackSoft,-0.31,1.35,0);
+const ws=new THREE.Mesh(new THREE.PlaneGeometry(1.22,0.52),matCarGlass);
+ws.rotation.y=Math.PI/2; ws.rotation.z=-0.4; ws.position.set(-0.42,1.12,0); porsche.add(ws);
 // cockpit + cognac interior + folded black top
 addBox(porsche,1.5,0.05,1.1,new THREE.MeshStandardMaterial({color:0x2a2a2a,roughness:.9}),0.35,0.9,0);
-const ps1=seat(matCognac,0.5); ps1.position.set(0.28,0.98,-0.33); porsche.add(ps1);
-const ps2=seat(matCognac,0.5); ps2.position.set(0.28,0.98,0.33); porsche.add(ps2);
-const foldedTop=new THREE.Mesh(new THREE.CapsuleGeometry(0.17,1.05,4,10),matBlackSoft);
-foldedTop.rotation.x=Math.PI/2; foldedTop.position.set(1.0,0.97,0); foldedTop.castShadow=true; porsche.add(foldedTop);
+const ps1=seat(matCognac,0.5); ps1.position.set(0.22,0.9,-0.33); porsche.add(ps1);
+const ps2=seat(matCognac,0.5); ps2.position.set(0.22,0.9,0.33); porsche.add(ps2);
+const foldedTop=new THREE.Mesh(new THREE.CapsuleGeometry(0.16,1.0,4,10),matBlackSoft);
+foldedTop.rotation.x=Math.PI/2; foldedTop.position.set(0.95,0.88,0); foldedTop.castShadow=true; porsche.add(foldedTop);
 const pWheel=new THREE.Mesh(new THREE.TorusGeometry(0.15,0.018,8,20),matBlackLeather);
 pWheel.position.set(-0.18,1.05,-0.33); pWheel.rotation.y=Math.PI/2; pWheel.rotation.x=0.35; porsche.add(pWheel);
 // wheels
-[[-1.32,-0.72],[-1.32,0.72],[1.3,-0.72],[1.3,0.72]].forEach(p=>{
+[[-1.32,-0.78],[-1.32,0.78],[1.3,-0.78],[1.3,0.78]].forEach(p=>{
   const w=wheelPorsche(); w.position.set(p[0],0.34,p[1]);
   if(p[1]<0) w.rotation.y=Math.PI;
   porsche.add(w);
@@ -826,6 +972,15 @@ addBox(mga,0.08,0.09,1.3,matChrome,2.1,0.36,0);
   const lens=new THREE.Mesh(new THREE.CircleGeometry(0.1,14),
     new THREE.MeshStandardMaterial({color:0xf4f1e2,roughness:.25}));
   lens.rotation.y=-Math.PI/2+sd*0.12; lens.position.set(-1.755,0.76,sd*0.415); mga.add(lens);
+  // swept front fender bulges
+  const f=new THREE.Mesh(new THREE.CapsuleGeometry(0.15,0.85,4,10),matMGARed);
+  f.rotation.z=Math.PI/2; f.position.set(-1.3,0.68,sd*0.46); f.castShadow=true; mga.add(f);
+});
+// little club badges on the grille, like the photo
+[[0xd8b13c,-0.13],[0x27418f,0],[0xb8322c,0.13]].forEach(([c,dz])=>{
+  const b=new THREE.Mesh(new THREE.CircleGeometry(0.035,10),
+    new THREE.MeshStandardMaterial({color:c,roughness:.4,metalness:.3}));
+  b.rotation.y=-Math.PI/2; b.position.set(-2.085,0.44,dz); mga.add(b);
 });
 // windscreen
 const mwsF=addBox(mga,0.05,0.4,1.0,matChrome,-0.28,0.98,0); mwsF.rotation.z=-0.16;
@@ -840,7 +995,7 @@ mWheel.position.set(-0.05,0.82,-0.26); mWheel.rotation.y=Math.PI/2; mWheel.rotat
 // tonneau hump behind seats
 const tonneau=new THREE.Mesh(new THREE.CapsuleGeometry(0.1,0.8,4,8),matBlackLeather);
 tonneau.rotation.x=Math.PI/2; tonneau.position.set(0.82,0.7,0); mga.add(tonneau);
-[[-1.26,-0.6],[-1.26,0.6],[1.22,-0.6],[1.22,0.6]].forEach(p=>{
+[[-1.26,-0.62],[-1.26,0.62],[1.22,-0.62],[1.22,0.62]].forEach(p=>{
   const w=wheelMGA(); w.position.set(p[0],0.31,p[1]);
   if(p[1]<0) w.rotation.y=Math.PI;
   mga.add(w);
@@ -911,7 +1066,7 @@ renderer.domElement.addEventListener('pointerup',e=>{
 
 /* ---------------- camera tours ---------------- */
 const VIEWS={
-  house:{p:[13,6.5,19],t:[-4,3.8,-2]},
+  house:{p:[13,5.5,19],t:[-4,3.0,-2]},
   cars:{p:[8.5,3,17.5],t:[8,0.8,10]},
   yard:{p:[-22,4.5,17],t:[-15,1,9]},
   club:{p:[16,7,-48],t:[28,1,-70]},
@@ -955,6 +1110,9 @@ function setMode(m){
   sun.position.set(isDay?38:34,isDay?52:26,isDay?18:28);
   rim.intensity=isDay?0.15:0.7;
   glassMats.forEach(g=>{g.emissiveIntensity=isDay?0.02:0.5;});
+  uplights.forEach(u=>{u.intensity=isDay?0:60;});
+  lampLights.forEach(u=>{u.intensity=isDay?0:7;});
+  lanternLight.intensity=isDay?0.5:6;
   renderer.toneMappingExposure=isDay?1.0:1.02;
   modeBtn.textContent=isDay?'Sunset':'Daylight';
 }
