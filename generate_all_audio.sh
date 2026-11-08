@@ -1,6 +1,7 @@
 #!/bin/bash
 
-API_KEY="sk_f5b2c2781f37706b7538cff0e4a39227259212d14edefec7"
+# Set your ElevenLabs key in the environment first: export ELEVENLABS_API_KEY=...
+API_KEY="${ELEVENLABS_API_KEY:?Set ELEVENLABS_API_KEY before running this script}"
 MODEL="eleven_multilingual_v2"
 
 # Voice IDs - using different voices for each language

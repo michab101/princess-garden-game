@@ -1,0 +1,4 @@
+# secrets and local tool state
+.env
+.env.*
+.claude/settings.local.json
